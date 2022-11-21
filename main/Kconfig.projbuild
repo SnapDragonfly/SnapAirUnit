@@ -1,0 +1,206 @@
+menu "Snap Air Unit"
+
+    menu "WiFi Configuration"
+
+        config ESP_WIFI_AP_SSID
+            string "WiFi AP SSID"
+            default "snap_ap"
+            help
+                SSID (network name) for the example to connect to.
+    
+        config ESP_WIFI_AP_PASSWORD
+            string "WiFi AP Password"
+            default "12345678"
+            help
+                WiFi password (WPA or WPA2) for the example to use.
+
+        config ESP_WIFI_STA_SSID
+            string "WiFi Station SSID"
+            default "AutoLab"
+            help
+                SSID (network name) for the example to connect to.
+    
+        config ESP_WIFI_STA_PASSWORD
+            string "WiFi Station Password"
+            default "68686868"
+            help
+                WiFi password (WPA or WPA2) for the example to use.
+
+        config ESP_WIFI_CHANNEL
+            int "WiFi Channel"
+            range 1 13
+            default 1
+            help
+                WiFi channel (network channel) for the example to use.
+    
+        config ESP_MAX_STA_CONN
+            int "Maximal STA connections"
+            default 4
+            help
+                Max number of the STA connects to AP.
+    
+        config ESP_MAXIMUM_RETRY
+            int "Maximum retry"
+            default 5
+            help
+                Set the Maximum retry to avoid station reconnecting to the AP unlimited when the AP is really inexistent.
+    
+        choice ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD
+            prompt "WiFi Scan auth mode threshold"
+            default ESP_WIFI_AUTH_WPA_WPA2_PSK
+            help
+                The weakest authmode to accept in the scan mode.
+                This value defaults to ESP_WIFI_AUTH_WPA_WPA2_PSK incase password is present and ESP_WIFI_AUTH_OPEN is used.
+                Please select ESP_WIFI_AUTH_WEP/ESP_WIFI_AUTH_WPA_PSK incase AP is operating in WEP/WPA mode.
+    
+            config ESP_WIFI_AUTH_OPEN
+                bool "OPEN"
+            config ESP_WIFI_AUTH_WEP
+                bool "WEP"
+            config ESP_WIFI_AUTH_WPA_PSK
+                bool "WPA PSK"
+            config ESP_WIFI_AUTH_WPA2_PSK
+                bool "WPA2 PSK"
+            config ESP_WIFI_AUTH_WPA_WPA2_PSK
+                bool "WPA/WPA2 PSK"
+            config ESP_WIFI_AUTH_WPA3_PSK
+                bool "WPA3 PSK"
+            config ESP_WIFI_AUTH_WPA2_WPA3_PSK
+                bool "WPA2/WPA3 PSK"
+            config ESP_WIFI_AUTH_WAPI_PSK
+                bool "WAPI PSK"
+        endchoice
+
+    endmenu
+
+    menu "MSP UART Configuration"
+
+        config MSP_TTL_TXD
+            int "TTL_TXD pin"
+            range ENV_GPIO_RANGE_MIN ENV_GPIO_IN_RANGE_MAX
+            default 4
+            help
+                GPIO pin number to be used as MSP_TTL_TXD.
+	    
+        config MSP_TTL_RXD
+            int "TTL_RXD pin"
+            range ENV_GPIO_RANGE_MIN ENV_GPIO_IN_RANGE_MAX
+            default 5
+            help
+                GPIO pin number to be used as MSP_TTL_RXD.
+
+        config DJI_TTL_TXD
+            int "DJI_TTL_TXD pin"
+            range ENV_GPIO_RANGE_MIN ENV_GPIO_IN_RANGE_MAX
+            default 17
+            help
+                GPIO pin number to be used as DJI_TTL_TXD.
+	    
+        config DJI_TTL_RXD
+            int "DJI_TTL_RXD pin"
+            range ENV_GPIO_RANGE_MIN ENV_GPIO_IN_RANGE_MAX
+            default 16
+            help
+                GPIO pin number to be used as DJI_TTL_RXD.
+
+    endmenu
+
+    menu "LED Configuration"
+    
+        orsource "components/env_caps/$IDF_TARGET/Kconfig.env_caps"
+    
+        choice BLINK_LED
+            prompt "Blink LED type"
+            default BLINK_LED_GPIO if IDF_TARGET_ESP32 || IDF_TARGET_ESP32C2
+            default BLINK_LED_RMT
+            help
+                Defines the default peripheral for blink example
+    
+            config BLINK_LED_GPIO
+                bool "GPIO"
+            config BLINK_LED_RMT
+                bool "RMT - Addressable LED"
+        endchoice
+    
+        config BLINK_GPIO
+            int "Blink GPIO number"
+            range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
+            default 18
+            help
+                GPIO number (IOxx) to blink on and off or the RMT signal for the addressable LED.
+                Some GPIOs are used for other purposes (flash connections, etc.) and cannot be used to blink.
+    
+        config BLINK_PERIOD_SLOW
+            int "Blink period for slow mode in ms"
+            range 10 3600000
+            default 1000
+            help
+                Define the blinking period for slow mode in milliseconds.
+
+
+        config BLINK_PERIOD_FAST
+            int "Blink period for fast mode in ms"
+            range 10 3600000
+            default 300
+            help
+                Define the blinking period for fast mode in milliseconds.
+
+        config BLINK_INTERVAL
+            int "Blink period in ms"
+            range 10 3600000
+            default 1000
+            help
+                Define the blinking period in milliseconds.
+
+        config BLINK_SUCCESSIVE_ERROR
+            int "Successive blink times for error"
+            range 2 5
+            default 3
+            help
+                Define successive blinking times for error.
+				
+        config BLINK_SUCCESSIVE_WARNING
+            int "Successive blink times for warning"
+            range 2 5
+            default 2
+            help
+                Define successive blinking times for warning.
+
+    endmenu
+
+
+    menu "Key Configuration"
+
+        orsource "$IDF_PATH/examples/common_components/env_caps/$IDF_TARGET/Kconfig.env_caps"
+	    
+        config KEY_MODE
+            int "KEY_MODE input pin"
+            range ENV_GPIO_RANGE_MIN ENV_GPIO_IN_RANGE_MAX
+            default 0
+            help
+                GPIO pin number to be used as KEY_MODE.
+	    
+        config KEY_ACTIVE
+            int "KEY_ACTIVE level"
+            range 0 1
+            default 0
+            help
+                GPIO level to be used as active key.
+
+        config KEY_PRESS_RESERVE
+            int "KEY multi successive press in seconds"
+            range 3 30
+            default 3
+            help
+                GPIO level hold for a short period of time (in ms).
+
+        config KEY_LONG_PRESS
+            int "KEY_action of long press in seconds"
+            range 1 30
+            default 10
+            help
+                GPIO level hold to be active for a long period of time (in seconds).
+
+    endmenu
+
+endmenu
