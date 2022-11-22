@@ -21,11 +21,11 @@
 /* Event source related definitions */
 ESP_EVENT_DEFINE_BASE(EVT_PROCESS);
 
-// Event loops
-esp_event_loop_handle_t loop_with_task;
+static esp_event_loop_handle_t loop_with_task;
+static TaskHandle_t application_task_hdl;
 
-static int64_t press_act_time = 0;
-static int64_t press_rel_time = 0;
+static int64_t press_act_time                   = 0;
+static int64_t press_rel_time                   = 0;
 
 static void task_evt_process(void* args)
 {
@@ -33,13 +33,11 @@ static void task_evt_process(void* args)
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
     while(1) {
-        //ESP_LOGI(TAG, "application_task: running application task");
+        //ESP_LOGI(MODULE_EVT_PROC, "application_task: running application task");
         //esp_event_loop_run(loop_with_task, 100);
         vTaskDelay(10);
     }
 }
-
-TaskHandle_t g_task;
 
 static void evt_process_handler(void* handler_args, esp_event_base_t base, int32_t id, void* event_data)
 {
@@ -59,9 +57,19 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
                 return;
             }
             press_act_time = curr_time;
-            ESP_LOGI(MODULE_EVT_PROC, "Switch from --------%d", snap_sw_mode_get());
+            
+#if (DEBUG_EVT_PROC)
+            ESP_LOGI(MODULE_EVT_PROC, "Switch from %d--------", snap_sw_mode_get());
+#endif /* DEBUG_EVT_PROC */
+            
             esp_err_t ret = snap_sw_mode_switch(next_mode);
-            ESP_LOGI(MODULE_EVT_PROC, "Switch to --------%d err = %d", snap_sw_mode_get(), ret);
+
+#if (DEBUG_EVT_PROC)
+            ESP_LOGI(MODULE_EVT_PROC, "Switch to %d-------- ret = %d", snap_sw_mode_get(), ret);
+#else
+            UNUSED(ret)
+#endif /*DEBUG_EVT_PROC*/
+
             led_mode_next((struct blink_led *)g_led_handle);
 
             break;
@@ -85,7 +93,9 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
 
 esp_event_loop_handle_t module_evt_start(void)
 {
+#if (DEBUG_EVT_PROC)
     ESP_LOGI(MODULE_EVT_PROC, "setting up");
+#endif /* DEBUG_EVT_PROC */
 
     esp_event_loop_args_t loop_with_task_args = {
         .queue_size = 5,
@@ -103,7 +113,6 @@ esp_event_loop_handle_t module_evt_start(void)
     ESP_ERROR_CHECK(esp_event_handler_instance_register_with(loop_with_task, EVT_PROCESS, ESP_EVENT_ANY_ID, evt_process_handler, loop_with_task, NULL));
 
     // Create the application task
-    TaskHandle_t application_task_hdl;
     xTaskCreate(task_evt_process, MODULE_EVT_PROC, 3072, NULL, uxTaskPriorityGet(NULL) + 1, &application_task_hdl);
 
     // Start the application task to run the event handlers

@@ -99,9 +99,9 @@ static void task_led_blink(void* args)
     while (1) {
         switch(led->mode){
             case LED_BLINK_NONE:
-                #if (DEBUG_LED_BLINK)
-                ESP_LOGD(MODULE_LED_BLINK, "Turning the LED %s!", led.state == true ? "ON" : "OFF");
-                #endif /* DEBUG_LED_BLINK */
+#if (DEBUG_LED_BLINK)
+                ESP_LOGI(MODULE_LED_BLINK, "Turning the LED %s!", led.state == true ? "ON" : "OFF");
+#endif /* DEBUG_LED_BLINK */
                 
                 led_set(led);  //Check active IO level of led on
 
@@ -109,9 +109,9 @@ static void task_led_blink(void* args)
                 break;
 
             case LED_BLINK_SLOW:
-                #if (DEBUG_LED_BLINK)
-                ESP_LOGD(MODULE_LED_BLINK, "Turning the LED %s!", led.state == true ? "ON" : "OFF");
-                #endif /* DEBUG_LED_BLINK */
+#if (DEBUG_LED_BLINK)
+                ESP_LOGI(MODULE_LED_BLINK, "Turning the LED %s!", led.state == true ? "ON" : "OFF");
+#endif /* DEBUG_LED_BLINK */
                 
                 led_set(led);  //Check active IO level of led on
 
@@ -123,9 +123,9 @@ static void task_led_blink(void* args)
                 break;
 
             case LED_BLINK_FAST:
-                #if (DEBUG_LED_BLINK)
-                ESP_LOGD(MODULE_LED_BLINK, "Turning the LED %s!", led.state == true ? "ON" : "OFF");
-                #endif /* DEBUG_LED_BLINK */
+#if (DEBUG_LED_BLINK)
+                ESP_LOGI(MODULE_LED_BLINK, "Turning the LED %s!", led.state == true ? "ON" : "OFF");
+#endif /* DEBUG_LED_BLINK */
                 
                 led_set(led);  //Check active IO level of led on
 
@@ -138,10 +138,10 @@ static void task_led_blink(void* args)
 
             case LED_BLINK_WARN:
                 for(int i = 0; i < 2*CONFIG_BLINK_SUCCESSIVE_WARNING; i++){
-                    #if (DEBUG_LED_BLINK)
-                    ESP_LOGD(MODULE_LED_BLINK, "Turning the LED %s!", led.state == true ? "ON" : "OFF");
-                    #endif /* DEBUG_LED_BLINK */
-                    
+#if (DEBUG_LED_BLINK)
+                    ESP_LOGI(MODULE_LED_BLINK, "Turning the LED %s!", led.state == true ? "ON" : "OFF");
+#endif /* DEBUG_LED_BLINK */
+
                     led_set(led);  //Check active IO level of led on
 
                     /* Toggle the LED state */
@@ -156,9 +156,9 @@ static void task_led_blink(void* args)
 
             case LED_BLINK_ERROR:
                 for(int i = 0; i < 2*CONFIG_BLINK_SUCCESSIVE_ERROR; i++){
-                    #if (DEBUG_LED_BLINK)
-                    ESP_LOGD(MODULE_LED_BLINK, "Turning the LED %s!", led.state == true ? "ON" : "OFF");
-                    #endif /* DEBUG_LED_BLINK */
+#if (DEBUG_LED_BLINK)
+                    ESP_LOGI(MODULE_LED_BLINK, "Turning the LED %s!", led.state == true ? "ON" : "OFF");
+#endif /* DEBUG_LED_BLINK */
                     
                     led_set(led);  //Check active IO level of led on
 

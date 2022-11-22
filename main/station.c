@@ -164,7 +164,7 @@ static void task_wifi_start_sta(void* args)
 
 void wifi_init_sta(void)
 {
-    ESP_ERROR_CHECK(snap_sw_mode_start(task_wifi_start_sta, true));
+    ESP_ERROR_CHECK(snap_sw_module_start(task_wifi_start_sta, true, TASK_LARGE_BUFFER, MODULE_WIFI_STA));
 }
 
 void wifi_stop_sta(void)

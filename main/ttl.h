@@ -11,7 +11,7 @@ extern "C" {
 
 #define TTL_UART_NUM        (UART_NUM_1)
 
-void ttl_uart_init(void);
+void module_ttl_start(uart_port_t uart_num);
 
 #ifdef __cplusplus
 }

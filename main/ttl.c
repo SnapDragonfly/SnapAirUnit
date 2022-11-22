@@ -13,6 +13,7 @@
 #include "esp_bt_device.h"
 
 #include "module.h"
+#include "define.h"
 #include "ttl.h"
 
 #define TTL_UART_TXD        (CONFIG_MSP_TTL_TXD)
@@ -24,7 +25,7 @@ QueueHandle_t ttl_uart_queue = NULL;
 extern bool bt_is_connected;
 extern uint32_t esp_ssp_handle;
 
-static void ttl_uart_task(void *pvParameters)
+static void task_start_ttl(void *pvParameters)
 {
     uart_event_t event;
 
@@ -45,10 +46,12 @@ static void ttl_uart_task(void *pvParameters)
                     memset(temp,0x0,event.size);
                     uart_read_bytes(TTL_UART_NUM, temp, event.size, portMAX_DELAY);
 
+#if (DEBUG_UART)
                     ESP_LOGI(MODULE_UART, "ttl read %d Bytes\n", event.size);
                     if (event.size < 128) {
                         esp_log_buffer_hex(MODULE_UART, temp, event.size);
                     }
+#endif /* DEBUG_UART */
 
                     // To do send to BT SPP
                     if (esp_ssp_handle){
@@ -66,7 +69,7 @@ static void ttl_uart_task(void *pvParameters)
     vTaskDelete(NULL);
 }
 
-void ttl_uart_init(void)
+void module_ttl_start(uart_port_t uart_num)
 {
     uart_config_t uart_config = {
         .baud_rate = 115200,
@@ -79,12 +82,13 @@ void ttl_uart_init(void)
     };
 
     //Install UART driver, and get the queue.
-    uart_driver_install(TTL_UART_NUM, TTL_BUF_SIZE * 2, 8192, 10, &ttl_uart_queue, 0);
+    uart_driver_install(uart_num, TTL_BUF_SIZE * 2, 8192, 10, &ttl_uart_queue, 0);
     //Set UART parameters
-    uart_param_config(TTL_UART_NUM, &uart_config);
+    uart_param_config(uart_num, &uart_config);
     //Set UART pins
-    uart_set_pin(TTL_UART_NUM, TTL_UART_TXD, TTL_UART_RXD, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
-    xTaskCreate(ttl_uart_task, MODULE_UART, 2048, (void*)TTL_UART_NUM, 8, NULL);
+    uart_set_pin(uart_num, TTL_UART_TXD, TTL_UART_RXD, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+
+    ESP_ERROR_CHECK(snap_sw_module_start(task_start_ttl, true, TASK_LARGE_BUFFER, MODULE_UART));
 }
 
 

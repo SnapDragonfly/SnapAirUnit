@@ -86,29 +86,20 @@ esp_err_t snap_sw_mode_switch(uint16_t mode)
     return ESP_OK;
 }
 
-esp_err_t snap_sw_mode_start(TaskFunction_t pxTaskCode, bool task)
-{
-    if(!pxTaskCode){
-        return ESP_FAIL;
-    }
-    
-    mode_key_lock();
-    
-    if (task){
-        xTaskCreate(pxTaskCode, MODULE_MODE, TASK_LARGE_BUFFER, NULL, uxTaskPriorityGet(NULL), NULL);
-    }else{
-        pxTaskCode(NULL);
-    }
-
-    mode_key_unlock();
-
-    return ESP_OK;
-}
-
 void snap_sw_mode_init(void)
 {
+    /*
+     * All service module need default event loop
+     * ToDo:
+     * Please check with ESP mannuals
+     */
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-    ttl_uart_init();
+
+    /*
+     * Application & service mode
+     * ToDO:
+     * Please set to AP by Spec, currently used for test(STA)
+     */
     g_sw_mode = SW_MODE_WIFI_STA;
     ESP_ERROR_CHECK(esp_netif_init());
     //esp_netif_create_default_wifi_ap();
@@ -116,7 +107,4 @@ void snap_sw_mode_init(void)
 
     ESP_LOGI(MODULE_MODE, "mode_init");
 }
-
-
-
 

@@ -91,7 +91,7 @@ static void task_wifi_start_softap(void* args)
 
 void wifi_init_softap(void)
 {
-    ESP_ERROR_CHECK(snap_sw_mode_start(task_wifi_start_softap, false));
+    ESP_ERROR_CHECK(snap_sw_module_start(task_wifi_start_softap, false, 0, MODULE_WIFI_AP));
 }
 
 void wifi_stop_softap(void)

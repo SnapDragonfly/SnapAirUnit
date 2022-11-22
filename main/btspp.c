@@ -293,6 +293,6 @@ static void task_bt_start_spp(void* args)
 
 void bt_init_spp(void)
 {
-    ESP_ERROR_CHECK(snap_sw_mode_start(task_bt_start_spp, false));
+    ESP_ERROR_CHECK(snap_sw_module_start(task_bt_start_spp, false, 0, MODULE_BT_SPP));
 }
 

@@ -14,9 +14,11 @@
 #include "btspp.h"
 #include "mode.h"
 
+#include "module.h"
 #include "define.h"
 #include "blink.h"
 #include "key.h"
+#include "ttl.h"
 #include "process.h"
 
 void sand_box(void)
@@ -33,7 +35,6 @@ void sand_box(void)
 
 }
 
-
 /* 
  * Snap Air Unit: Main
  */
@@ -42,7 +43,7 @@ blink_led_handle_t             g_led_handle = NULL;
 button_handle_t                g_key_handle = NULL;
 esp_event_loop_handle_t        g_evt_handle = NULL;
 
-void app_task(void)
+void app_init(void)
 {
     //Initialize NVS
     esp_err_t ret = nvs_flash_init();
@@ -52,12 +53,16 @@ void app_task(void)
     }
     ESP_ERROR_CHECK(ret);
 
-    //Components need to be started.
+    //Basic Software Components
     g_evt_handle = module_evt_start();
+
+    //Basic Hardware Components
     g_led_handle = module_led_start(BLINK_GPIO);
     g_key_handle = module_key_start(KEY_MODE);
+    (void)module_ttl_start(TTL_UART_NUM);
 
-    //Default software mode
+
+    //Service Module for Applications
     snap_sw_mode_init();
 
     printf("%s: free_heap_size = %d\n", DEVICE_NAME_SNAP_AIR_UNIT, esp_get_free_heap_size());
@@ -93,8 +98,8 @@ void app_main(void)
 
     printf("Minimum free heap size: %d bytes\n", esp_get_minimum_free_heap_size());
 
-    /* Snap Air Unit: Modules */
-    app_task();
+    /* Snap Air Unit: Modules & Components */
+    app_init();
 
     /* Snap Air Unit: Sandbox */
     sand_box();
