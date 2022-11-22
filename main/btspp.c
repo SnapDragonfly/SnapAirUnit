@@ -233,7 +233,16 @@ static void task_bt_start_spp(void* args)
     char bda_str[18] = {0};
     esp_err_t ret;
 
-    ESP_ERROR_CHECK(esp_bt_controller_mem_release(ESP_BT_MODE_BLE));
+    //ESP_ERROR_CHECK(esp_bt_controller_mem_release(ESP_BT_MODE_BLE));
+    int retry = 3;
+    do{
+        ret = esp_bt_controller_mem_release(ESP_BT_MODE_BLE);
+        if (ESP_OK != ret){
+            ESP_LOGW(MODULE_BT_SPP, "esp_bt_controller_mem_release ret = %08x retry %d", ret, retry);
+            retry--;
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+        }
+    }while (ESP_OK != ret && retry > 0);
 
     esp_bt_controller_config_t bt_cfg = BT_CONTROLLER_INIT_CONFIG_DEFAULT();
     if ((ret = esp_bt_controller_init(&bt_cfg)) != ESP_OK) {
