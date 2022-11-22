@@ -67,7 +67,7 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
 #if (DEBUG_EVT_PROC)
             ESP_LOGI(MODULE_EVT_PROC, "Switch to %d-------- ret = %d", snap_sw_mode_get(), ret);
 #else
-            UNUSED(ret)
+            UNUSED(ret);
 #endif /*DEBUG_EVT_PROC*/
 
             led_mode_next((struct blink_led *)g_led_handle);

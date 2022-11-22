@@ -109,6 +109,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
     case ESP_SPP_DATA_IND_EVT:
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_DATA_IND_EVT len:%d handle:%d",
                  param->data_ind.len, param->data_ind.handle);
+#if (DEBUG_BT_SPP)
         if (param->data_ind.len < 128) {
             esp_log_buffer_hex(MODULE_BT_SPP, param->data_ind.data, param->data_ind.len);
         }else{
@@ -118,6 +119,10 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
                 print_speed();
             }
         }
+#else
+        UNUSED(print_speed);
+#endif /* DEBUG_BT_SPP */
+
         uart_write_bytes(TTL_UART_NUM, param->data_ind.data, param->data_ind.len);
         break;
         

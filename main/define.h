@@ -20,6 +20,7 @@ extern "C" {
 
 #define TIME_DIFF_IN_MS(prev, curr)            ((curr - prev)/1000)
 
+#define UNUSED(x)                              (void)(x)
 
 
 #ifdef __cplusplus
