@@ -18,6 +18,7 @@
 
 #include "mode.h"
 #include "softap.h"
+#include "rest_server.h"
 
 /* The examples use WiFi configuration that you can set via project configuration menu.
 
@@ -92,12 +93,14 @@ static void task_wifi_start_softap(void* args)
 void wifi_init_softap(void)
 {
     ESP_ERROR_CHECK(snap_sw_module_start(task_wifi_start_softap, false, 0, MODULE_WIFI_AP));
+    ESP_ERROR_CHECK(start_rest_server(CONFIG_RESTFUL_WEB_MOUNT_POINT));
 }
 
 void wifi_stop_softap(void)
 {
     //esp_err_t ret;
     //wifi_mode_t wifi_mode;
+    ESP_ERROR_CHECK(stop_rest_server());
 
     ESP_ERROR_CHECK(esp_wifi_stop());
     ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &softap_instance_any_id));

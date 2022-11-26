@@ -16,7 +16,7 @@
 #include "module.h"
 #include "mode.h"
 #include "station.h"
-
+#include "rest_server.h"
 
 #define EXAMPLE_ESP_WIFI_STA_SSID      CONFIG_ESP_WIFI_STA_SSID
 #define EXAMPLE_ESP_WIFI_STA_PASS      CONFIG_ESP_WIFI_STA_PASSWORD
@@ -165,12 +165,14 @@ static void task_wifi_start_sta(void* args)
 void wifi_init_sta(void)
 {
     ESP_ERROR_CHECK(snap_sw_module_start(task_wifi_start_sta, true, TASK_LARGE_BUFFER, MODULE_WIFI_STA));
+    ESP_ERROR_CHECK(start_rest_server(CONFIG_RESTFUL_WEB_MOUNT_POINT));
 }
 
 void wifi_stop_sta(void)
 {
     //esp_err_t ret;
     //wifi_mode_t wifi_mode;
+    ESP_ERROR_CHECK(stop_rest_server());
 
     esp_sta_active = false;
     ESP_ERROR_CHECK(esp_wifi_disconnect());

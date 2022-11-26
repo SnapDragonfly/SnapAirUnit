@@ -31,8 +31,11 @@ extern "C" {
 
 // Application Mode
 #define DEBUG_MODE            0
+#define DEBUG_HTTP            0
+
 
 #define MODULE_MODE            "mod"
+#define MODULE_HTTP            "http"
 
 
 esp_err_t snap_sw_module_start(TaskFunction_t pxTaskCode, bool task, const uint32_t stackDepth, const char * const pcName);
