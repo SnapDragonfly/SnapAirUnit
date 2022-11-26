@@ -125,6 +125,27 @@ menu "Snap Air Unit"
     
     endmenu
 
+
+    menu "UDP Server Configuration"
+    
+        config EXAMPLE_IPV4
+            bool "IPV4"
+            default y
+    
+        config EXAMPLE_IPV6
+            bool "IPV6"
+            default n
+            select EXAMPLE_CONNECT_IPV6
+    
+        config EXAMPLE_PORT
+            int "Port"
+            range 0 65535
+            default 8889
+            help
+                Local port the UDP server will listen on.
+    
+    endmenu
+
     menu "MSP UART Configuration"
 
         config MSP_TTL_TXD

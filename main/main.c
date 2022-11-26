@@ -21,6 +21,7 @@
 #include "ttl.h"
 #include "process.h"
 #include "rest_server.h"
+#include "udp_server.h"
 
 void sand_box(void)
 {
@@ -66,6 +67,7 @@ void app_init(void)
     //Service Module for Applications
     snap_sw_mode_init();
     sanp_sw_rest_init();
+    ESP_ERROR_CHECK(start_udp_server());
 
     printf("%s: free_heap_size = %d\n", DEVICE_NAME_SNAP_AIR_UNIT, esp_get_free_heap_size());
 }
