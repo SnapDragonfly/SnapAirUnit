@@ -11,6 +11,7 @@ idf_component_register(SRCS "main.c"
                             "module.c"
                             "rest_server.c"
                             "udp_server.c"
+                            "udp_client.c"
                        INCLUDE_DIRS ".")
 
 if(CONFIG_EXAMPLE_WEB_DEPLOY_SF)
