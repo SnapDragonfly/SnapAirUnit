@@ -4,7 +4,7 @@ menu "Snap Air Unit"
 
         config ESP_WIFI_AP_SSID
             string "WiFi AP SSID"
-            default "snap_ap"
+            default "Snap-Air-Unit"
             help
                 SSID (network name) for the example to connect to.
     
@@ -116,15 +116,24 @@ menu "Snap Air Unit"
                     When using semihost in ESP32, you should specify the host path which will be mounted to VFS.
                     Note that only absolute path is acceptable.
         endif
-    
+
+    endmenu
+
+    menu "Storage Configuration"
+	
         config RESTFUL_WEB_MOUNT_POINT
             string "Website mount point in VFS"
             default "/www"
             help
                 Specify the mount point in VFS.
-    
-    endmenu
 
+        config SPIFFS_MOUNT_POINT
+            string "Spiffs mount point in VFS"
+            default "/storage"
+            help
+                Specify the mount point in VFS.
+
+	endmenu
 
     menu "UDP Configuration"
     
@@ -327,4 +336,13 @@ menu "Snap Air Unit"
 
     endmenu
 
+    menu "SPIFFS menu"
+    
+        config EXAMPLE_SPIFFS_CHECK_ON_START
+            bool "Run SPIFFS_check on every start-up"
+            default y
+            help
+                If this config item is set, esp_spiffs_check() will be run on every start-up.
+                Slow on large flash sizes.
+    endmenu
 endmenu

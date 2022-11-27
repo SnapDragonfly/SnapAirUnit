@@ -23,6 +23,7 @@
 #include "rest_server.h"
 #include "udp_server.h"
 #include "udp_client.h"
+#include "spiffs.h"
 
 void sand_box(void)
 {
@@ -32,6 +33,8 @@ void sand_box(void)
      */
 
     // ...
+    //spiffs_test();
+    //stop_spiffs();
 
     snap_alive(SAND_BOX_ALIVE_CHARACTER);
     snap_reboot(SAND_BOX_REBOOT_PROMOTES);
@@ -58,6 +61,7 @@ void app_init(void)
 
     //Basic Software Components
     g_evt_handle = module_evt_start();
+    ESP_ERROR_CHECK(start_spiffs());
 
     //Basic Hardware Components
     g_led_handle = module_led_start(BLINK_GPIO);

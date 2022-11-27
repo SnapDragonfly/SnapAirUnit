@@ -337,9 +337,9 @@ esp_err_t init_fs(void)
 {
     esp_vfs_spiffs_conf_t conf = {
         .base_path = CONFIG_RESTFUL_WEB_MOUNT_POINT,
-        .partition_label = NULL,
+        .partition_label = "www",
         .max_files = 5,
-        .format_if_mount_failed = false
+        .format_if_mount_failed = false,
     };
     esp_err_t ret = esp_vfs_spiffs_register(&conf);
 

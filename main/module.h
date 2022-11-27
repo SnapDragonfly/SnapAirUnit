@@ -7,9 +7,17 @@
 extern "C" {
 #endif
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/event_groups.h"
+#include "freertos/task.h"
+
+
 // Software components
 #define DEBUG_EVT_PROC        1
+#define DEBUG_SPIFFS          1
+
 #define MODULE_EVT_PROC        "evt"
+#define MODULE_SPIFFS          "ffs"
 
 // Hardware components
 #define DEBUG_LED_BLINK       0

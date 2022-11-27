@@ -23,6 +23,9 @@ extern "C" {
 #define UNUSED(x)                              (void)(x)
 
 
+#define STRCAT(param1, param2)                 (param1##param2)
+#define TOSTR(param)                           #param
+
 #ifdef __cplusplus
 }
 #endif
