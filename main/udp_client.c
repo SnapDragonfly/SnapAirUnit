@@ -25,6 +25,10 @@
 #include <lwip/netdb.h>
 #include "addr_from_stdin.h"
 
+#include "module.h"
+#include "define.h"
+#include "udp_client.h"
+
 #if defined(CONFIG_EXAMPLE_IPV4)
 #define HOST_IP_ADDR CONFIG_EXAMPLE_IPV4_ADDR
 #elif defined(CONFIG_EXAMPLE_IPV6)
@@ -35,7 +39,6 @@
 
 #define PORT CONFIG_EXAMPLE_SERVER_PORT
 
-static const char *TAG = "example";
 static const char *payload = "Message from ESP32 ";
 
 
@@ -70,7 +73,7 @@ static void udp_client_task(void *pvParameters)
 
         int sock = socket(addr_family, SOCK_DGRAM, ip_protocol);
         if (sock < 0) {
-            ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
+            ESP_LOGE(MODULE_UDP_CLT, "Unable to create socket: errno %d", errno);
             break;
         }
 
@@ -80,16 +83,16 @@ static void udp_client_task(void *pvParameters)
         timeout.tv_usec = 0;
         setsockopt (sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout);
 
-        ESP_LOGI(TAG, "Socket created, sending to %s:%d", HOST_IP_ADDR, PORT);
+        ESP_LOGI(MODULE_UDP_CLT, "Socket created, sending to %s:%d", HOST_IP_ADDR, PORT);
 
         while (1) {
 
             int err = sendto(sock, payload, strlen(payload), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
             if (err < 0) {
-                ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
+                ESP_LOGE(MODULE_UDP_CLT, "Error occurred during sending: errno %d", errno);
                 break;
             }
-            ESP_LOGI(TAG, "Message sent");
+            ESP_LOGI(MODULE_UDP_CLT, "Message sent");
 
             struct sockaddr_storage source_addr; // Large enough for both IPv4 or IPv6
             socklen_t socklen = sizeof(source_addr);
@@ -97,16 +100,16 @@ static void udp_client_task(void *pvParameters)
 
             // Error occurred during receiving
             if (len < 0) {
-                ESP_LOGE(TAG, "recvfrom failed: errno %d", errno);
+                ESP_LOGE(MODULE_UDP_CLT, "recvfrom failed: errno %d", errno);
                 break;
             }
             // Data received
             else {
                 rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
-                ESP_LOGI(TAG, "Received %d bytes from %s:", len, host_ip);
-                ESP_LOGI(TAG, "%s", rx_buffer);
+                ESP_LOGI(MODULE_UDP_CLT, "Received %d bytes from %s:", len, host_ip);
+                ESP_LOGI(MODULE_UDP_CLT, "%s", rx_buffer);
                 if (strncmp(rx_buffer, "OK: ", 4) == 0) {
-                    ESP_LOGI(TAG, "Received expected message, reconnecting");
+                    ESP_LOGI(MODULE_UDP_CLT, "Received expected message, reconnecting");
                     break;
                 }
             }
@@ -115,7 +118,7 @@ static void udp_client_task(void *pvParameters)
         }
 
         if (sock != -1) {
-            ESP_LOGE(TAG, "Shutting down socket and restarting...");
+            ESP_LOGE(MODULE_UDP_CLT, "Shutting down socket and restarting...");
             shutdown(sock, 0);
             close(sock);
         }
