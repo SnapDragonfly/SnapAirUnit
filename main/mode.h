@@ -7,16 +7,33 @@ extern "C" {
 #endif
 
 
-enum {
+typedef enum {
     SW_MODE_WIFI_AP       = 0,
     SW_MODE_WIFI_STA      = 1,
     SW_MODE_BT_SPP        = 2,
     SW_MODE_NULL
-};
+} enum_mode_t;
 
-esp_err_t snap_sw_mode_switch(uint16_t mode);
-uint16_t snap_sw_mode_next(void);
-uint16_t snap_sw_mode_get(void);
+typedef enum {
+    SW_STATE_INVALID      = 0,
+    SW_STATE_IDLE         = 1,
+    SW_STATE_HALF_DUPLEX  = 2,
+    SW_STATE_FULL_DUPLEX  = 3,
+    SW_STATE_TELLO        = 4,
+    SW_STATE_NULL
+} enum_state_t;
+
+
+void snap_sw_state_set(enum_state_t state);
+void snap_sw_state_degrade(enum_state_t state);
+void snap_sw_state_upgrade(enum_state_t state);
+bool snap_sw_state_active(enum_mode_t mode);
+enum_state_t snap_sw_state_get(void);
+
+esp_err_t snap_sw_mode_switch(enum_mode_t mode);
+
+enum_mode_t snap_sw_mode_next(void);
+enum_mode_t snap_sw_mode_get(void);
 
 void snap_sw_mode_init(void);
 

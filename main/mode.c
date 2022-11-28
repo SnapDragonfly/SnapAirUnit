@@ -24,19 +24,67 @@
 #include "mode.h"
 #include "key.h"
 
-uint16_t      g_sw_mode           = SW_MODE_WIFI_AP;
+static uint16_t g_sw_mode              = SW_MODE_WIFI_AP;
+static enum_state_t g_sw_state         = SW_STATE_INVALID;
 
-uint16_t snap_sw_mode_next(void)
+
+void snap_sw_state_set(enum_state_t state)
+{
+    g_sw_state = state;
+}
+
+void snap_sw_state_degrade(enum_state_t state)
+{
+    if (g_sw_state > state){
+#if (DEBUG_MODE)
+        ESP_LOGI(MODULE_MODE, "degrade from %d to %d", g_sw_state, state);
+#endif /* DEBUG_MODE */
+        g_sw_state = state;
+    } 
+#if (DEBUG_MODE)
+    else {
+        ESP_LOGI(MODULE_MODE, "degrade ignore %d, hold %d", state, g_sw_state);
+    }
+#endif /* DEBUG_MODE */
+}
+
+void snap_sw_state_upgrade(enum_state_t state)
+{
+    if (g_sw_state < state){
+#if (DEBUG_MODE)
+        ESP_LOGI(MODULE_MODE, "upgrade from %d to %d", g_sw_state, state);
+#endif /* DEBUG_MODE */
+        g_sw_state = state;
+    } 
+#if (DEBUG_MODE)
+    else {
+        ESP_LOGI(MODULE_MODE, "upgrade ignore %d, hold %d", state, g_sw_state);
+    }
+#endif /* DEBUG_MODE */
+}
+
+
+bool snap_sw_state_active(enum_mode_t mode)
+{
+    return g_sw_state > SW_STATE_HALF_DUPLEX && g_sw_mode == mode;
+}
+
+enum_state_t snap_sw_state_get(void)
+{
+    return g_sw_state;
+}
+
+enum_mode_t snap_sw_mode_next(void)
 {
     return (g_sw_mode + 1) % SW_MODE_NULL;
 }
 
-uint16_t snap_sw_mode_get(void)
+enum_mode_t snap_sw_mode_get(void)
 {
     return g_sw_mode;
 }
 
-esp_err_t snap_sw_mode_switch(uint16_t mode)
+esp_err_t snap_sw_mode_switch(enum_mode_t mode)
 {
     /* Make sure it's NOT overflow! */
     mode = mode % SW_MODE_NULL;
@@ -48,14 +96,17 @@ esp_err_t snap_sw_mode_switch(uint16_t mode)
     /* Stop previous modes */
     switch(g_sw_mode){
         case SW_MODE_WIFI_AP:
+            snap_sw_state_set(SW_STATE_INVALID);
             wifi_stop_softap();
             break;
 
         case SW_MODE_WIFI_STA:
+            snap_sw_state_set(SW_STATE_INVALID);
             wifi_stop_sta();
             break;
 
         case SW_MODE_BT_SPP:
+            snap_sw_state_set(SW_STATE_INVALID);
             bt_deinit_spp();
             break;
 

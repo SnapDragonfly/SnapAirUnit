@@ -37,7 +37,6 @@ static const esp_spp_sec_t sec_mask = ESP_SPP_SEC_AUTHENTICATE;
 static const esp_spp_role_t role_slave = ESP_SPP_ROLE_SLAVE;
 
 uint32_t esp_ssp_handle = 0;
-bool bt_is_connected = false;
 
 static char *bda2str(uint8_t * bda, char *str, size_t size)
 {
@@ -86,7 +85,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         break;
     
     case ESP_SPP_CLOSE_EVT:
-        bt_is_connected = false;
+        snap_sw_state_set(SW_STATE_INVALID);
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_CLOSE_EVT status:%d handle:%d close_by_remote:%d", param->close.status,
                  param->close.handle, param->close.async);
         break;
@@ -122,8 +121,9 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 #else
         UNUSED(print_speed);
 #endif /* DEBUG_BT_SPP */
-
-        uart_write_bytes(TTL_UART_NUM, param->data_ind.data, param->data_ind.len);
+        if(snap_sw_state_active(SW_MODE_BT_SPP)){
+            ESP_ERROR_CHECK(ttl_send(param->data_ind.data, param->data_ind.len));
+        }
         break;
         
     case ESP_SPP_CONG_EVT:
@@ -137,7 +137,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
     case ESP_SPP_SRV_OPEN_EVT:
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_SRV_OPEN_EVT status:%d handle:%d, rem_bda:[%s]", param->srv_open.status,
                  param->srv_open.handle, bda2str(param->srv_open.rem_bda, bda_str, sizeof(bda_str)));
-        bt_is_connected = true;
+        snap_sw_state_set(SW_STATE_FULL_DUPLEX);
         esp_ssp_handle = param->srv_open.handle;
         gettimeofday(&time_old, NULL);
         break;
@@ -219,7 +219,7 @@ void bt_deinit_spp(void)
 {
     esp_bt_controller_status_t bt_status;
 
-    bt_is_connected = false;
+    snap_sw_state_set(SW_STATE_INVALID);
 
     ESP_ERROR_CHECK(esp_spp_deinit());
     ESP_ERROR_CHECK(esp_bluedroid_disable());
@@ -308,5 +308,6 @@ static void task_bt_start_spp(void* args)
 void bt_init_spp(void)
 {
     ESP_ERROR_CHECK(snap_sw_module_start(task_bt_start_spp, false, 0, MODULE_BT_SPP));
+    snap_sw_state_set(SW_STATE_IDLE);
 }
 

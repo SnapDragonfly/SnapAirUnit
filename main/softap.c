@@ -94,6 +94,7 @@ void wifi_init_softap(void)
 {
     ESP_ERROR_CHECK(snap_sw_module_start(task_wifi_start_softap, false, 0, MODULE_WIFI_AP));
     ESP_ERROR_CHECK(start_rest_server(CONFIG_RESTFUL_WEB_MOUNT_POINT));
+    snap_sw_state_set(SW_STATE_IDLE);
 }
 
 void wifi_stop_softap(void)

@@ -13,17 +13,35 @@
 #include "esp_bt_device.h"
 
 #include "module.h"
+#include "mode.h"
 #include "define.h"
 #include "ttl.h"
+#include "udp_server.h"
+#include "msp_protocol.h"
+#include "tello_protocol.h"
+
+
+#define TTL_UART_NUM        (UART_NUM_1)
 
 #define TTL_UART_TXD        (CONFIG_MSP_TTL_TXD)
 #define TTL_UART_RXD        (CONFIG_MSP_TTL_RXD)
 #define TTL_BUF_SIZE        (1024)
 
-QueueHandle_t ttl_uart_queue = NULL;
+static QueueHandle_t ttl_uart_queue = NULL;
 
-extern bool bt_is_connected;
 extern uint32_t esp_ssp_handle;
+
+
+
+esp_err_t ttl_send(uint8_t * buf, int len)
+{
+    if(NULL == buf){
+        return ESP_FAIL;
+    }
+    uart_write_bytes(TTL_UART_NUM, buf, len);
+    return ESP_OK;
+}
+
 
 static void task_start_ttl(void *pvParameters)
 {
@@ -35,7 +53,7 @@ static void task_start_ttl(void *pvParameters)
             switch (event.type) {
             //Event of UART receving data
             case UART_DATA:
-                if ((event.size)&&(bt_is_connected)) {
+                if (event.size) {
                     uint8_t * temp = NULL;
 
                     temp = (uint8_t *)malloc(sizeof(uint8_t)*event.size);
@@ -54,8 +72,13 @@ static void task_start_ttl(void *pvParameters)
 #endif /* DEBUG_UART */
 
                     // To do send to BT SPP
-                    if (esp_ssp_handle){
+                    if (esp_ssp_handle && snap_sw_state_active(SW_MODE_BT_SPP)){
                         esp_spp_write(esp_ssp_handle, event.size, temp);
+                    } else {
+                        esp_err_t ret = ttl_handle_msp_protocol(temp, event.size);
+                        if(ESP_OK != ret){
+                            ttl_handle_tello_protocol(temp, event.size);
+                        }
                     }
                     //esp_ble_gatts_send_indicate(spp_gatts_if, spp_conn_id, spp_handle_table[SPP_IDX_SPP_DATA_NTY_VAL],event.size, temp, false);
                     free(temp);
@@ -69,7 +92,7 @@ static void task_start_ttl(void *pvParameters)
     vTaskDelete(NULL);
 }
 
-void module_ttl_start(uart_port_t uart_num)
+esp_err_t module_ttl_start(void)
 {
     uart_config_t uart_config = {
         .baud_rate = 115200,
@@ -82,13 +105,15 @@ void module_ttl_start(uart_port_t uart_num)
     };
 
     //Install UART driver, and get the queue.
-    uart_driver_install(uart_num, TTL_BUF_SIZE * 2, 8192, 10, &ttl_uart_queue, 0);
+    uart_driver_install(UART_NUM_1, TTL_BUF_SIZE * 2, 8192, 10, &ttl_uart_queue, 0);
     //Set UART parameters
-    uart_param_config(uart_num, &uart_config);
+    uart_param_config(UART_NUM_1, &uart_config);
     //Set UART pins
-    uart_set_pin(uart_num, TTL_UART_TXD, TTL_UART_RXD, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+    uart_set_pin(UART_NUM_1, TTL_UART_TXD, TTL_UART_RXD, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
     ESP_ERROR_CHECK(snap_sw_module_start(task_start_ttl, true, TASK_LARGE_BUFFER, MODULE_UART));
+
+    return ESP_OK;
 }
 
 

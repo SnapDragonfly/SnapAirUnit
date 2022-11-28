@@ -8,10 +8,9 @@ extern "C" {
 
 #include "driver/uart.h"
 
+esp_err_t module_ttl_start(void);
+esp_err_t ttl_send(uint8_t * buf, int len);
 
-#define TTL_UART_NUM        (UART_NUM_1)
-
-void module_ttl_start(uart_port_t uart_num);
 
 #ifdef __cplusplus
 }

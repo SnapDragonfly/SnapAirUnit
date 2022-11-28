@@ -66,7 +66,7 @@ void app_init(void)
     //Basic Hardware Components
     g_led_handle = module_led_start(BLINK_GPIO);
     g_key_handle = module_key_start(KEY_MODE);
-    (void)module_ttl_start(TTL_UART_NUM);
+    ESP_ERROR_CHECK(module_ttl_start());
 
 
     //Service Module for Applications

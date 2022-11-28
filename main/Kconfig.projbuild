@@ -139,7 +139,7 @@ menu "Snap Air Unit"
     
         choice EXAMPLE_IP_MODE
             prompt "IP Version"
-            depends on EXAMPLE_SOCKET_IP_INPUT_STRING
+            default EXAMPLE_IPV4
             help
                 UDP server & client can use either IPV4 or IPV6.
     
@@ -154,9 +154,9 @@ menu "Snap Air Unit"
 
 
 
-        menu "UDP Server Configuration"
+        menu "UDP Control Server Configuration"
 	    
-            config EXAMPLE_PORT
+            config CONTROL_SERVER_PORT
                 int "Port"
                 range 0 65535
                 default 8889
@@ -166,7 +166,7 @@ menu "Snap Air Unit"
         endmenu
 		
 		
-        menu "UDP Client Configuration"
+        menu "UDP Status Server Configuration"
 
             config EXAMPLE_IPV4_ADDR
                 string "IPV4 Address"
@@ -182,26 +182,13 @@ menu "Snap Air Unit"
                 help
                     IPV6 address to which the client example will send data.
 		    
-            config EXAMPLE_SERVER_PORT
+            config STATUS_SERVER_PORT
                 int "Port"
                 range 0 65535
                 default 8890
                 help
-                    The remote port to which the client example will send data.
-		    
-            choice EXAMPLE_SOCKET_IP_INPUT
-                prompt "Socket example source"
-                default EXAMPLE_SOCKET_IP_INPUT_STRING
-                help
-                    Selects the input source of the IP used in the example.
-		    
-                config EXAMPLE_SOCKET_IP_INPUT_STRING
-                    bool "From string"
-		    
-                config EXAMPLE_SOCKET_IP_INPUT_STDIN
-                    bool "From stdin"
-            endchoice
-		
+                    The remote port to which the client will send data.
+	
 		endmenu
     
     endmenu

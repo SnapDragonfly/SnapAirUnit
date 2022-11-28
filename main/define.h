@@ -14,8 +14,10 @@ extern "C" {
 #define TASK_SIMPLE_BUFFER                     (1024)
 #define TASK_MIDDLE_BUFFER                     (2048)
 #define TASK_LARGE_BUFFER                      (3072)
+#define TASK_EXLARGE_BUFFER                    (4096)
 
 #define TIME_ONE_SECOND_IN_MS                  (1000)
+#define TIME_TWO_SECOND_IN_MS                  (2000)
 
 
 #define TIME_DIFF_IN_MS(prev, curr)            ((curr - prev)/1000)
