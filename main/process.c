@@ -29,6 +29,8 @@ static int64_t press_rel_time                   = 0;
 
 static void task_evt_process(void* args)
 {
+    UNUSED(args);
+
     // Wait to be started by the main task
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
@@ -99,7 +101,7 @@ esp_event_loop_handle_t module_evt_start(void)
 
     esp_event_loop_args_t loop_with_task_args = {
         .queue_size = 5,
-        .task_name = "loop_task", // task will be created
+        .task_name = MODULE_EVT_PROC, // task will be created
         .task_priority = uxTaskPriorityGet(NULL),
         .task_stack_size = 3072,
         .task_core_id = tskNO_AFFINITY

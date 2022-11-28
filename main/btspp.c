@@ -69,46 +69,64 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
     switch (event) {
     case ESP_SPP_INIT_EVT:
         if (param->init.status == ESP_SPP_SUCCESS) {
+#if (DEBUG_BT_SPP)
             ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_INIT_EVT");
+#endif /* DEBUG_BT_SPP */
             esp_spp_start_srv(sec_mask, role_slave, 0, SPP_SERVER_NAME);
-        } else {
+        } 
+#if (DEBUG_BT_SPP)
+        else {
             ESP_LOGE(MODULE_BT_SPP, "ESP_SPP_INIT_EVT status:%d", param->init.status);
         }
+#endif /* DEBUG_BT_SPP */
         break;
         
     case ESP_SPP_DISCOVERY_COMP_EVT:
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_DISCOVERY_COMP_EVT");
+#endif /* DEBUG_BT_SPP */
         break;
     
     case ESP_SPP_OPEN_EVT:
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_OPEN_EVT");
+#endif /* DEBUG_BT_SPP */
         break;
     
     case ESP_SPP_CLOSE_EVT:
         snap_sw_state_set(SW_STATE_INVALID);
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_CLOSE_EVT status:%d handle:%d close_by_remote:%d", param->close.status,
                  param->close.handle, param->close.async);
+#endif /* DEBUG_BT_SPP */
         break;
         
     case ESP_SPP_START_EVT:
         if (param->start.status == ESP_SPP_SUCCESS) {
+#if (DEBUG_BT_SPP)
             ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_START_EVT handle:%d sec_id:%d scn:%d", param->start.handle, param->start.sec_id,
                      param->start.scn);
+#endif /* DEBUG_BT_SPP */
             esp_bt_dev_set_device_name(SPP_DEVICE_NAME);
             esp_bt_gap_set_scan_mode(ESP_BT_CONNECTABLE, ESP_BT_GENERAL_DISCOVERABLE);
-        } else {
+        } 
+#if (DEBUG_BT_SPP)
+        else {
             ESP_LOGE(MODULE_BT_SPP, "ESP_SPP_START_EVT status:%d", param->start.status);
         }
+#endif /* DEBUG_BT_SPP */
         break;
         
     case ESP_SPP_CL_INIT_EVT:
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_CL_INIT_EVT");
+#endif /* DEBUG_BT_SPP */
         break;
     
     case ESP_SPP_DATA_IND_EVT:
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_DATA_IND_EVT len:%d handle:%d",
                  param->data_ind.len, param->data_ind.handle);
-#if (DEBUG_BT_SPP)
         if (param->data_ind.len < 128) {
             esp_log_buffer_hex(MODULE_BT_SPP, param->data_ind.data, param->data_ind.len);
         }else{
@@ -127,28 +145,40 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         break;
         
     case ESP_SPP_CONG_EVT:
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_CONG_EVT");
+#endif /* DEBUG_BT_SPP */
         break;
     
     case ESP_SPP_WRITE_EVT:
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_WRITE_EVT");
+#endif /* DEBUG_BT_SPP */
         break;
     
     case ESP_SPP_SRV_OPEN_EVT:
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_SRV_OPEN_EVT status:%d handle:%d, rem_bda:[%s]", param->srv_open.status,
                  param->srv_open.handle, bda2str(param->srv_open.rem_bda, bda_str, sizeof(bda_str)));
+#else
+        UNUSED(bda_str);
+#endif /* DEBUG_BT_SPP */
         snap_sw_state_set(SW_STATE_FULL_DUPLEX);
         esp_ssp_handle = param->srv_open.handle;
         gettimeofday(&time_old, NULL);
         break;
         
     case ESP_SPP_SRV_STOP_EVT:
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_SRV_STOP_EVT");
+#endif /* DEBUG_BT_SPP */
         esp_ssp_handle = 0;
         break;
         
     case ESP_SPP_UNINIT_EVT:
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_UNINIT_EVT");
+#endif /* DEBUG_BT_SPP */
         break;
     
     default:
@@ -162,22 +192,32 @@ void esp_bt_gap_cb(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param)
 
     switch (event) {
     case ESP_BT_GAP_AUTH_CMPL_EVT:{
+#if (DEBUG_BT_SPP)
         if (param->auth_cmpl.stat == ESP_BT_STATUS_SUCCESS) {
             ESP_LOGI(MODULE_BT_SPP, "authentication success: %s bda:[%s]", param->auth_cmpl.device_name,
                      bda2str(param->auth_cmpl.bda, bda_str, sizeof(bda_str)));
         } else {
             ESP_LOGE(MODULE_BT_SPP, "authentication failed, status:%d", param->auth_cmpl.stat);
         }
+#else
+        UNUSED(bda_str);
+#endif /* DEBUG_BT_SPP */
         break;
     }
     case ESP_BT_GAP_PIN_REQ_EVT:{
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_BT_GAP_PIN_REQ_EVT min_16_digit:%d", param->pin_req.min_16_digit);
+#endif /* DEBUG_BT_SPP */
         if (param->pin_req.min_16_digit) {
+#if (DEBUG_BT_SPP)
             ESP_LOGI(MODULE_BT_SPP, "Input pin code: 0000 0000 0000 0000");
+#endif /* DEBUG_BT_SPP */
             esp_bt_pin_code_t pin_code = {0};
             esp_bt_gap_pin_reply(param->pin_req.bda, true, 16, pin_code);
         } else {
+#if (DEBUG_BT_SPP)
             ESP_LOGI(MODULE_BT_SPP, "Input pin code: 1234");
+#endif /* DEBUG_BT_SPP */
             esp_bt_pin_code_t pin_code;
             pin_code[0] = '1';
             pin_code[1] = '2';
@@ -190,24 +230,34 @@ void esp_bt_gap_cb(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param)
 
 #if (CONFIG_BT_SSP_ENABLED == true)
     case ESP_BT_GAP_CFM_REQ_EVT:
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_BT_GAP_CFM_REQ_EVT Please compare the numeric value: %d", param->cfm_req.num_val);
+#endif /* DEBUG_BT_SPP */
         esp_bt_gap_ssp_confirm_reply(param->cfm_req.bda, true);
         break;
     case ESP_BT_GAP_KEY_NOTIF_EVT:
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_BT_GAP_KEY_NOTIF_EVT passkey:%d", param->key_notif.passkey);
+#endif /* DEBUG_BT_SPP */
         break;
     case ESP_BT_GAP_KEY_REQ_EVT:
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_BT_GAP_KEY_REQ_EVT Please enter passkey!");
+#endif /* DEBUG_BT_SPP */
         break;
 #endif
 
     case ESP_BT_GAP_MODE_CHG_EVT:
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_BT_GAP_MODE_CHG_EVT mode:%d bda:[%s]", param->mode_chg.mode,
                  bda2str(param->mode_chg.bda, bda_str, sizeof(bda_str)));
+#endif /* DEBUG_BT_SPP */
         break;
 
     default: {
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "event: %d", event);
+#endif /* DEBUG_BT_SPP */
         break;
     }
     }
@@ -227,7 +277,9 @@ void bt_deinit_spp(void)
     ESP_ERROR_CHECK(esp_bt_controller_disable());
     ESP_ERROR_CHECK(esp_bt_controller_deinit());
     do{
+#if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "BT SPP wait stop");
+#endif /* DEBUG_BT_SPP */
         vTaskDelay(100 / portTICK_PERIOD_MS);
         bt_status = esp_bt_controller_get_status();
     }while(ESP_BT_CONTROLLER_STATUS_IDLE != bt_status);

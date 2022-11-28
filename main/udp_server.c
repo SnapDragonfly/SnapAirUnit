@@ -217,7 +217,9 @@ static void udp_server_task(void *pvParameters)
         }
 
         if (g_server_sock != -1) {
+#if (DEBUG_UDP_SRV)
             ESP_LOGE(MODULE_UDP_SRV, "Shutting down socket and restarting...");
+#endif /* DEBUG_UDP_SRV */
             shutdown(g_server_sock, 0);
             close(g_server_sock);
             snap_sw_state_set(SW_STATE_IDLE);

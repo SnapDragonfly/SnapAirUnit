@@ -31,8 +31,6 @@ static QueueHandle_t ttl_uart_queue = NULL;
 
 extern uint32_t esp_ssp_handle;
 
-
-
 esp_err_t ttl_send(uint8_t * buf, int len)
 {
     if(NULL == buf){

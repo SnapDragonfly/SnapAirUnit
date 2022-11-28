@@ -39,7 +39,11 @@ void mode_key_long_press(void* arg)
 #endif /* DEBUG_KEY_MODE */
 
     if(g_key_filter){
+#if (DEBUG_KEY_MODE)
         ESP_LOGI(MODULE_KEY_MODE, "%s filter", arg);
+#else
+        UNUSED(arg);
+#endif /* DEBUG_KEY_MODE */
         return;
     }
 
@@ -54,7 +58,11 @@ void mode_key_pressed(void* arg)
 #endif /* DEBUG_KEY_MODE */
 
     if(g_key_filter){
+#if (DEBUG_KEY_MODE)
         ESP_LOGI(MODULE_KEY_MODE, "%s filter", arg);
+#else
+        UNUSED(arg);
+#endif /* DEBUG_KEY_MODE */
         return;
     }
 
@@ -72,7 +80,11 @@ void mode_key_released(void* arg)
 #endif /* DEBUG_KEY_MODE */
 
     if(g_key_filter){
+#if (DEBUG_KEY_MODE)
         ESP_LOGI(MODULE_KEY_MODE, "%s filter", arg);
+#else
+        UNUSED(arg);
+#endif /* DEBUG_KEY_MODE */
         return;
     }
 
