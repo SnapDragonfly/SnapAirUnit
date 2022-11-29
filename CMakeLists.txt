@@ -2,13 +2,9 @@
 # CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.16)
 
-#set(EXTRA_COMPONENT_DIRS "${EXTRA_COMPONENT_DIRS} components/button")
-#list(APPEND EXTRA_COMPONENT_DIRS components/protocol_common)
-
-#set(EXTRA_COMPONENT_DIRS "${EXTRA_COMPONENT_DIRS} components/button")
-#set(EXTRA_COMPONENT_DIRS "${EXTRA_COMPONENT_DIRS} components/protocol_common")
-
-set(EXTRA_COMPONENT_DIRS "components/button" "components/protocol_common")
+set(EXTRA_COMPONENT_DIRS "components/button" 
+                                                     "components/protocol_common" 
+                                                     "components/command")
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(SnapAirUnit)

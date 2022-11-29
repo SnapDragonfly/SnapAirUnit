@@ -54,8 +54,8 @@ esp_err_t udp_send_msg(uint8_t * buf, int len)
 
 static void udp_server_task(void *pvParameters)
 {
-    char rx_buffer[128];
-    char addr_str[128];
+    char rx_buffer[STR_BUFFER_LEN];
+    char addr_str[STR_BUFFER_LEN];
     int addr_family = (int)pvParameters;
     int ip_protocol = 0;
     struct sockaddr_in6 dest_addr;

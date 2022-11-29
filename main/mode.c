@@ -154,7 +154,6 @@ void snap_sw_mode_init(void)
     g_sw_mode = SW_MODE_WIFI_STA;
     ESP_ERROR_CHECK(esp_netif_init());
     //esp_netif_create_default_wifi_ap();
-    wifi_init_sta();
 
     ESP_LOGI(MODULE_MODE, "mode_init");
 }

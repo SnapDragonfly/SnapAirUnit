@@ -24,6 +24,7 @@
 #include "udp_server.h"
 #include "udp_client.h"
 #include "spiffs.h"
+#include "console.h"
 
 void sand_box(void)
 {
@@ -35,6 +36,10 @@ void sand_box(void)
     // ...
     //spiffs_test();
     //stop_spiffs();
+
+
+    // Console for back dorr debug
+    ESP_ERROR_CHECK(module_console_start());
 
     snap_alive(SAND_BOX_ALIVE_CHARACTER);
     snap_reboot(SAND_BOX_REBOOT_PROMOTES);
@@ -74,6 +79,7 @@ void app_init(void)
     sanp_sw_rest_init();
     ESP_ERROR_CHECK(start_udp_server());
     ESP_ERROR_CHECK(start_udp_client());
+    wifi_init_sta();
 
     printf("%s: free_heap_size = %d\n", DEVICE_NAME_SNAP_AIR_UNIT, esp_get_free_heap_size());
 }

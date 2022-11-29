@@ -62,7 +62,7 @@ esp_err_t spiffs_test(void)
     sprintf(str_buf2, "%s%s", CONFIG_SPIFFS_MOUNT_POINT, TEST_FILE2);
     if (stat(str_buf2, &st) == 0) {
         // Delete it if it exists
-        unlink("/spiffs/foo.txt");
+        unlink(str_buf2);
     }
 
     // Rename original file

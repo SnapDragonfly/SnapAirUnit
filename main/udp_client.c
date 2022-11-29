@@ -35,7 +35,7 @@
 
 static void udp_client_task(void *pvParameters)
 {
-    char rx_buffer[128];
+    char rx_buffer[STR_BUFFER_LEN];
     char host_ip[] = HOST_IP_ADDR;
     int addr_family = 0;
     int ip_protocol = 0;
@@ -83,12 +83,9 @@ static void udp_client_task(void *pvParameters)
         ESP_LOGI(MODULE_UDP_CLT, "Socket created, sending to %s:%d", HOST_IP_ADDR, STATUS_PORT);
 #endif /* DEBUG_UDP_CLT */
         while (1) {
-            
-            char payload[64];
+            sprintf(rx_buffer, "udp sate =%d mode =%d", snap_sw_state_get(), snap_sw_mode_get());
 
-            sprintf(payload, "udp sate =%d mode =%d", snap_sw_state_get(), snap_sw_mode_get());
-
-            int err = sendto(sock, payload, strlen(payload), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
+            int err = sendto(sock, rx_buffer, strlen(rx_buffer), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
             if (err < 0) {
 #if (DEBUG_UDP_CLT)
                 ESP_LOGE(MODULE_UDP_CLT, "Error occurred during sending: errno %d", errno);

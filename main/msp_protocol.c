@@ -283,7 +283,7 @@ esp_err_t ttl_handle_msp_protocol(uint8_t * buf, int len)
         mspSerialProcessReceivedData(&esp_msp_port, *(buf +i));
         if(MSP_COMMAND_RECEIVED == esp_msp_port.c_state){
             if(snap_sw_state_active(SW_MODE_WIFI_AP) || snap_sw_state_active(SW_MODE_WIFI_STA)){
-                uint8_t rx_buffer[128];
+                uint8_t rx_buffer[STR_BUFFER_LEN];
                 switch(esp_msp_port.mspVersion){
                     case MSP_V2_NATIVE:
                         rx_buffer[0] = '$';

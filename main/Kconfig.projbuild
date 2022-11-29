@@ -332,4 +332,16 @@ menu "Snap Air Unit"
                 If this config item is set, esp_spiffs_check() will be run on every start-up.
                 Slow on large flash sizes.
     endmenu
+	
+    menu "Command History"
+    
+        config STORE_HISTORY
+            bool "Store command history in flash"
+            default y
+            help
+                Linenoise line editing library provides functions to save and load
+                command history. If this option is enabled, initalizes a FAT filesystem
+                and uses it to store command history.
+    
+    endmenu
 endmenu

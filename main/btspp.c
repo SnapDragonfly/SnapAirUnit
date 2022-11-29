@@ -127,7 +127,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 #if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_DATA_IND_EVT len:%d handle:%d",
                  param->data_ind.len, param->data_ind.handle);
-        if (param->data_ind.len < 128) {
+        if (param->data_ind.len < STR_BUFFER_LEN) {
             esp_log_buffer_hex(MODULE_BT_SPP, param->data_ind.data, param->data_ind.len);
         }else{
             gettimeofday(&time_new, NULL);

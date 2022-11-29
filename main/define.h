@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-#define DEVICE_NAME_SNAP_AIR_UNIT              ("Snap Air Unit")
+#define DEVICE_NAME_SNAP_AIR_UNIT              "Snap Air Unit"
 
 #define SAND_BOX_ALIVE_CHARACTER               ('.')
 #define SAND_BOX_REBOOT_PROMOTES               (10)
@@ -18,6 +18,8 @@ extern "C" {
 
 #define TIME_ONE_SECOND_IN_MS                  (1000)
 #define TIME_TWO_SECOND_IN_MS                  (2000)
+
+#define STR_BUFFER_LEN                         (128)
 
 
 #define TIME_DIFF_IN_MS(prev, curr)            ((curr - prev)/1000)

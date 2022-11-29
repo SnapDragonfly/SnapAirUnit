@@ -15,9 +15,12 @@ extern "C" {
 // Software components
 #define DEBUG_EVT_PROC        1
 #define DEBUG_SPIFFS          1
+#define DEBUG_NVS             1
+
 
 #define MODULE_EVT_PROC        "evt"
 #define MODULE_SPIFFS          "ffs"
+#define MODULE_NVS             "nvs"
 
 // Hardware components
 #define DEBUG_LED_BLINK       0
@@ -44,6 +47,7 @@ extern "C" {
 #define DEBUG_UDP_CLT         0
 #define DEBUG_MSP_PROTO       0
 #define DEBUG_TELLO_PROTO     0
+#define DEBUG_CONSOLE         0
 
 
 #define MODULE_MODE            "mod"
@@ -52,6 +56,7 @@ extern "C" {
 #define MODULE_UDP_CLT         "uclt"
 #define MODULE_MSP_PROTO       "msp"
 #define MODULE_TELLO_PROTO     "tell"
+#define MODULE_CONSOLE         "cons"
 
 
 esp_err_t snap_sw_module_start(TaskFunction_t pxTaskCode, bool task, const uint32_t stackDepth, const char * const pcName);
