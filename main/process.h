@@ -16,7 +16,8 @@ enum {
     MODE_KEY_RELEASED       = 0,
     MODE_KEY_SHORT_PRESSED  = 1,
     MODE_KEY_LONG_PRESSED   = 2,
-    MODE_KEY_PRESS_ACT      = 3
+    MODE_KEY_PRESS_ACT      = 3,
+    MODE_KEY_DEFAULT        = 4
 };
 
 esp_event_loop_handle_t module_evt_start(void);

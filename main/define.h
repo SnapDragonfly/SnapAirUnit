@@ -18,6 +18,7 @@ extern "C" {
 #define TASK_MIDDLE_BUFFER                     (2048)
 #define TASK_LARGE_BUFFER                      (3072)
 #define TASK_EXLARGE_BUFFER                    (4096)
+#define TASK_XXLARGE_BUFFER                    (5120)
 
 #define TIME_ONE_SECOND_IN_MS                  (1000)
 #define TIME_TWO_SECOND_IN_MS                  (2000)

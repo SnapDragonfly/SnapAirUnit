@@ -74,6 +74,11 @@ enum_state_t snap_sw_state_get(void)
     return g_sw_state;
 }
 
+void snap_sw_mode_set(enum_mode_t mode)
+{
+    g_sw_mode = mode;
+}
+
 enum_mode_t snap_sw_mode_next(void)
 {
     return (g_sw_mode + 1) % SW_MODE_NULL;

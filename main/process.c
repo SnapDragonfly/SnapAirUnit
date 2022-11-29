@@ -35,6 +35,22 @@ static void task_evt_process(void* args)
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
     while(1) {
+
+        /*
+         * Monitor WiFi Station Connect Failure
+         * Fall back to WiFi AP mode by default
+         */
+        extern bool g_wifi_sta_start;
+        if(!g_wifi_sta_start && SW_MODE_NULL == snap_sw_mode_get()){
+            extern void snap_sw_mode_set(enum_mode_t mode);
+            snap_sw_mode_set(SW_MODE_WIFI_STA);
+
+            ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, MODE_KEY_DEFAULT, NULL, 0, portMAX_DELAY));
+            ESP_ERROR_CHECK(esp_event_post(EVT_PROCESS, MODE_KEY_DEFAULT, NULL, 0, portMAX_DELAY));
+            ESP_LOGI(MODULE_CONSOLE, "Trigger MODE_KEY_DEFAULT\n");
+            //g_wifi_sta_start = true;
+        }
+        
         //ESP_LOGI(MODULE_EVT_PROC, "application_task: running application task");
         //esp_event_loop_run(loop_with_task, 100);
         vTaskDelay(10);
@@ -43,10 +59,15 @@ static void task_evt_process(void* args)
 
 static void evt_process_handler(void* handler_args, esp_event_base_t base, int32_t id, void* event_data)
 {
-    static uint16_t next_mode = SW_MODE_WIFI_AP;
-    int64_t curr_time;
-    curr_time = esp_timer_get_time();
+    esp_err_t ret;
     
+    static uint16_t next_mode = SW_MODE_WIFI_AP;
+    int64_t curr_time        = esp_timer_get_time();
+
+#if (DEBUG_EVT_PROC)
+    ESP_LOGI(MODULE_EVT_PROC, "evt_process_handler id = %d", id);
+#endif /* DEBUG_EVT_PROC */
+
     switch(id){
         case MODE_KEY_SHORT_PRESSED:
             if(TIME_DIFF_IN_MS(press_rel_time, curr_time) > CONFIG_KEY_RESERVE_TIME_IN_MS){
@@ -64,7 +85,7 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
             ESP_LOGI(MODULE_EVT_PROC, "Switch from %d--------", snap_sw_mode_get());
 #endif /* DEBUG_EVT_PROC */
             
-            esp_err_t ret = snap_sw_mode_switch(next_mode);
+            ret = snap_sw_mode_switch(next_mode);
 
 #if (DEBUG_EVT_PROC)
             ESP_LOGI(MODULE_EVT_PROC, "Switch to %d-------- ret = %d", snap_sw_mode_get(), ret);
@@ -84,6 +105,13 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
 
         case MODE_KEY_LONG_PRESSED:
             snap_reboot(3);
+            break;
+
+        case MODE_KEY_DEFAULT:
+            ret = snap_sw_mode_switch(SW_MODE_WIFI_AP);
+#if (DEBUG_EVT_PROC)
+            ESP_LOGI(MODULE_EVT_PROC, "Switch to %d-------- ret = %d", snap_sw_mode_get(), ret);
+#endif /* DEBUG_EVT_PROC */
             break;
             
         default:

@@ -115,7 +115,7 @@ esp_err_t restore_factory_settings(void)
 
 
 
-esp_err_t set_ap_settings(char * ssid, char * pass)
+esp_err_t set_ap_settings(const char * ssid, const char * pass)
 {
     esp_err_t err;
     ssize_t ssid_len, pass_len; 
@@ -148,7 +148,7 @@ esp_err_t set_ap_settings(char * ssid, char * pass)
     return err;
 }
 
-esp_err_t set_sta_settings(char * ssid, char * pass)
+esp_err_t set_sta_settings(const char * ssid, const char * pass)
 {
     esp_err_t err;
     ssize_t ssid_len, pass_len; 
