@@ -20,6 +20,7 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "cmd_nvs.h"
+#include "cmd_sau.h"
 
 #include "define.h"
 #include "module.h"
@@ -113,7 +114,7 @@ static void initialize_console(void)
 #endif
 }
 
-static void task_console_start(void* args)
+esp_err_t module_console_start(void)
 {
 #if CONFIG_STORE_HISTORY
     ESP_LOGI(MODULE_CONSOLE, "Command history enabled");
@@ -126,13 +127,8 @@ static void task_console_start(void* args)
     /* Register commands */
     esp_console_register_help_command();
 
-#if 0
-    register_system();
-    register_wifi();
-#endif
-
     register_nvs();
-
+    register_sau();
 
     /* Prompt to be printed before each line.
      * This can be customized, made dynamic, etc.
@@ -198,20 +194,7 @@ static void task_console_start(void* args)
 
     ESP_LOGE(MODULE_CONSOLE, "Error or end-of-input, terminating console");
     esp_console_deinit();
-}
-
-#if 1
-esp_err_t module_console_start(void)
-{
-    task_console_start(NULL);
     return ESP_OK;
 }
-#else
-esp_err_t module_console_start(void)
-{
-    ESP_ERROR_CHECK(snap_sw_module_start(task_console_start, true, TASK_LARGE_BUFFER, MODULE_WIFI_STA));
-    return ESP_OK;
-}
-#endif
 
 

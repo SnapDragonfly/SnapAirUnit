@@ -86,6 +86,10 @@ enum_mode_t snap_sw_mode_get(void)
 
 esp_err_t snap_sw_mode_switch(enum_mode_t mode)
 {
+#if (DEBUG_MODE)
+    ESP_LOGI(MODULE_MODE, "current mode(%d), set to %d, actually %d", g_sw_state, mode, mode % SW_MODE_NULL);
+#endif /* DEBUG_MODE */
+
     /* Make sure it's NOT overflow! */
     mode = mode % SW_MODE_NULL;
 

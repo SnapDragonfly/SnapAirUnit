@@ -16,11 +16,13 @@ extern "C" {
 #define DEBUG_EVT_PROC        1
 #define DEBUG_SPIFFS          1
 #define DEBUG_NVS             1
+#define DEBUG_SAU             1
 
 
 #define MODULE_EVT_PROC        "evt"
 #define MODULE_SPIFFS          "ffs"
 #define MODULE_NVS             "nvs"
+#define MODULE_SAU             "sau"
 
 // Hardware components
 #define DEBUG_LED_BLINK       0
