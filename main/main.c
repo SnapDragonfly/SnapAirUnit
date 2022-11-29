@@ -67,6 +67,7 @@ void app_init(void)
     //Basic Software Components
     g_evt_handle = module_evt_start();
     ESP_ERROR_CHECK(start_spiffs());
+    (void)start_factory_settings();
 
     //Basic Hardware Components
     g_led_handle = module_led_start(BLINK_GPIO);

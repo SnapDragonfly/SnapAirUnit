@@ -20,16 +20,6 @@
 #include "softap.h"
 #include "rest_server.h"
 
-/* The examples use WiFi configuration that you can set via project configuration menu.
-
-   If you'd rather not, just change the below entries to strings with
-   the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
-*/
-#define EXAMPLE_ESP_WIFI_AP_SSID      CONFIG_ESP_WIFI_AP_SSID
-#define EXAMPLE_ESP_WIFI_AP_PASS      CONFIG_ESP_WIFI_AP_PASSWORD
-#define EXAMPLE_ESP_WIFI_CHANNEL      CONFIG_ESP_WIFI_CHANNEL
-#define EXAMPLE_MAX_STA_CONN          CONFIG_ESP_MAX_STA_CONN
-
 static esp_event_handler_instance_t softap_instance_any_id;
 static esp_netif_t* softap_instance_netif = NULL;
 
@@ -64,18 +54,24 @@ static void task_wifi_start_softap(void* args)
 
     wifi_config_t wifi_config = {
         .ap = {
-            .ssid = EXAMPLE_ESP_WIFI_AP_SSID,
-            .ssid_len = strlen(EXAMPLE_ESP_WIFI_AP_SSID),
-            .channel = EXAMPLE_ESP_WIFI_CHANNEL,
-            .password = EXAMPLE_ESP_WIFI_AP_PASS,
-            .max_connection = EXAMPLE_MAX_STA_CONN,
+            //.ssid = FACTORY_ESP_WIFI_AP_SSID,
+            .ssid_len = strlen(get_ap_ssid()),
+            .channel = FACTORY_ESP_WIFI_CHANNEL,
+            //.password = FACTORY_ESP_WIFI_AP_PASS,
+            .max_connection = FACTORY_MAX_STA_CONN,
             .authmode = WIFI_AUTH_WPA_WPA2_PSK,
             .pmf_cfg = {
                     .required = false,
             },
         },
     };
-    if (strlen(EXAMPLE_ESP_WIFI_AP_PASS) == 0) {
+    
+    memset(wifi_config.ap.ssid, 0, SSID_LENGTH);
+    strcpy((char *)wifi_config.ap.ssid, get_ap_ssid());
+    memset(wifi_config.ap.password, 0, SSID_LENGTH);
+    strcpy((char *)wifi_config.ap.password, get_ap_pass());
+
+    if (strlen(get_ap_pass()) == 0) {
         wifi_config.ap.authmode = WIFI_AUTH_OPEN;
     }
 
@@ -84,7 +80,7 @@ static void task_wifi_start_softap(void* args)
     ESP_ERROR_CHECK(esp_wifi_start());
 
     ESP_LOGI(MODULE_WIFI_AP, "wifi_start_softap done. SSID:%s password:%s channel:%d",
-             EXAMPLE_ESP_WIFI_AP_SSID, EXAMPLE_ESP_WIFI_AP_PASS, EXAMPLE_ESP_WIFI_CHANNEL);
+             get_ap_ssid(), get_ap_pass(), FACTORY_ESP_WIFI_CHANNEL);
 
     //vTaskDelete(NULL);
 }

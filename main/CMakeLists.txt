@@ -16,6 +16,7 @@ idf_component_register(SRCS "main.c"
                             "tello_protocol.c"
                             "msp_protocol.c"
                             "console.c"
+                            "factory_setting.c"
                        INCLUDE_DIRS ".")
 
 if(CONFIG_RESTFUL_WEB_DEPLOY_SF)

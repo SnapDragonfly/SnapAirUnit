@@ -6,6 +6,9 @@
 extern "C" {
 #endif
 
+#include "factory_setting.h"
+
+
 #define DEVICE_NAME_SNAP_AIR_UNIT              "Snap Air Unit"
 
 #define SAND_BOX_ALIVE_CHARACTER               ('.')

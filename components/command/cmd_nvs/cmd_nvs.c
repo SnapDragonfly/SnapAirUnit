@@ -608,3 +608,132 @@ void register_nvs(void)
     ESP_ERROR_CHECK(esp_console_cmd_register(&list_entries_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&erase_namespace_cmd));
 }
+
+
+#define KEY_AP_SSID    "apssid"
+#define KEY_AP_PASS    "appass"
+#define KEY_STA_SSID   "stssid"
+#define KEY_STA_PASS   "stpass"
+
+esp_err_t nvs_get_wifi_ap(char * ssid, size_t ssid_len, char * pass, size_t pass_len)
+{
+    nvs_handle_t nvs;
+    esp_err_t err;
+
+    if (NULL == ssid || NULL == pass){
+        return ESP_FAIL;
+    }
+
+    err = nvs_open(current_namespace, NVS_READONLY, &nvs);
+    if (err != ESP_OK) {
+        return err;
+    }
+
+    err = nvs_get_str(nvs, KEY_AP_SSID, ssid, &ssid_len);
+    if (err != ESP_OK) {
+        nvs_close(nvs);
+        return err;
+    }
+
+    err = nvs_get_str(nvs, KEY_AP_PASS, pass, &pass_len);
+    if (err != ESP_OK) {
+        nvs_close(nvs);
+        return err;
+    }
+
+    nvs_close(nvs);
+    return err;
+}
+
+esp_err_t nvs_get_wifi_sta(char * ssid, size_t ssid_len, char * pass, size_t pass_len)
+{
+    nvs_handle_t nvs;
+    esp_err_t err;
+
+    if (NULL == ssid || NULL == pass){
+        return ESP_FAIL;
+    }
+
+    err = nvs_open(current_namespace, NVS_READONLY, &nvs);
+    if (err != ESP_OK) {
+        return err;
+    }
+
+    err = nvs_get_str(nvs, KEY_STA_SSID, ssid, &ssid_len);
+    if (err != ESP_OK) {
+        nvs_close(nvs);
+        return err;
+    }
+
+    err = nvs_get_str(nvs, KEY_STA_PASS, pass, &pass_len);
+    if (err != ESP_OK) {
+        nvs_close(nvs);
+        return err;
+    }
+
+    nvs_close(nvs);
+    return err;
+}
+
+esp_err_t nvs_set_wifi_ap(char * ssid, char * pass)
+{
+    nvs_handle_t nvs;
+    esp_err_t err;
+
+    if (NULL == ssid || NULL == pass){
+        return ESP_FAIL;
+    }
+
+    err = nvs_open(current_namespace, NVS_READWRITE, &nvs);
+    if (err != ESP_OK) {
+        return err;
+    }
+
+    err = nvs_set_str(nvs, KEY_AP_SSID, ssid);
+    if (err != ESP_OK) {
+        nvs_close(nvs);
+        return err;
+    }
+
+    err = nvs_set_str(nvs, KEY_AP_PASS, pass);
+    if (err != ESP_OK) {
+        nvs_close(nvs);
+        return err;
+    }
+
+    nvs_close(nvs);
+    return err;
+}
+
+esp_err_t nvs_set_wifi_sta(char * ssid, char * pass)
+{
+    nvs_handle_t nvs;
+    esp_err_t err;
+
+    if (NULL == ssid || NULL == pass){
+        return ESP_FAIL;
+    }
+
+    err = nvs_open(current_namespace, NVS_READWRITE, &nvs);
+    if (err != ESP_OK) {
+        return err;
+    }
+
+    err = nvs_set_str(nvs, KEY_STA_SSID, ssid);
+    if (err != ESP_OK) {
+        nvs_close(nvs);
+        return err;
+    }
+
+    err = nvs_set_str(nvs, KEY_STA_PASS, pass);
+    if (err != ESP_OK) {
+        nvs_close(nvs);
+        return err;
+    }
+
+    nvs_close(nvs);
+    return err;
+
+}
+
+
