@@ -18,6 +18,7 @@ typedef esp_err_t (*udp_func)(struct udp_data *);
 esp_err_t udp_bluetooth(struct udp_data * data);
 esp_err_t udp_ap(struct udp_data * data);
 esp_err_t udp_wifi(struct udp_data * data);
+esp_err_t udp_sdk(struct udp_data * data);
 
 
 #ifdef __cplusplus

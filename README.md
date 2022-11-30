@@ -49,11 +49,11 @@ It's an education version of Snap Air Unit.
 
 ## VersionControl
 [软件版本管理原则](https://blog.csdn.net/lida2003/article/details/36617839)
-版本控制规范：x.y.z.commitid
+版本控制规范：x.y.commitid-clean/dirty/release
 * x: 主版本号,由项目负责人维护
 * y: 次版本号,由版本管理人维护
-* z: 小版本号,由领域负责人维护 
 * commitid: 前7位，比如下面最初的版本，commit id = 39034f8
+* clean/dirty/release: clean(与git版本一致), dirty(本地版本), release(发布版本)
 
 
 > commit 39034f800063292df29c18e4002147890ce5a131 (HEAD -> main, origin/main, origin/HEAD)

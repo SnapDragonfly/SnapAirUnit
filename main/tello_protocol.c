@@ -13,6 +13,9 @@
 #include "cmd_udp.h"
 #include "tello_protocol.h"
 
+#define TELLO_RESPONSE_OK       "ok"
+#define TELLO_RESPONSE_ERR      "error"
+
 struct udp_command {
     const char command[UDP_COMMAND_LENGTH];
     udp_func   call;
@@ -22,6 +25,7 @@ struct udp_command g_udp_commands[] = {
     {"bluetooth", udp_bluetooth},
     {"ap",        udp_ap       },
     {"wifi",      udp_wifi     },
+    {"sdk?",      udp_sdk      },
 };
 
 static esp_err_t tello_protocol_parse(uint8_t * buf, int len)
@@ -31,7 +35,7 @@ static esp_err_t tello_protocol_parse(uint8_t * buf, int len)
 
     char *szcmdline = (char *) malloc(len + 1);
     if (szcmdline == NULL) {
-        return ESP_FAIL;
+        return ESP_ERR_NO_MEM;
     }
     memcpy(szcmdline, buf, len);
     szcmdline[len] = '\0';
@@ -81,7 +85,7 @@ static esp_err_t tello_protocol_parse(uint8_t * buf, int len)
     }
 
     free(szcmdline);
-    return ESP_FAIL;
+    return ESP_ERR_NOT_FOUND;
 }
 
 esp_err_t udp_handle_tello_protocol(uint8_t * buf, int len)
@@ -95,15 +99,34 @@ esp_err_t udp_handle_tello_protocol(uint8_t * buf, int len)
     }
 
     esp_err_t err = tello_protocol_parse(buf, len);
-    if(ESP_OK != err){
+    switch(err){
+        case ESP_ERR_NOT_FOUND:
 #if (DEBUG_TELLO_PROTO)
-        ESP_LOGI(MODULE_TELLO_PROTO, "udp_handle %d bytes", len);
-        esp_log_buffer_hex(MODULE_TELLO_PROTO, buf, len);
-        //ESP_LOGI(MODULE_TELLO_PROTO, "%s", buf);
+            ESP_LOGI(MODULE_TELLO_PROTO, "udp_handle %d bytes", len);
+            esp_log_buffer_hex(MODULE_TELLO_PROTO, buf, len);
+            //ESP_LOGI(MODULE_TELLO_PROTO, "%s", buf);
 #endif /* DEBUG_TELLO_PROTO */
 
-        ESP_ERROR_CHECK(ttl_send(buf, len));
-    }
+            ESP_ERROR_CHECK(ttl_send(buf, len));
+            break;
+
+        case ESP_ERR_NOT_SUPPORTED:
+            /* special feed back response should be handled in command call */
+            break;
+
+        case ESP_OK:
+            udp_send_msg((uint8_t *)TELLO_RESPONSE_OK, strlen(TELLO_RESPONSE_OK));
+            break;
+
+        case ESP_FAIL:
+            /* FALL THROUGH */
+        case ESP_ERR_NO_MEM:
+            /* FALL THROUGH */
+        default:
+            udp_send_msg((uint8_t *)TELLO_RESPONSE_ERR, strlen(TELLO_RESPONSE_ERR));
+            break;
+        }
+
     return err;
 }
 

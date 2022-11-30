@@ -13,6 +13,7 @@
 #include "module.h"
 #include "mode.h"
 #include "define.h"
+#include "udp_server.h"
 
 esp_err_t udp_bluetooth(struct udp_data * data)
 {
@@ -73,5 +74,13 @@ esp_err_t udp_wifi(struct udp_data * data)
 
     return err;
 }
+
+esp_err_t udp_sdk(struct udp_data * data)
+{
+    UNUSED(data);
+    udp_send_msg((uint8_t *)APP_VERSION, strlen(APP_VERSION));
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
 
 

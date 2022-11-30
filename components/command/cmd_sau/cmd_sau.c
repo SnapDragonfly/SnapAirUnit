@@ -43,6 +43,9 @@ static struct {
     struct arg_end *end;
 } wifi_sta_args;
 
+static struct {
+    struct arg_end *end;
+} sdk_args;
 
 static int sau_switch(int argc, char **argv)
 {
@@ -148,6 +151,19 @@ static int sau_wifi(int argc, char **argv)
     return 0;
 }
 
+static int sau_sdk(int argc, char **argv)
+{
+    int nerrors = arg_parse(argc, argv, (void **) &status_args);
+    if (nerrors != 0) {
+        arg_print_errors(stderr, status_args.end, argv[0]);
+        return 1;
+    }
+
+    ESP_LOGI(MODULE_CMD_SAU, "Version: %s", APP_VERSION);
+    return 0;
+}
+
+
 void register_sau(void)
 {
     mode_args.mode   = arg_str1(NULL, NULL, "<mode>", "application mode to be set");
@@ -164,6 +180,8 @@ void register_sau(void)
     wifi_sta_args.ssid   = arg_str1(NULL, NULL, "<ssid>", "wifi ssid");
     wifi_sta_args.pass   = arg_str1(NULL, NULL, "<pass>", "wifi password");
     wifi_sta_args.end    = arg_end(2);
+
+    sdk_args.end  = arg_end(2);
 
     const esp_console_cmd_t switch_cmd = {
         .command = "switch",
@@ -217,10 +235,21 @@ void register_sau(void)
         .argtable = &wifi_sta_args
     };
 
+    const esp_console_cmd_t sdk_cmd = {
+        .command = "sdk?",
+        .help = "Get application version.\n"
+        "Examples:\n"
+        " sdk? \n",
+        .hint = NULL,
+        .func = &sau_sdk,
+        .argtable = &sdk_args
+    };
+
     ESP_ERROR_CHECK(esp_console_cmd_register(&switch_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&status_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&bluetooth_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&ap_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&wifi_cmd));
+    ESP_ERROR_CHECK(esp_console_cmd_register(&sdk_cmd));
 }
 
