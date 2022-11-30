@@ -113,7 +113,7 @@ static esp_err_t store_blob(nvs_handle_t nvs, const char *key, const char *str_v
     size_t blob_len = str_len / 2;
 
     if (str_len % 2) {
-        ESP_LOGE(MODULE_NVS, "Blob data must contain even number of characters");
+        ESP_LOGE(MODULE_CMD_NVS, "Blob data must contain even number of characters");
         return ESP_ERR_NVS_TYPE_MISMATCH;
     }
 
@@ -131,7 +131,7 @@ static esp_err_t store_blob(nvs_handle_t nvs, const char *key, const char *str_v
         } else if (ch >= 'a' && ch <= 'f') {
             value = ch - 'a' + 10;
         } else {
-            ESP_LOGE(MODULE_NVS, "Blob data contain invalid character");
+            ESP_LOGE(MODULE_CMD_NVS, "Blob data contain invalid character");
             free(blob);
             return ESP_ERR_NVS_TYPE_MISMATCH;
         }
@@ -171,7 +171,7 @@ static esp_err_t set_value_in_nvs(const char *key, const char *str_type, const c
     nvs_type_t type = str_to_type(str_type);
 
     if (type == NVS_TYPE_ANY) {
-        ESP_LOGE(MODULE_NVS, "Type '%s' is undefined", str_type);
+        ESP_LOGE(MODULE_CMD_NVS, "Type '%s' is undefined", str_type);
         return ESP_ERR_NVS_TYPE_MISMATCH;
     }
 
@@ -242,7 +242,7 @@ static esp_err_t set_value_in_nvs(const char *key, const char *str_type, const c
     if (err == ESP_OK) {
         err = nvs_commit(nvs);
         if (err == ESP_OK) {
-            ESP_LOGI(MODULE_NVS, "Value stored under key '%s'", key);
+            ESP_LOGI(MODULE_CMD_NVS, "Value stored under key '%s'", key);
         }
     }
 
@@ -258,7 +258,7 @@ static esp_err_t get_value_from_nvs(const char *key, const char *str_type)
     nvs_type_t type = str_to_type(str_type);
 
     if (type == NVS_TYPE_ANY) {
-        ESP_LOGE(MODULE_NVS, "Type '%s' is undefined", str_type);
+        ESP_LOGE(MODULE_CMD_NVS, "Type '%s' is undefined", str_type);
         return ESP_ERR_NVS_TYPE_MISMATCH;
     }
 
@@ -344,7 +344,7 @@ static esp_err_t erase(const char *key)
         if (err == ESP_OK) {
             err = nvs_commit(nvs);
             if (err == ESP_OK) {
-                ESP_LOGI(MODULE_NVS, "Value with key '%s' erased", key);
+                ESP_LOGI(MODULE_CMD_NVS, "Value with key '%s' erased", key);
             }
         }
         nvs_close(nvs);
@@ -365,7 +365,7 @@ static esp_err_t erase_all(const char *name)
         }
     }
 
-    ESP_LOGI(MODULE_NVS, "Namespace '%s' was %s erased", name, (err == ESP_OK) ? "" : "not");
+    ESP_LOGI(MODULE_CMD_NVS, "Namespace '%s' was %s erased", name, (err == ESP_OK) ? "" : "not");
 
     nvs_close(nvs);
     return ESP_OK;
@@ -378,12 +378,12 @@ static int list(const char *part, const char *name, const char *str_type)
     nvs_iterator_t it = NULL;
     esp_err_t result = nvs_entry_find(part, NULL, type, &it);
     if (result == ESP_ERR_NVS_NOT_FOUND) {
-        ESP_LOGE(MODULE_NVS, "No such entry was found");
+        ESP_LOGE(MODULE_CMD_NVS, "No such entry was found");
         return 1;
     }
 
     if (result != ESP_OK) {
-        ESP_LOGE(MODULE_NVS, "NVS error: %s", esp_err_to_name(result));
+        ESP_LOGE(MODULE_CMD_NVS, "NVS error: %s", esp_err_to_name(result));
         return 1;
     }
 
@@ -397,7 +397,7 @@ static int list(const char *part, const char *name, const char *str_type)
     } while (result == ESP_OK);
 
     if (result != ESP_ERR_NVS_NOT_FOUND) { // the last iteration ran into an internal error
-        ESP_LOGE(MODULE_NVS, "NVS error %s at current iteration, stopping.", esp_err_to_name(result));
+        ESP_LOGE(MODULE_CMD_NVS, "NVS error %s at current iteration, stopping.", esp_err_to_name(result));
         return 1;
     }
 
@@ -419,7 +419,7 @@ static int set_value(int argc, char **argv)
     esp_err_t err = set_value_in_nvs(key, type, values);
 
     if (err != ESP_OK) {
-        ESP_LOGE(MODULE_NVS, "%s", esp_err_to_name(err));
+        ESP_LOGE(MODULE_CMD_NVS, "%s", esp_err_to_name(err));
         return 1;
     }
 
@@ -440,7 +440,7 @@ static int get_value(int argc, char **argv)
     esp_err_t err = get_value_from_nvs(key, type);
 
     if (err != ESP_OK) {
-        ESP_LOGE(MODULE_NVS, "%s", esp_err_to_name(err));
+        ESP_LOGE(MODULE_CMD_NVS, "%s", esp_err_to_name(err));
         return 1;
     }
 
@@ -460,7 +460,7 @@ static int erase_value(int argc, char **argv)
     esp_err_t err = erase(key);
 
     if (err != ESP_OK) {
-        ESP_LOGE(MODULE_NVS, "%s", esp_err_to_name(err));
+        ESP_LOGE(MODULE_CMD_NVS, "%s", esp_err_to_name(err));
         return 1;
     }
 
@@ -479,7 +479,7 @@ static int erase_namespace(int argc, char **argv)
 
     esp_err_t err = erase_all(name);
     if (err != ESP_OK) {
-        ESP_LOGE(MODULE_NVS, "%s", esp_err_to_name(err));
+        ESP_LOGE(MODULE_CMD_NVS, "%s", esp_err_to_name(err));
         return 1;
     }
 
@@ -496,7 +496,7 @@ static int set_namespace(int argc, char **argv)
 
     const char *namespace = namespace_args.namespace->sval[0];
     strlcpy(current_namespace, namespace, sizeof(current_namespace));
-    ESP_LOGI(MODULE_NVS, "Namespace set to '%s'", current_namespace);
+    ESP_LOGI(MODULE_CMD_NVS, "Namespace set to '%s'", current_namespace);
     return 0;
 }
 

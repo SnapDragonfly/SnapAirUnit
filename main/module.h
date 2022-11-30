@@ -15,16 +15,18 @@ extern "C" {
 // Software components
 #define DEBUG_EVT_PROC            1
 #define DEBUG_SPIFFS              1
-#define DEBUG_NVS                 1
-#define DEBUG_SAU                 1
+#define DEBUG_CMD_NVS             1
+#define DEBUG_CMD_SAU             1
 #define DEBUG_FACTORY_SETTING     1
+#define DEBUG_CMD_UDP             1
 
 
 #define MODULE_EVT_PROC            "evt"
 #define MODULE_SPIFFS              "ffs"
-#define MODULE_NVS                 "nvs"
-#define MODULE_SAU                 "sau"
+#define MODULE_CMD_NVS             "nvs"
+#define MODULE_CMD_SAU             "sau"
 #define MODULE_FACTORY_SETTING     "fac"
+#define MODULE_CMD_UDP             "udp"
 
 
 // Hardware components
@@ -60,7 +62,7 @@ extern "C" {
 #define MODULE_UDP_SRV             "usrv"
 #define MODULE_UDP_CLT             "uclt"
 #define MODULE_MSP_PROTO           "msp"
-#define MODULE_TELLO_PROTO         "tell"
+#define MODULE_TELLO_PROTO         "tel"
 #define MODULE_CONSOLE             "cons"
 
 

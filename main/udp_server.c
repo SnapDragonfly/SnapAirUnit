@@ -142,6 +142,7 @@ static void udp_server_task(void *pvParameters)
 #if (DEBUG_UDP_SRV)
             ESP_LOGI(MODULE_UDP_SRV, "Waiting for data");
 #endif /* DEBUG_UDP_SRV */
+            memset(rx_buffer, 0, STR_BUFFER_LEN);
 
 #if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_EXAMPLE_IPV6)
             int len = recvmsg(g_server_sock, &msg, 0);
@@ -241,10 +242,10 @@ esp_err_t start_udp_server(void)
     //ESP_ERROR_CHECK(example_connect());
 
 #ifdef CONFIG_EXAMPLE_IPV4
-    xTaskCreate(udp_server_task, MODULE_UDP_SRV, TASK_LARGE_BUFFER, (void*)AF_INET, 5, NULL);
+    xTaskCreate(udp_server_task, MODULE_UDP_SRV, TASK_EXLARGE_BUFFER, (void*)AF_INET, 5, NULL);
 #endif
 #ifdef CONFIG_EXAMPLE_IPV6
-    xTaskCreate(udp_server_task, MODULE_UDP_SRV, TASK_LARGE_BUFFER, (void*)AF_INET6, 5, NULL);
+    xTaskCreate(udp_server_task, MODULE_UDP_SRV, TASK_EXLARGE_BUFFER, (void*)AF_INET6, 5, NULL);
 #endif
 
     return ESP_OK;

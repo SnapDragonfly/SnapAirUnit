@@ -12,6 +12,7 @@
 #include "freertos/event_groups.h"
 #include "esp_err.h"
 #include "cmd_sau.h"
+#include "cmd_udp.h"
 
 #include "module.h"
 #include "mode.h"
@@ -56,7 +57,7 @@ static int sau_switch(int argc, char **argv)
     esp_err_t err = snap_sw_mode_switch(mode);
 
     if (err != ESP_OK) {
-        ESP_LOGE(MODULE_SAU, "%s", esp_err_to_name(err));
+        ESP_LOGE(MODULE_CMD_SAU, "%s", esp_err_to_name(err));
         return 1;
     }
 
@@ -74,8 +75,8 @@ static int sau_status(int argc, char **argv)
     enum_state_t state = snap_sw_state_get();
     enum_mode_t mode   = snap_sw_mode_get();
 
-    ESP_LOGI(MODULE_SAU, "Application mode(%d) state(%d)", mode, state);
-    ESP_LOGI(MODULE_SAU, "Minimum free heap size: %d bytes\n", esp_get_minimum_free_heap_size());
+    ESP_LOGI(MODULE_CMD_SAU, "Application mode(%d) state(%d)", mode, state);
+    ESP_LOGI(MODULE_CMD_SAU, "Minimum free heap size: %d bytes\n", esp_get_minimum_free_heap_size());
 
     return 0;
 }
@@ -88,10 +89,9 @@ static int sau_bluetooth(int argc, char **argv)
         return 1;
     }
 
-    esp_err_t err = snap_sw_mode_switch(SW_MODE_BT_SPP);
-
+    esp_err_t err = udp_bluetooth(NULL);
     if (err != ESP_OK) {
-        ESP_LOGE(MODULE_SAU, "%s", esp_err_to_name(err));
+        ESP_LOGE(MODULE_CMD_SAU, "%s", esp_err_to_name(err));
         return 1;
     }
 
@@ -109,16 +109,14 @@ static int sau_ap(int argc, char **argv)
     const char *ssid = wifi_ap_args.ssid->sval[0];
     const char *pass = wifi_ap_args.pass->sval[0];
 
+    struct udp_data data;
+    data.param[0] = ssid;
+    data.param[1] = pass;
+    data.counts   = 2;
 
-    esp_err_t err = set_sta_settings(ssid, pass);
+    esp_err_t err = udp_ap((void *)&data);
     if (err != ESP_OK) {
-        ESP_LOGE(MODULE_SAU, "%s", esp_err_to_name(err));
-        return 1;
-    }
-
-    err = snap_sw_mode_switch(SW_MODE_WIFI_STA);
-    if (err != ESP_OK) {
-        ESP_LOGE(MODULE_SAU, "%s", esp_err_to_name(err));
+        ESP_LOGE(MODULE_CMD_SAU, "%s", esp_err_to_name(err));
         return 1;
     }
 
@@ -136,22 +134,19 @@ static int sau_wifi(int argc, char **argv)
     const char *ssid = wifi_sta_args.ssid->sval[0];
     const char *pass = wifi_sta_args.pass->sval[0];
 
+    struct udp_data data;
+    data.param[0] = ssid;
+    data.param[1] = pass;
+    data.counts   = 2;
 
-    esp_err_t err = set_ap_settings(ssid, pass);
+    esp_err_t err = udp_wifi((void *)&data);
     if (err != ESP_OK) {
-        ESP_LOGE(MODULE_SAU, "%s", esp_err_to_name(err));
-        return 1;
-    }
-
-    err = snap_sw_mode_switch(SW_MODE_WIFI_AP);
-    if (err != ESP_OK) {
-        ESP_LOGE(MODULE_SAU, "%s", esp_err_to_name(err));
+        ESP_LOGE(MODULE_CMD_SAU, "%s", esp_err_to_name(err));
         return 1;
     }
 
     return 0;
 }
-
 
 void register_sau(void)
 {
