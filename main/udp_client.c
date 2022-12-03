@@ -23,28 +23,24 @@
 #include "define.h"
 #include "udp_client.h"
 
-#if defined(CONFIG_EXAMPLE_IPV4)
-#define HOST_IP_ADDR CONFIG_EXAMPLE_IPV4_ADDR
-#elif defined(CONFIG_EXAMPLE_IPV6)
-#define HOST_IP_ADDR CONFIG_EXAMPLE_IPV6_ADDR
-#else
-#define HOST_IP_ADDR ""
-#endif
-
 #define STATUS_PORT CONFIG_STATUS_SERVER_PORT
+
+extern char g_addr_str[STR_IP_LEN];
 
 static void udp_client_task(void *pvParameters)
 {
     char rx_buffer[STR_BUFFER_LEN];
-    char host_ip[] = HOST_IP_ADDR;
     int addr_family = 0;
     int ip_protocol = 0;
+    size_t len = 0;
 
     while (1) {
-
-        if(SW_STATE_INVALID == snap_sw_state_get() || SW_MODE_BT_SPP == snap_sw_mode_get()){
+        len = strlen(g_addr_str);
+        if(SW_STATE_INVALID == snap_sw_state_get() 
+            || SW_MODE_BT_SPP == snap_sw_mode_get()
+            || 0 == len){
 #if (DEBUG_UDP_CLT)
-            ESP_LOGI(MODULE_UDP_CLT, "invalid switching time");
+            ESP_LOGI(MODULE_UDP_CLT, "invalid switching time: %d-%d-%d", snap_sw_state_get(),snap_sw_mode_get(),len);
 #endif /* DEBUG_UDP_CLT */
             vTaskDelay(TIME_ONE_SECOND_IN_MS / portTICK_PERIOD_MS);
             continue;
@@ -52,14 +48,14 @@ static void udp_client_task(void *pvParameters)
 
 #if defined(CONFIG_EXAMPLE_IPV4)
         struct sockaddr_in dest_addr;
-        dest_addr.sin_addr.s_addr = inet_addr(HOST_IP_ADDR);
+        dest_addr.sin_addr.s_addr = inet_addr(g_addr_str);
         dest_addr.sin_family = AF_INET;
         dest_addr.sin_port = htons(STATUS_PORT);
         addr_family = AF_INET;
         ip_protocol = IPPROTO_IP;
 #elif defined(CONFIG_EXAMPLE_IPV6)
         struct sockaddr_in6 dest_addr = { 0 };
-        inet6_aton(HOST_IP_ADDR, &dest_addr.sin6_addr);
+        inet6_aton(g_addr_str, &dest_addr.sin6_addr);
         dest_addr.sin6_family = AF_INET6;
         dest_addr.sin6_port = htons(STATUS_PORT);
         dest_addr.sin6_scope_id = esp_netif_get_netif_impl_index(EXAMPLE_INTERFACE);
@@ -80,7 +76,7 @@ static void udp_client_task(void *pvParameters)
         setsockopt (sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout);
 
 #if (DEBUG_UDP_CLT)
-        ESP_LOGI(MODULE_UDP_CLT, "Socket created, sending to %s:%d", HOST_IP_ADDR, STATUS_PORT);
+        ESP_LOGI(MODULE_UDP_CLT, "Socket created, sending to %s:%d", g_addr_str, STATUS_PORT);
 #endif /* DEBUG_UDP_CLT */
         while (1) {
             sprintf(rx_buffer, "udp sate =%d mode =%d", snap_sw_state_get(), snap_sw_mode_get());
@@ -113,10 +109,8 @@ static void udp_client_task(void *pvParameters)
                 rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
 
 #if (DEBUG_UDP_CLT)
-                ESP_LOGI(MODULE_UDP_CLT, "Received %d bytes from %s:", len, host_ip);
+                ESP_LOGI(MODULE_UDP_CLT, "Received %d bytes from %s:", len, g_addr_str);
                 ESP_LOGI(MODULE_UDP_CLT, "%s", rx_buffer);
-#else
-                UNUSED(host_ip);
 #endif /* DEBUG_UDP_CLT */
 
                 if (strncmp(rx_buffer, "OK: ", 4) == 0) {

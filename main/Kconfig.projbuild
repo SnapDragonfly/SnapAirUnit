@@ -167,20 +167,6 @@ menu "Snap Air Unit"
 		
 		
         menu "UDP Status Server Configuration"
-
-            config EXAMPLE_IPV4_ADDR
-                string "IPV4 Address"
-                default "192.168.78.218"
-                depends on EXAMPLE_IPV4
-                help
-                    IPV4 address to which the client example will send data.
-		    
-            config EXAMPLE_IPV6_ADDR
-                string "IPV6 Address"
-                default "FE80::30AD:E57B:C212:68AD"
-                depends on EXAMPLE_IPV6
-                help
-                    IPV6 address to which the client example will send data.
 		    
             config STATUS_SERVER_PORT
                 int "Port"

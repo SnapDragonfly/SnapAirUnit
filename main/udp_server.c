@@ -32,6 +32,8 @@
 #define PORT CONFIG_CONTROL_SERVER_PORT
 
 static int g_server_sock;
+char g_addr_str[STR_IP_LEN];
+
 static struct sockaddr_storage g_source_addr; // Large enough for both IPv4 or IPv6
 
 esp_err_t udp_send_msg(uint8_t * buf, int len)
@@ -55,11 +57,11 @@ esp_err_t udp_send_msg(uint8_t * buf, int len)
 static void udp_server_task(void *pvParameters)
 {
     char rx_buffer[STR_BUFFER_LEN];
-    char addr_str[STR_BUFFER_LEN];
     int addr_family = (int)pvParameters;
     int ip_protocol = 0;
     struct sockaddr_in6 dest_addr;
 
+    memset(g_addr_str, 0, STR_IP_LEN);
     while (1) {
 
         if(SW_STATE_INVALID == snap_sw_state_get() || SW_MODE_BT_SPP == snap_sw_mode_get()){
@@ -162,7 +164,7 @@ static void udp_server_task(void *pvParameters)
                 snap_sw_state_upgrade(SW_STATE_FULL_DUPLEX);
                 // Get the sender's ip address as string
                 if (g_source_addr.ss_family == PF_INET) {
-                    inet_ntoa_r(((struct sockaddr_in *)&g_source_addr)->sin_addr, addr_str, sizeof(addr_str) - 1);
+                    inet_ntoa_r(((struct sockaddr_in *)&g_source_addr)->sin_addr, g_addr_str, sizeof(g_addr_str) - 1);
 #if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_EXAMPLE_IPV6)
                     for ( cmsgtmp = CMSG_FIRSTHDR(&msg); cmsgtmp != NULL; cmsgtmp = CMSG_NXTHDR(&msg, cmsgtmp) ) {
                         if ( cmsgtmp->cmsg_level == IPPROTO_IP && cmsgtmp->cmsg_type == IP_PKTINFO ) {
@@ -175,7 +177,7 @@ static void udp_server_task(void *pvParameters)
                     }
 #endif
                 } else if (g_source_addr.ss_family == PF_INET6) {
-                    inet6_ntoa_r(((struct sockaddr_in6 *)&g_source_addr)->sin6_addr, addr_str, sizeof(addr_str) - 1);
+                    inet6_ntoa_r(((struct sockaddr_in6 *)&g_source_addr)->sin6_addr, g_addr_str, sizeof(g_addr_str) - 1);
                 }
 
                 rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string...
@@ -183,7 +185,7 @@ static void udp_server_task(void *pvParameters)
                 switch(snap_sw_state_get()){
                     case SW_STATE_FULL_DUPLEX:
 #if (DEBUG_UDP_SRV)
-                        ESP_LOGI(MODULE_UDP_SRV, "Received %d bytes from %s:", len, addr_str);
+                        ESP_LOGI(MODULE_UDP_SRV, "Received %d bytes from %s:", len, g_addr_str);
                         esp_log_buffer_hex(MODULE_UDP_SRV, rx_buffer, len);
 #endif /* DEBUG_UDP_SRV */
 
@@ -197,7 +199,7 @@ static void udp_server_task(void *pvParameters)
                     case SW_STATE_TELLO:
                         snap_sw_state_upgrade(SW_STATE_TELLO);
 #if (DEBUG_UDP_SRV)
-                        ESP_LOGI(MODULE_UDP_SRV, "Received %d bytes from %s:", len, addr_str);
+                        ESP_LOGI(MODULE_UDP_SRV, "Received %d bytes from %s:", len, g_addr_str);
                         ESP_LOGI(MODULE_UDP_SRV, "%s", rx_buffer);
 #endif /* DEBUG_UDP_SRV */
 
@@ -209,7 +211,7 @@ static void udp_server_task(void *pvParameters)
                         break;
 
                     default:
-                        ESP_LOGW(MODULE_UDP_SRV, "Can't be HERE!!! Received %d bytes from %s:", len, addr_str);
+                        ESP_LOGW(MODULE_UDP_SRV, "Can't be HERE!!! Received %d bytes from %s:", len, g_addr_str);
                         ESP_LOGW(MODULE_UDP_SRV, "%s", rx_buffer);
 
                         break;

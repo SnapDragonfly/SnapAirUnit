@@ -24,6 +24,7 @@ extern "C" {
 #define TIME_TWO_SECOND_IN_MS                  (2000)
 
 #define STR_BUFFER_LEN                         (128)
+#define STR_IP_LEN                             (16)
 
 
 #define TIME_DIFF_IN_MS(prev, curr)            ((curr - prev)/1000)
