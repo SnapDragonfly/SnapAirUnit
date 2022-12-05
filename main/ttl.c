@@ -109,7 +109,7 @@ esp_err_t module_ttl_start(void)
     //Set UART pins
     uart_set_pin(UART_NUM_1, TTL_UART_TXD, TTL_UART_RXD, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
-    ESP_ERROR_CHECK(snap_sw_module_start(task_start_ttl, true, TASK_MIDDLE_BUFFER, MODULE_UART));
+    ESP_ERROR_CHECK(snap_sw_module_start(task_start_ttl, true, TASK_LARGE_BUFFER, MODULE_UART));
 
     return ESP_OK;
 }
