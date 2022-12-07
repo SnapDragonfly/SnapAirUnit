@@ -102,7 +102,7 @@ esp_err_t udp_handle_tello_protocol(uint8_t * buf, int len)
     switch(err){
         case ESP_ERR_NOT_FOUND:
 #if (DEBUG_TELLO_PROTO)
-            ESP_LOGI(MODULE_TELLO_PROTO, "udp_handle %d bytes", len);
+            ESP_LOGI(MODULE_TELLO_PROTO, "udp_handle_tello %d bytes", len);
             esp_log_buffer_hex(MODULE_TELLO_PROTO, buf, len);
             //ESP_LOGI(MODULE_TELLO_PROTO, "%s", buf);
 #endif /* DEBUG_TELLO_PROTO */
@@ -137,7 +137,7 @@ esp_err_t ttl_handle_tello_protocol(uint8_t * buf, int len)
     }
 
 #if (DEBUG_TELLO_PROTO)
-    ESP_LOGI(MODULE_TELLO_PROTO, "ttl_handle %d bytes", len);
+    ESP_LOGI(MODULE_TELLO_PROTO, "ttl_handle_tello %d bytes", len);
     esp_log_buffer_hex(MODULE_TELLO_PROTO, buf, len);
     //ESP_LOGI(MODULE_TELLO_PROTO, "%s", buf);
 #endif /* DEBUG_TELLO_PROTO */

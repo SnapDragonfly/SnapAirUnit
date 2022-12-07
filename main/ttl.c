@@ -71,12 +71,24 @@ static void task_start_ttl(void *pvParameters)
 
                     // To do send to BT SPP
                     if (esp_ssp_handle && snap_sw_state_active(SW_MODE_BT_SPP)){
-                        esp_spp_write(esp_ssp_handle, event.size, temp);
-                    } else {
-                        esp_err_t ret = ttl_handle_msp_protocol(temp, event.size);
-                        if(ESP_OK != ret){
-                            ttl_handle_tello_protocol(temp, event.size);
+                        if(MESSAGE_CENTER == mspGetMessage()){
+                            center_handle_msp_protocol(temp, event.size);
+                        } else {
+                            esp_spp_write(esp_ssp_handle, event.size, temp);
                         }
+                        mspSetMessage(MESSAGE_UNKNOW);
+                    } else {
+                        esp_err_t ret;
+                        
+                        if(MESSAGE_CENTER == mspGetMessage()){
+                            center_handle_msp_protocol(temp, event.size);
+                        } else {
+                            ret = ttl_handle_msp_protocol(temp, event.size);
+                            if(ESP_OK != ret){
+                                ttl_handle_tello_protocol(temp, event.size);
+                            }
+                        }
+                        mspSetMessage(MESSAGE_UNKNOW);
                     }
                     //esp_ble_gatts_send_indicate(spp_gatts_if, spp_conn_id, spp_handle_table[SPP_IDX_SPP_DATA_NTY_VAL],event.size, temp, false);
                     free(temp);

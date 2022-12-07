@@ -26,6 +26,7 @@
 #include "module.h"
 #include "mode.h"
 #include "btspp.h"
+#include "msp_protocol.h"
 
 #define SPP_SERVER_NAME     DEVICE_NAME_SNAP_AIR_UNIT
 #define SPP_DEVICE_NAME     DEVICE_NAME_SNAP_AIR_UNIT
@@ -140,7 +141,8 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         UNUSED(print_speed);
 #endif /* DEBUG_BT_SPP */
         if(snap_sw_state_active(SW_MODE_BT_SPP)){
-            ESP_ERROR_CHECK(ttl_send(param->data_ind.data, param->data_ind.len));
+            handle_msp_protocol(param->data_ind.data, param->data_ind.len);
+            //ESP_ERROR_CHECK(ttl_send(param->data_ind.data, param->data_ind.len));
         }
         break;
         

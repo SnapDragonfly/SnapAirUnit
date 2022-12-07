@@ -21,6 +21,7 @@
 #include "ttl.h"
 #include "process.h"
 #include "rest_server.h"
+#include "msp_protocol.h"
 #include "udp_server.h"
 #include "udp_client.h"
 #include "spiffs.h"
@@ -81,6 +82,7 @@ void app_init(void)
     ESP_ERROR_CHECK(start_udp_server());
     ESP_ERROR_CHECK(start_udp_client());
     wifi_init_sta();
+    ESP_ERROR_CHECK(start_message_center());
 
     printf("%s: free_heap_size = %d\n", DEVICE_NAME_SNAP_AIR_UNIT, esp_get_free_heap_size());
 }

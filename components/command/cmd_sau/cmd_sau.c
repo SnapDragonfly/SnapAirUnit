@@ -47,6 +47,15 @@ static struct {
     struct arg_end *end;
 } sdk_args;
 
+static struct {
+    struct arg_end *end;
+} emergency_args;
+
+static struct {
+    struct arg_end *end;
+} arm_args;
+
+
 static int sau_switch(int argc, char **argv)
 {
     int nerrors = arg_parse(argc, argv, (void **) &mode_args);
@@ -163,6 +172,42 @@ static int sau_sdk(int argc, char **argv)
     return 0;
 }
 
+static int sau_emergency(int argc, char **argv)
+{
+    int nerrors = arg_parse(argc, argv, (void **) &status_args);
+    if (nerrors != 0) {
+        arg_print_errors(stderr, status_args.end, argv[0]);
+        return 1;
+    }
+
+    extern esp_err_t mspSetChannel(uint8_t index, uint16_t value);
+
+    mspSetChannel(4, 1200);
+    ESP_LOGI(MODULE_CMD_SAU, "emergency");
+
+extern esp_err_t mspUpdateChannels(void);
+    mspUpdateChannels();
+    return 0;
+}
+
+static int sau_arm(int argc, char **argv)
+{
+    int nerrors = arg_parse(argc, argv, (void **) &status_args);
+    if (nerrors != 0) {
+        arg_print_errors(stderr, status_args.end, argv[0]);
+        return 1;
+    }
+
+    extern esp_err_t mspSetChannel(uint8_t index, uint16_t value);
+
+    mspSetChannel(4, 1900);
+    ESP_LOGI(MODULE_CMD_SAU, "arm");
+
+extern esp_err_t mspUpdateChannels(void);
+    mspUpdateChannels();
+    return 0;
+}
+
 
 void register_sau(void)
 {
@@ -182,6 +227,9 @@ void register_sau(void)
     wifi_sta_args.end    = arg_end(2);
 
     sdk_args.end  = arg_end(2);
+
+    emergency_args.end  = arg_end(2);
+    arm_args.end  = arg_end(2);
 
     const esp_console_cmd_t switch_cmd = {
         .command = "switch",
@@ -245,11 +293,33 @@ void register_sau(void)
         .argtable = &sdk_args
     };
 
+    const esp_console_cmd_t emergency_cmd = {
+        .command = "emergency",
+        .help = "emergency.\n"
+        "Examples:\n"
+        " emergency \n",
+        .hint = NULL,
+        .func = &sau_emergency,
+        .argtable = &emergency_args
+    };
+
+    const esp_console_cmd_t arm_cmd = {
+        .command = "arm",
+        .help = "arm.\n"
+        "Examples:\n"
+        " arm \n",
+        .hint = NULL,
+        .func = &sau_arm,
+        .argtable = &arm_args
+    };
+
     ESP_ERROR_CHECK(esp_console_cmd_register(&switch_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&status_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&bluetooth_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&ap_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&wifi_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&sdk_cmd));
+    ESP_ERROR_CHECK(esp_console_cmd_register(&emergency_cmd));
+    ESP_ERROR_CHECK(esp_console_cmd_register(&arm_cmd));
 }
 

@@ -20,6 +20,13 @@ extern "C" {
 #define TASK_EXLARGE_BUFFER                    (4096)
 #define TASK_XXLARGE_BUFFER                    (5120)
 
+#define TIME_5_MS                              (5)
+#define TIME_10_MS                             (10)
+#define TIME_20_MS                             (20)
+#define TIME_50_MS                             (50)
+#define TIME_100_MS                            (100)
+#define TIME_200_MS                            (200)
+#define TIME_500_MS                            (500)
 #define TIME_ONE_SECOND_IN_MS                  (1000)
 #define TIME_TWO_SECOND_IN_MS                  (2000)
 

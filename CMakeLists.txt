@@ -43,10 +43,6 @@ Get_CommitID(APP_COMMITID)
 set(APP_DIRTYFLAG "")
 Get_DIRTYFLAG(APP_DIRTYFLAG)
 
-if("dirty" STREQUAL ${APP_DIRTYFLAG})
-	add_definitions(-DAPP_VERSION=\"${APP_VER_MAJOR}.${APP_VER_MINOR}.${APP_COMMITID}-dirty\")
-else()
-	add_definitions(-DAPP_VERSION=\"${APP_VER_MAJOR}.${APP_VER_MINOR}.${APP_COMMITID}-clean\")
-endif()
+add_definitions(-DAPP_VERSION=\"${APP_VER_MAJOR}.${APP_VER_MINOR}.${APP_COMMITID}-${APP_DIRTYFLAG}\")
 
 project(SnapAirUnit)
