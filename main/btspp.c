@@ -27,6 +27,7 @@
 #include "mode.h"
 #include "btspp.h"
 #include "msp_protocol.h"
+#include "tello_protocol.h"
 
 #define SPP_SERVER_NAME     DEVICE_NAME_SNAP_AIR_UNIT
 #define SPP_DEVICE_NAME     DEVICE_NAME_SNAP_AIR_UNIT
@@ -140,9 +141,57 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 #else
         UNUSED(print_speed);
 #endif /* DEBUG_BT_SPP */
+
         if(snap_sw_state_active(SW_MODE_BT_SPP)){
-            handle_msp_protocol(param->data_ind.data, param->data_ind.len);
-            //ESP_ERROR_CHECK(ttl_send(param->data_ind.data, param->data_ind.len));
+            snap_sw_state_upgrade(SW_STATE_FULL_DUPLEX);
+            //handle_msp_protocol(param->data_ind.data, param->data_ind.len);
+            esp_err_t ret;
+            switch(snap_sw_state_get()){
+                case SW_STATE_FULL_DUPLEX:
+#if (DEBUG_BT_SPP)
+                    ESP_LOGI(MODULE_BT_SPP, "spp received %d bytes", param->data_ind.len);
+                    esp_log_buffer_hex(MODULE_BT_SPP, param->data_ind.data, param->data_ind.len);
+#endif /* DEBUG_BT_SPP */
+
+                    ret = handle_msp_protocol(param->data_ind.data, param->data_ind.len);
+                    if(ESP_OK == ret){
+                        break;
+                    }
+
+                    /* FALL THROUGH */
+
+                case SW_STATE_TELLO:
+                    snap_sw_state_upgrade(SW_STATE_TELLO);
+#if (DEBUG_BT_SPP)
+                    ESP_LOGI(MODULE_BT_SPP, "tello received %d bytes", param->data_ind.len);
+                    ESP_LOGI(MODULE_BT_SPP, "%s", param->data_ind.data);
+#endif /* DEBUG_BT_SPP */
+
+                    ret = udp_handle_tello_protocol(param->data_ind.data, param->data_ind.len);
+                    if(ESP_ERR_NOT_SUPPORTED == ret){
+                        snap_sw_state_upgrade(SW_STATE_CLI);
+                        vTaskDelay(TIME_50_MS / portTICK_PERIOD_MS);
+                        ESP_ERROR_CHECK(ttl_send(param->data_ind.data, param->data_ind.len));
+                    } else if(ESP_OK != ret){
+                        snap_sw_state_degrade(SW_STATE_FULL_DUPLEX);
+                    }
+
+                    break;
+
+                case SW_STATE_CLI:
+                    ret = udp_handle_cli_protocol(param->data_ind.data, param->data_ind.len);
+                    if(ESP_OK != ret){
+                        snap_sw_state_set(SW_STATE_FULL_DUPLEX);
+                    }
+
+                    break;
+
+                default:
+                    ESP_LOGW(MODULE_BT_SPP, "Can't be HERE!!! Received %d bytes", param->data_ind.len);
+
+                    break;
+                }
+
         }
         break;
         

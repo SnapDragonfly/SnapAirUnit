@@ -80,15 +80,12 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
                 return;
             }
             press_act_time = curr_time;
-            
-#if (DEBUG_EVT_PROC)
-            ESP_LOGI(MODULE_EVT_PROC, "Switch from %d--------", snap_sw_mode_get());
-#endif /* DEBUG_EVT_PROC */
-            
+
+            enum_mode_t prev_mode = snap_sw_mode_get();
             ret = snap_sw_mode_switch(next_mode);
 
 #if (DEBUG_EVT_PROC)
-            ESP_LOGI(MODULE_EVT_PROC, "Switch to %d-------- ret = %d", snap_sw_mode_get(), ret);
+            ESP_LOGI(MODULE_EVT_PROC, "Switch from %d to %d, ret = %d", prev_mode, snap_sw_mode_get(), ret);
 #else
             UNUSED(ret);
 #endif /*DEBUG_EVT_PROC*/

@@ -80,7 +80,7 @@ esp_err_t udp_sdk(struct udp_data * data)
 {
     UNUSED(data);
     udp_send_msg((uint8_t *)APP_VERSION, strlen(APP_VERSION));
-    return ESP_ERR_NOT_SUPPORTED;
+    return ESP_ERR_INVALID_RESPONSE;
 }
 
 esp_err_t udp_arm(struct udp_data * data)

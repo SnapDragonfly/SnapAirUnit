@@ -31,7 +31,7 @@ extern "C" {
 
 // Hardware components
 #define DEBUG_LED_BLINK           0
-#define DEBUG_KEY_MODE            1
+#define DEBUG_KEY_MODE            0
 #define DEBUG_UART                0
 
 #define MODULE_LED_BLINK           "led"

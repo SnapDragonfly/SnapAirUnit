@@ -79,16 +79,19 @@ static void task_start_ttl(void *pvParameters)
                         mspSetMessage(MESSAGE_UNKNOW);
                     } else {
                         esp_err_t ret;
-                        
-                        if(MESSAGE_CENTER == mspGetMessage()){
-                            center_handle_msp_protocol(temp, event.size);
-                        } else {
-                            ret = ttl_handle_msp_protocol(temp, event.size);
-                            if(ESP_OK != ret){
-                                ttl_handle_tello_protocol(temp, event.size);
+                        if (SW_STATE_CLI == snap_sw_state_get()){
+                            udp_send_msg(temp, event.size);
+                        }else{
+                            if(MESSAGE_CENTER == mspGetMessage()){
+                                center_handle_msp_protocol(temp, event.size);
+                            } else {
+                                ret = ttl_handle_msp_protocol(temp, event.size);
+                                if(ESP_OK != ret){
+                                    ttl_handle_tello_protocol(temp, event.size);
+                                }
                             }
+                            mspSetMessage(MESSAGE_UNKNOW);
                         }
-                        mspSetMessage(MESSAGE_UNKNOW);
                     }
                     //esp_ble_gatts_send_indicate(spp_gatts_if, spp_conn_id, spp_handle_table[SPP_IDX_SPP_DATA_NTY_VAL],event.size, temp, false);
                     free(temp);

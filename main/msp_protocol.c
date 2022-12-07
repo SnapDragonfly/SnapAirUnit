@@ -344,7 +344,6 @@ esp_err_t mspSerialEncode(mspPacket_t *packet, mspVersion_e mspVersion)
     }
 
     // Send the frame
-    //ESP_ERROR_CHECK(ttl_send(msg_buffer,STR_BUFFER_LEN - sbufBytesRemaining(&msg)));
     ttl_send(hdrBuf, hdrLen);
     ttl_send(sbufPtr(&packet->buf), dataLen);
     ttl_send(crcBuf, crcLen);
@@ -677,7 +676,10 @@ esp_err_t center_handle_msp_protocol(uint8_t * buf, int len)
 static void message_center_task(void *pvParameters)
 {
     while (1) {
-        ESP_ERROR_CHECK(mspUpdateChannels());
+        if (SW_STATE_CLI != snap_sw_state_get() && !snap_sw_state_active(SW_MODE_BT_SPP)){
+            /* Used for Air Unit RC control in WiFi AP/STA MSP comunication */
+            ESP_ERROR_CHECK(mspUpdateChannels());
+        }
 
         // TODO: sync time need to be considered
         vTaskDelay(TIME_50_MS / portTICK_PERIOD_MS);  // around 20Hz RC commands update rate

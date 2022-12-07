@@ -27,6 +27,7 @@
 #include "tello_protocol.h"
 #include "module.h"
 #include "mode.h"
+#include "ttl.h"
 #include "define.h"
 
 #define PORT CONFIG_CONTROL_SERVER_PORT
@@ -153,7 +154,7 @@ static void udp_server_task(void *pvParameters)
 #endif
             // Error occurred during receiving
             if (len < 0) {
-                snap_sw_state_set(SW_STATE_IDLE);
+                //snap_sw_state_set(SW_STATE_IDLE);
 #if (DEBUG_UDP_SRV)
                 ESP_LOGE(MODULE_UDP_SRV, "recvfrom failed: errno %d", errno);
 #endif /* DEBUG_UDP_SRV */
@@ -185,7 +186,7 @@ static void udp_server_task(void *pvParameters)
                 switch(snap_sw_state_get()){
                     case SW_STATE_FULL_DUPLEX:
 #if (DEBUG_UDP_SRV)
-                        ESP_LOGI(MODULE_UDP_SRV, "Received %d bytes from %s:", len, g_addr_str);
+                        ESP_LOGI(MODULE_UDP_SRV, "msp received %d bytes from %s:", len, g_addr_str);
                         esp_log_buffer_hex(MODULE_UDP_SRV, rx_buffer, len);
 #endif /* DEBUG_UDP_SRV */
 
@@ -199,13 +200,25 @@ static void udp_server_task(void *pvParameters)
                     case SW_STATE_TELLO:
                         snap_sw_state_upgrade(SW_STATE_TELLO);
 #if (DEBUG_UDP_SRV)
-                        ESP_LOGI(MODULE_UDP_SRV, "Received %d bytes from %s:", len, g_addr_str);
+                        ESP_LOGI(MODULE_UDP_SRV, "tello received %d bytes from %s:", len, g_addr_str);
                         ESP_LOGI(MODULE_UDP_SRV, "%s", rx_buffer);
 #endif /* DEBUG_UDP_SRV */
 
                         ret = udp_handle_tello_protocol((uint8_t *)rx_buffer, len);
-                        if(ESP_OK != ret){
+                        if(ESP_ERR_NOT_SUPPORTED == ret){
+                            snap_sw_state_upgrade(SW_STATE_CLI);
+                            vTaskDelay(TIME_50_MS / portTICK_PERIOD_MS);
+                            ESP_ERROR_CHECK(ttl_send((uint8_t *)rx_buffer, len));
+                        } else if(ESP_OK != ret){
                             snap_sw_state_degrade(SW_STATE_FULL_DUPLEX);
+                        }
+
+                        break;
+
+                    case SW_STATE_CLI:
+                        ret = udp_handle_cli_protocol((uint8_t *)rx_buffer, len);
+                        if(ESP_OK != ret){
+                            snap_sw_state_set(SW_STATE_FULL_DUPLEX);
                         }
 
                         break;
@@ -225,7 +238,7 @@ static void udp_server_task(void *pvParameters)
 #endif /* DEBUG_UDP_SRV */
             shutdown(g_server_sock, 0);
             close(g_server_sock);
-            snap_sw_state_set(SW_STATE_IDLE);
+            //snap_sw_state_set(SW_STATE_IDLE);
         }
     }
     vTaskDelete(NULL);

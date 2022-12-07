@@ -66,30 +66,53 @@ static esp_err_t tello_protocol_parse(uint8_t * buf, int len)
     }
 
     int total_commands = sizeof(g_udp_commands)/sizeof(struct udp_command);
+
 #if (DEBUG_TELLO_PROTO)
     ESP_LOGI(MODULE_TELLO_PROTO, "argc(%d) commands(%d)", argc, total_commands);
 #endif /* DEBUG_TELLO_PROTO */
     for (int i = 0; i < total_commands; i++){
-#if (DEBUG_TELLO_PROTO)
-        ESP_LOGI(MODULE_TELLO_PROTO, "comparing... %s to %s", argv[0], g_udp_commands[i].command);
-        esp_log_buffer_hex(MODULE_TELLO_PROTO, argv[0], strlen(argv[0]));
-#endif /* DEBUG_TELLO_PROTO */
         if(!strcmp(g_udp_commands[i].command, argv[0])){
             struct udp_data data;
-            
+
             data.counts = argc - 1;
             for (int j = 1; j < argc; j++){
                 data.param[j - 1] = argv[j];
             }
-            
+
+#if (DEBUG_TELLO_PROTO)
+            ESP_LOGI(MODULE_TELLO_PROTO, "hit --> %s", argv[0]);
+#endif /* DEBUG_TELLO_PROTO */
             return g_udp_commands[i].call(&data);
         }
+#if (DEBUG_TELLO_PROTO)
+        else {
+            ESP_LOGI(MODULE_TELLO_PROTO, "comparing... %s to %s", argv[0], g_udp_commands[i].command);
+        }
+#endif /* DEBUG_TELLO_PROTO */
     }
 
     free(szcmdline);
     return ESP_ERR_NOT_FOUND;
 }
 
+esp_err_t udp_handle_cli_protocol(uint8_t * buf, int len)
+{
+    if(NULL == buf){
+        return ESP_FAIL;
+    }
+
+    if (*buf == '$'){
+        return ESP_FAIL;
+    }
+
+#if (DEBUG_TELLO_PROTO)
+    ESP_LOGI(MODULE_TELLO_PROTO, "udp_handle_cli %d bytes", len);
+    esp_log_buffer_hex(MODULE_TELLO_PROTO, buf, len);
+#endif /* DEBUG_TELLO_PROTO */
+
+    ESP_ERROR_CHECK(ttl_send(buf, len));
+    return ESP_OK;
+}
 esp_err_t udp_handle_tello_protocol(uint8_t * buf, int len)
 {
     if(NULL == buf){
@@ -100,19 +123,26 @@ esp_err_t udp_handle_tello_protocol(uint8_t * buf, int len)
         return ESP_FAIL;
     }
 
+    if (*buf == '#'){
+#if (DEBUG_TELLO_PROTO)
+        ESP_LOGI(MODULE_TELLO_PROTO, "cli char found %d bytes", len);
+        esp_log_buffer_hex(MODULE_TELLO_PROTO, buf, len);
+#endif /* DEBUG_TELLO_PROTO */
+        return ESP_ERR_NOT_SUPPORTED;
+    }
+
     esp_err_t err = tello_protocol_parse(buf, len);
     switch(err){
         case ESP_ERR_NOT_FOUND:
 #if (DEBUG_TELLO_PROTO)
-            ESP_LOGI(MODULE_TELLO_PROTO, "udp_handle_tello %d bytes", len);
+            ESP_LOGI(MODULE_TELLO_PROTO, "tello NOT found passthrough %d bytes", len);
             esp_log_buffer_hex(MODULE_TELLO_PROTO, buf, len);
-            //ESP_LOGI(MODULE_TELLO_PROTO, "%s", buf);
 #endif /* DEBUG_TELLO_PROTO */
 
             ESP_ERROR_CHECK(ttl_send(buf, len));
             break;
 
-        case ESP_ERR_NOT_SUPPORTED:
+        case ESP_ERR_INVALID_RESPONSE:
             /* special feed back response should be handled in command call */
             break;
 

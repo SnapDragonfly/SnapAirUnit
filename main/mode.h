@@ -20,6 +20,7 @@ typedef enum {
     SW_STATE_HALF_DUPLEX  = 2,
     SW_STATE_FULL_DUPLEX  = 3,
     SW_STATE_TELLO        = 4,
+    SW_STATE_CLI          = 5,
     SW_STATE_NULL
 } enum_state_t;
 
