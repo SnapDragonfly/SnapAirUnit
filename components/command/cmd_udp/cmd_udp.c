@@ -14,6 +14,7 @@
 #include "mode.h"
 #include "define.h"
 #include "udp_server.h"
+#include "msp_protocol.h"
 
 esp_err_t udp_bluetooth(struct udp_data * data)
 {
@@ -80,6 +81,26 @@ esp_err_t udp_sdk(struct udp_data * data)
     UNUSED(data);
     udp_send_msg((uint8_t *)APP_VERSION, strlen(APP_VERSION));
     return ESP_ERR_NOT_SUPPORTED;
+}
+
+esp_err_t udp_arm(struct udp_data * data)
+{
+    UNUSED(data);
+
+    mspSetChannel(4, 1900);
+    mspUpdateChannels();
+
+    return ESP_OK;
+}
+
+esp_err_t udp_emergency(struct udp_data * data)
+{
+    UNUSED(data);
+
+    mspSetChannel(4, 1200);
+    mspUpdateChannels();
+
+    return ESP_OK;
 }
 
 

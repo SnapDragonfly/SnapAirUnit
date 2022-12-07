@@ -25,6 +25,7 @@ esp_err_t start_message_center(void);
 
 esp_err_t mspSetChannel(uint8_t index, uint16_t value);
 esp_err_t mspSetChannels(uint8_t count, uint16_t *value);
+esp_err_t mspUpdateChannels(void);
 
 esp_err_t mspSetMessage(messageVersion_e type);
 messageVersion_e mspGetMessage(void);

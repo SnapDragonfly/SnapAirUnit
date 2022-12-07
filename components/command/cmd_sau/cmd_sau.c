@@ -14,6 +14,7 @@
 #include "cmd_sau.h"
 #include "cmd_udp.h"
 
+#include "msp_protocol.h"
 #include "module.h"
 #include "mode.h"
 #include "define.h"
@@ -180,13 +181,10 @@ static int sau_emergency(int argc, char **argv)
         return 1;
     }
 
-    extern esp_err_t mspSetChannel(uint8_t index, uint16_t value);
-
     mspSetChannel(4, 1200);
-    ESP_LOGI(MODULE_CMD_SAU, "emergency");
-
-extern esp_err_t mspUpdateChannels(void);
     mspUpdateChannels();
+
+    ESP_LOGI(MODULE_CMD_SAU, "emergency");
     return 0;
 }
 
@@ -198,13 +196,10 @@ static int sau_arm(int argc, char **argv)
         return 1;
     }
 
-    extern esp_err_t mspSetChannel(uint8_t index, uint16_t value);
-
     mspSetChannel(4, 1900);
-    ESP_LOGI(MODULE_CMD_SAU, "arm");
-
-extern esp_err_t mspUpdateChannels(void);
     mspUpdateChannels();
+
+    ESP_LOGI(MODULE_CMD_SAU, "arm");
     return 0;
 }
 
