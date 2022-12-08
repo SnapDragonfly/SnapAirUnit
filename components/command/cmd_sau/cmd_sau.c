@@ -169,7 +169,7 @@ static int sau_sdk(int argc, char **argv)
         return 1;
     }
 
-    ESP_LOGI(MODULE_CMD_SAU, "Version: %s", APP_VERSION);
+    ESP_LOGI(MODULE_CMD_SAU, "Version: SDK(%s) APP(%s)", IDF_VER, APP_VERSION);
     return 0;
 }
 
