@@ -53,8 +53,10 @@ static struct {
 } emergency_args;
 
 static struct {
+    struct arg_str *channel;
+    struct arg_str *value;
     struct arg_end *end;
-} arm_args;
+} channel_args;
 
 
 static int sau_switch(int argc, char **argv)
@@ -163,9 +165,9 @@ static int sau_wifi(int argc, char **argv)
 
 static int sau_sdk(int argc, char **argv)
 {
-    int nerrors = arg_parse(argc, argv, (void **) &status_args);
+    int nerrors = arg_parse(argc, argv, (void **) &sdk_args);
     if (nerrors != 0) {
-        arg_print_errors(stderr, status_args.end, argv[0]);
+        arg_print_errors(stderr, sdk_args.end, argv[0]);
         return 1;
     }
 
@@ -175,9 +177,9 @@ static int sau_sdk(int argc, char **argv)
 
 static int sau_emergency(int argc, char **argv)
 {
-    int nerrors = arg_parse(argc, argv, (void **) &status_args);
+    int nerrors = arg_parse(argc, argv, (void **) &emergency_args);
     if (nerrors != 0) {
-        arg_print_errors(stderr, status_args.end, argv[0]);
+        arg_print_errors(stderr, emergency_args.end, argv[0]);
         return 1;
     }
 
@@ -188,47 +190,59 @@ static int sau_emergency(int argc, char **argv)
     return 0;
 }
 
-static int sau_arm(int argc, char **argv)
+static int sau_channel(int argc, char **argv)
 {
-    int nerrors = arg_parse(argc, argv, (void **) &status_args);
+    int nerrors = arg_parse(argc, argv, (void **) &channel_args);
     if (nerrors != 0) {
         arg_print_errors(stderr, status_args.end, argv[0]);
         return 1;
     }
 
-    mspSetChannel(4, 1900);
+    uint8_t channel = strtol(channel_args.channel->sval[0], NULL, 0);
+    uint16_t value  = strtol(channel_args.value->sval[0], NULL, 0);
+
+    if(channel >= MAX_SUPPORTED_RC_CHANNEL_COUNT &&
+       value < 900 &&
+       value > 2100){
+       return 1;
+    }
+
+    mspSetChannel(channel, value);
     mspUpdateChannels();
 
-    ESP_LOGI(MODULE_CMD_SAU, "arm");
+    ESP_LOGI(MODULE_CMD_SAU, "channel %d %d", channel, value);
     return 0;
 }
 
 
 void register_sau(void)
 {
-    mode_args.mode   = arg_str1(NULL, NULL, "<mode>", "application mode to be set");
-    mode_args.end    = arg_end(2);
+    mode_args.mode         = arg_str1(NULL, NULL, "<mode>", "application mode to be set");
+    mode_args.end          = arg_end(2);
 
-    status_args.end  = arg_end(2);
+    status_args.end        = arg_end(2);
 
-    bluetooth_args.end  = arg_end(2);
+    bluetooth_args.end     = arg_end(2);
 
-    wifi_ap_args.ssid   = arg_str1(NULL, NULL, "<ssid>", "wifi ssid");
-    wifi_ap_args.pass   = arg_str1(NULL, NULL, "<pass>", "wifi password");
-    wifi_ap_args.end    = arg_end(2);
+    wifi_ap_args.ssid      = arg_str1(NULL, NULL, "<ssid>", "wifi ssid");
+    wifi_ap_args.pass      = arg_str1(NULL, NULL, "<pass>", "wifi password");
+    wifi_ap_args.end       = arg_end(2);
 
-    wifi_sta_args.ssid   = arg_str1(NULL, NULL, "<ssid>", "wifi ssid");
-    wifi_sta_args.pass   = arg_str1(NULL, NULL, "<pass>", "wifi password");
-    wifi_sta_args.end    = arg_end(2);
+    wifi_sta_args.ssid     = arg_str1(NULL, NULL, "<ssid>", "wifi ssid");
+    wifi_sta_args.pass     = arg_str1(NULL, NULL, "<pass>", "wifi password");
+    wifi_sta_args.end      = arg_end(2);
 
-    sdk_args.end  = arg_end(2);
+    sdk_args.end           = arg_end(2);
 
-    emergency_args.end  = arg_end(2);
-    arm_args.end  = arg_end(2);
+    emergency_args.end     = arg_end(2);
+
+    channel_args.channel   = arg_str1(NULL, NULL, "<channel>", "rc channel");
+    channel_args.value     = arg_str1(NULL, NULL, "<value>", "channel value");
+    channel_args.end       = arg_end(2);
 
     const esp_console_cmd_t switch_cmd = {
         .command = "switch",
-        .help = "Switch application mode to ap(0)/sta(1)/bt(2).\n"
+        .help = "Switch <mode>, mode:ap(0)/sta(1)/bt(2).\n"
         "Examples:\n"
         " switch 0 \n"
         " switch 1 \n"
@@ -270,9 +284,9 @@ void register_sau(void)
 
     const esp_console_cmd_t wifi_cmd = {
         .command = "wifi",
-        .help = "Switch to WiFi AP.\n"
+        .help = "wifi <ssid> <pass>, Switch to WiFi AP.\n"
         "Examples:\n"
-        " wifi ssid pass \n",
+        " wifi SnapAirUnit 12345678 \n",
         .hint = NULL,
         .func = &sau_wifi,
         .argtable = &wifi_sta_args
@@ -298,14 +312,14 @@ void register_sau(void)
         .argtable = &emergency_args
     };
 
-    const esp_console_cmd_t arm_cmd = {
-        .command = "arm",
-        .help = "arm.\n"
+    const esp_console_cmd_t channel_cmd = {
+        .command = "channel",
+        .help = "channel <channel> <value>, value 900~ 2100.\n"
         "Examples:\n"
-        " arm \n",
+        " channel 5 1400 \n",
         .hint = NULL,
-        .func = &sau_arm,
-        .argtable = &arm_args
+        .func = &sau_channel,
+        .argtable = &channel_args
     };
 
     ESP_ERROR_CHECK(esp_console_cmd_register(&switch_cmd));
@@ -315,6 +329,6 @@ void register_sau(void)
     ESP_ERROR_CHECK(esp_console_cmd_register(&wifi_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&sdk_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&emergency_cmd));
-    ESP_ERROR_CHECK(esp_console_cmd_register(&arm_cmd));
+    ESP_ERROR_CHECK(esp_console_cmd_register(&channel_cmd));
 }
 

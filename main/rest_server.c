@@ -19,7 +19,7 @@
 #include "mdns.h"
 #include "lwip/apps/netbiosns.h"
 
-
+#include "msp_protocol.h"
 #include "protocol_examples_common.h"
 #include "define.h"
 #include "module.h"
@@ -173,15 +173,23 @@ static esp_err_t system_info_get_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
-/* Simple handler for getting temperature data */
-static esp_err_t temperature_data_get_handler(httpd_req_t *req)
+extern uint16_t g_esp_rc_channel[];
+static esp_err_t rc_data_get_handler(httpd_req_t *req)
 {
     httpd_resp_set_type(req, "application/json");
     cJSON *root = cJSON_CreateObject();
-    cJSON_AddNumberToObject(root, "raw", esp_random() % 20);
-    const char *sys_info = cJSON_Print(root);
-    httpd_resp_sendstr(req, sys_info);
-    free((void *)sys_info);
+
+    for(int i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++){
+    
+        char nth_rc_channel[6];
+        snprintf(nth_rc_channel, 5, "%d", i);
+        nth_rc_channel[5] = 0;
+        
+        cJSON_AddNumberToObject(root, nth_rc_channel, g_esp_rc_channel[i]);
+    }
+    const char *rc_data_raw = cJSON_Print(root);
+    httpd_resp_sendstr(req, rc_data_raw);
+    free((void *)rc_data_raw);
     cJSON_Delete(root);
     return ESP_OK;
 }
@@ -209,9 +217,9 @@ httpd_uri_t light_brightness_post_uri = {
 
 /* URI handler for fetching temperature data */
 httpd_uri_t temperature_data_get_uri = {
-	.uri = "/api/v1/temp/raw",
+	.uri = "/api/v1/rc/raw",
 	.method = HTTP_GET,
-	.handler = temperature_data_get_handler,
+	.handler = rc_data_get_handler,
 	.user_ctx = &g_rest_context
 };
 

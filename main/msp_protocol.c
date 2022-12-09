@@ -32,7 +32,6 @@ typedef enum {
 
 #define MSP_V2_FRAME_ID                      255
 #define MSP_PORT_INBUF_SIZE                  192
-#define MAX_SUPPORTED_RC_CHANNEL_COUNT       8
 #define JUMBO_FRAME_SIZE_LIMIT               255
 
 #define MSP_VERSION_MAGIC_INITIALIZER { 'M', 'M', 'X' }
@@ -100,7 +99,7 @@ typedef struct mspPacket_s {
 static mspPort_t esp_msp_port;
 static messageVersion_e g_esp_msg_center = MESSAGE_UNKNOW;
 
-static uint16_t g_esp_rc_channel[MAX_SUPPORTED_RC_CHANNEL_COUNT] ={
+uint16_t g_esp_rc_channel[MAX_SUPPORTED_RC_CHANNEL_COUNT] ={
     1500,
     1500,
     885,
