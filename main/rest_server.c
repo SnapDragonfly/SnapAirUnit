@@ -143,16 +143,69 @@ static esp_err_t light_brightness_post_handler(httpd_req_t *req)
         cur_len += received;
     }
     buf[total_len] = '\0';
+    ESP_LOGI(MODULE_HTTP, "Light control: %s", buf);
 
     cJSON *root = cJSON_Parse(buf);
-    int red = cJSON_GetObjectItem(root, "red")->valueint;
-    int green = cJSON_GetObjectItem(root, "green")->valueint;
-    int blue = cJSON_GetObjectItem(root, "blue")->valueint;
-    ESP_LOGI(MODULE_HTTP, "Light control: red = %d, green = %d, blue = %d", red, green, blue);
+    char *red = cJSON_GetObjectItem(root, "red")->valuestring;
+    char *green = cJSON_GetObjectItem(root, "green")->valuestring;
+    char *blue = cJSON_GetObjectItem(root, "blue")->valuestring;
+    ESP_LOGI(MODULE_HTTP, "Light control: red = %s, green = %s, blue = %d", red, green, blue);
     cJSON_Delete(root);
     httpd_resp_sendstr(req, "Post control value successfully");
     return ESP_OK;
 }
+
+extern uint16_t g_esp_rc_channel[];
+static esp_err_t rc_data_post_handler(httpd_req_t *req)
+{
+    int total_len = req->content_len;
+    int cur_len = 0;
+    char *buf = ((rest_server_context_t *)(req->user_ctx))->scratch;
+    int received = 0;
+    if (total_len >= SCRATCH_BUFSIZE) {
+        /* Respond with 500 Internal Server Error */
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "content too long");
+        return ESP_FAIL;
+    }
+    while (cur_len < total_len) {
+        received = httpd_req_recv(req, buf + cur_len, total_len);
+        if (received <= 0) {
+            /* Respond with 500 Internal Server Error */
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to post control value");
+            return ESP_FAIL;
+        }
+        cur_len += received;
+    }
+    buf[total_len] = '\0';
+
+#if (DEBUG_HTTP)
+    ESP_LOGI(MODULE_HTTP, "RC data: %s", buf);
+#endif /* DEBUG_HTTP */
+
+    cJSON *root = cJSON_Parse(buf);
+    for(int i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++){
+        char nth_rc_channel[6];
+        snprintf(nth_rc_channel, 5, "%d", i);
+        nth_rc_channel[5] = 0;
+
+        struct cJSON *item = cJSON_GetObjectItem(root, nth_rc_channel);
+        if(cJSON_Number == item->type){
+            g_esp_rc_channel[i] = item->valueint;
+        } else if (cJSON_String == item->type){
+            g_esp_rc_channel[i] = atoi(item->valuestring);
+        } else{
+            ESP_LOGW(MODULE_HTTP, "Can't be HERE json type 0x%01x", item->type);
+        }
+#if (DEBUG_HTTP)
+        ESP_LOGI(MODULE_HTTP, "RC post channel %d value %d", i, g_esp_rc_channel[i]);
+#endif /* DEBUG_HTTP */
+    }
+
+    cJSON_Delete(root);
+    httpd_resp_sendstr(req, "Post control value successfully");
+    return ESP_OK;
+}
+
 
 /* Simple handler for getting system handler */
 static esp_err_t system_info_get_handler(httpd_req_t *req)
@@ -173,7 +226,6 @@ static esp_err_t system_info_get_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
-extern uint16_t g_esp_rc_channel[];
 static esp_err_t rc_data_get_handler(httpd_req_t *req)
 {
     httpd_resp_set_type(req, "application/json");
@@ -186,6 +238,8 @@ static esp_err_t rc_data_get_handler(httpd_req_t *req)
         nth_rc_channel[5] = 0;
         
         cJSON_AddNumberToObject(root, nth_rc_channel, g_esp_rc_channel[i]);
+
+        ESP_LOGI(MODULE_HTTP, "RC get channel %d value %d", i, g_esp_rc_channel[i]);
     }
     const char *rc_data_raw = cJSON_Print(root);
     httpd_resp_sendstr(req, rc_data_raw);
@@ -215,8 +269,16 @@ httpd_uri_t light_brightness_post_uri = {
 	.user_ctx = &g_rest_context
 };
 
-/* URI handler for fetching temperature data */
-httpd_uri_t temperature_data_get_uri = {
+/* URI handler for posting rc data */
+httpd_uri_t rc_data_post_uri = {
+	.uri = "/api/v1/rc/post",
+	.method = HTTP_POST,
+	.handler = rc_data_post_handler,
+	.user_ctx = &g_rest_context
+};
+
+/* URI handler for fetching rc data */
+httpd_uri_t rc_data_get_uri = {
 	.uri = "/api/v1/rc/raw",
 	.method = HTTP_GET,
 	.handler = rc_data_get_handler,
@@ -246,7 +308,9 @@ esp_err_t start_rest_server(const char *base_path)
 
     httpd_register_uri_handler(g_rest_server, &system_info_get_uri);
 
-    httpd_register_uri_handler(g_rest_server, &temperature_data_get_uri);
+    httpd_register_uri_handler(g_rest_server, &rc_data_get_uri);
+
+    httpd_register_uri_handler(g_rest_server, &rc_data_post_uri);
 
     httpd_register_uri_handler(g_rest_server, &light_brightness_post_uri);
 
@@ -265,7 +329,9 @@ esp_err_t stop_rest_server(void)
 
     httpd_unregister_uri_handler(g_rest_server, light_brightness_post_uri.uri, light_brightness_post_uri.method);
 
-    httpd_unregister_uri_handler(g_rest_server, temperature_data_get_uri.uri, temperature_data_get_uri.method);
+    httpd_unregister_uri_handler(g_rest_server, rc_data_get_uri.uri, rc_data_get_uri.method);
+
+    httpd_unregister_uri_handler(g_rest_server, rc_data_post_uri.uri, rc_data_post_uri.method);
 
     httpd_unregister_uri_handler(g_rest_server, system_info_get_uri.uri, system_info_get_uri.method);
 
