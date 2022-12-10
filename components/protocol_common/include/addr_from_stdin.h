@@ -34,6 +34,8 @@ extern "C" {
  * @param[out] dest_addr sockaddr_storage structure (for both IPv4 and IPv6)
  * @return ESP_OK on success, ESP_FAIL otherwise
  */
+esp_err_t example_configure_stdin_stdout(void);
+
 esp_err_t get_addr_from_stdin(int port, int sock_type,
                               int *ip_protocol,
                               int *addr_family,

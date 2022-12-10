@@ -18,6 +18,7 @@
 #include "module.h"
 #include "mode.h"
 #include "define.h"
+#include "util.h"
 
 static struct {
     struct arg_str *mode;
@@ -58,6 +59,9 @@ static struct {
     struct arg_end *end;
 } channel_args;
 
+static struct {
+    struct arg_end *end;
+} reboot_args;
 
 static int sau_switch(int argc, char **argv)
 {
@@ -214,6 +218,17 @@ static int sau_channel(int argc, char **argv)
     return 0;
 }
 
+static int sau_reboot(int argc, char **argv)
+{
+    int nerrors = arg_parse(argc, argv, (void **) &reboot_args);
+    if (nerrors != 0) {
+        arg_print_errors(stderr, reboot_args.end, argv[0]);
+        return 1;
+    }
+
+    snap_reboot(3);
+    return 0;
+}
 
 void register_sau(void)
 {
@@ -239,6 +254,8 @@ void register_sau(void)
     channel_args.channel   = arg_str1(NULL, NULL, "<channel>", "rc channel");
     channel_args.value     = arg_str1(NULL, NULL, "<value>", "channel value");
     channel_args.end       = arg_end(2);
+
+    reboot_args.end        = arg_end(2);
 
     const esp_console_cmd_t switch_cmd = {
         .command = "switch",
@@ -322,6 +339,16 @@ void register_sau(void)
         .argtable = &channel_args
     };
 
+    const esp_console_cmd_t reboot_cmd = {
+        .command = "reboot",
+        .help = "reboot.\n"
+        "Examples:\n"
+        " reboot \n",
+        .hint = NULL,
+        .func = &sau_reboot,
+        .argtable = &reboot_args
+    };
+
     ESP_ERROR_CHECK(esp_console_cmd_register(&switch_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&status_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&bluetooth_cmd));
@@ -330,5 +357,6 @@ void register_sau(void)
     ESP_ERROR_CHECK(esp_console_cmd_register(&sdk_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&emergency_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&channel_cmd));
+    ESP_ERROR_CHECK(esp_console_cmd_register(&reboot_cmd));
 }
 

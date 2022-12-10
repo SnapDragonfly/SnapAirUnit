@@ -20,7 +20,6 @@
 #include "lwip/apps/netbiosns.h"
 
 #include "msp_protocol.h"
-#include "protocol_examples_common.h"
 #include "define.h"
 #include "module.h"
 
