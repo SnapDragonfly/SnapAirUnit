@@ -675,7 +675,7 @@ esp_err_t center_handle_msp_protocol(uint8_t * buf, int len)
 static void message_center_task(void *pvParameters)
 {
     while (1) {
-        if (SW_STATE_CLI != snap_sw_state_get() && !snap_sw_state_active(SW_MODE_BT_SPP)){
+        if (SW_STATE_CLI != snap_sw_state_get() && !snap_sw_state_active(SW_MODE_BT_SPP) && !snap_sw_debug_get()){
             /* Used for Air Unit RC control in WiFi AP/STA MSP comunication */
             ESP_ERROR_CHECK(mspUpdateChannels());
         }

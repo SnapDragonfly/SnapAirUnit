@@ -28,6 +28,8 @@ struct udp_command g_udp_commands[] = {
     {"sdk?",      udp_sdk      },
     {"arm",       udp_arm      },
     {"emergency", udp_emergency},
+    {"reboot",    udp_reboot   },
+    {"debug",     udp_debug    },
 };
 
 static esp_err_t tello_protocol_parse(uint8_t * buf, int len)

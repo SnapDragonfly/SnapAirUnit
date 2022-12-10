@@ -63,6 +63,12 @@ static struct {
     struct arg_end *end;
 } reboot_args;
 
+static struct {
+    struct arg_str *mode;
+    struct arg_end *end;
+} debug_args;
+
+
 static int sau_switch(int argc, char **argv)
 {
     int nerrors = arg_parse(argc, argv, (void **) &mode_args);
@@ -230,6 +236,19 @@ static int sau_reboot(int argc, char **argv)
     return 0;
 }
 
+static int sau_debug(int argc, char **argv)
+{
+    int nerrors = arg_parse(argc, argv, (void **) &debug_args);
+    if (nerrors != 0) {
+        arg_print_errors(stderr, debug_args.end, argv[0]);
+        return 1;
+    }
+
+    int mode = strtol(debug_args.mode->sval[0], NULL, 0);
+
+    return snap_sw_debug_set(mode);
+}
+
 void register_sau(void)
 {
     mode_args.mode         = arg_str1(NULL, NULL, "<mode>", "application mode to be set");
@@ -256,6 +275,9 @@ void register_sau(void)
     channel_args.end       = arg_end(2);
 
     reboot_args.end        = arg_end(2);
+
+    debug_args.mode       = arg_str1(NULL, NULL, "<mode>", "debug mode");
+    debug_args.end        = arg_end(2);
 
     const esp_console_cmd_t switch_cmd = {
         .command = "switch",
@@ -349,6 +371,17 @@ void register_sau(void)
         .argtable = &reboot_args
     };
 
+    const esp_console_cmd_t debug_cmd = {
+        .command = "debug",
+        .help = "debug <mode>, mode:false(0)/true(1).\n"
+        "Examples:\n"
+        " debug 0 \n"
+        " debug 1 \n",
+        .hint = NULL,
+        .func = &sau_debug,
+        .argtable = &debug_args
+    };
+
     ESP_ERROR_CHECK(esp_console_cmd_register(&switch_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&status_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&bluetooth_cmd));
@@ -358,5 +391,6 @@ void register_sau(void)
     ESP_ERROR_CHECK(esp_console_cmd_register(&emergency_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&channel_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&reboot_cmd));
+    ESP_ERROR_CHECK(esp_console_cmd_register(&debug_cmd));
 }
 

@@ -10,6 +10,7 @@
 #include "esp_log.h"
 #include "cmd_udp.h"
 
+#include "util.h"
 #include "module.h"
 #include "mode.h"
 #include "define.h"
@@ -100,6 +101,25 @@ esp_err_t udp_emergency(struct udp_data * data)
     mspSetChannel(4, 1200);
     mspUpdateChannels();
 
+    return ESP_OK;
+}
+
+esp_err_t udp_debug(struct udp_data * data)
+{
+    if(NULL == data){
+        return ESP_FAIL;
+    }
+
+    if(data->counts != 1){
+        return ESP_FAIL;
+    }
+
+    return snap_sw_debug_set(atoi(data->param[0]));
+}
+
+esp_err_t udp_reboot(struct udp_data * data)
+{
+    snap_reboot(3);
     return ESP_OK;
 }
 
