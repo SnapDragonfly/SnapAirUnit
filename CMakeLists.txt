@@ -6,7 +6,6 @@ set(APP_VER_MAJOR "0")
 set(APP_VER_MINOR "1")
 
 set(EXTRA_COMPONENT_DIRS "components/button" 
-                         "components/protocol_common" 
                          "components/command")
 
 macro(Get_COMMITID APP_COMMITID)

@@ -15,7 +15,6 @@
 #include "lwip/sockets.h"
 #include "lwip/sys.h"
 #include <lwip/netdb.h>
-#include "addr_from_stdin.h"
 
 #include "module.h"
 #include "mode.h"
@@ -139,12 +138,6 @@ esp_err_t start_udp_client(void)
     //ESP_ERROR_CHECK(nvs_flash_init());
     //ESP_ERROR_CHECK(esp_netif_init());
     //ESP_ERROR_CHECK(esp_event_loop_create_default());
-
-    /* This helper function configures Wi-Fi or Ethernet, as selected in menuconfig.
-     * Read "Establishing Wi-Fi or Ethernet Connection" section in
-     * examples/protocols/README.md for more information about this function.
-     */
-    //ESP_ERROR_CHECK(example_connect());
 
     xTaskCreate(udp_client_task, MODULE_UDP_CLT, TASK_LARGE_BUFFER, NULL, 5, NULL);
 
