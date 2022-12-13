@@ -18,9 +18,16 @@ Please consult:
 ## Step 2: Software mode switching
 
 **Mode LED**
-> 1.  WiFi-AP mode: Always bright 
-> 2. WiFi-STA mode: Slow flash
-> 3.   BT-SPP mode: flash
+> 1. [Mandatory] WiFi-AP mode: Always bright 
+> 2. [Mandatory] WiFi-STA mode: Slow flash
+> 3. [Mandatory] BT-SPP mode: flash
+
+**Status LED**
+> 1. [Mandatory] Time out for Connection with Factory mode: Quick flash
+> 2. [Mandatory] Wait for Binding: Two flash
+> 3. [Mandatory] Wait for Connection: Slow flash
+> 4. [Mandatory] Connection Established: Always bright
+> 5. [Mandatory] Exception or Error: Three flash
 
 ### 2.1 by hardware
 

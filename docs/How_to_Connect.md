@@ -8,6 +8,7 @@
 # Snap Air Unit Hardware Interface Definitions
 
 * [Mandatory] LED x 2, status & mode
+* [Mandatory] Button x 1, software mode switch
 * [Mandatory] MMCX for RF antenna (2.4G WiFi & BT)
 * [Mandatory] USB-C for PC connection
 * [Mandatory] 6pin connector for power and communication (7-24V, GND, OSD_Rx, OSD_Tx, MSP_Rx, MSP_Tx)
