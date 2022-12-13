@@ -21,21 +21,14 @@ Currently we use goouuuu-esp32 for demonstration.
 * CP2102 USB-to-TTL
 * 2 Buttons: reboot + GPIO
 * ESP-WROOM-32 
-> ESP32-D0WDQ6 
->
-> Xtensa® 32-bit LX6 MCU x 2 
->
-> Clock Freq. 80 ~ 240 MHz 
-> 
-> 448 KB ROM
->
-> 520 KB SRAM
->
-> RTC 8 KB SRAM
->
-> 1 kbit  eFuse, 256 bit for sysem use (MAC and chip settings), 768 bit reserved for user
->
-> 4MB SPIFlash
+> 1. ESP32-D0WDQ6 
+> 2. Xtensa® 32-bit LX6 MCU x 2 
+> 3. Clock Freq. 80 ~ 240 MHz 
+> 4. 448 KB ROM
+> 5. 520 KB SRAM
+> 6. RTC 8 KB SRAM
+> 7. 1 kbit  eFuse, 256 bit for sysem use (MAC and chip settings), 768 bit reserved for user
+> 8. 4MB SPIFlash
 
 <image src="./images/goouuuu-esp32-pcba.png" width="200"> <image src="./images/goouuuu-esp32-pcb.png" width="120">
 
@@ -43,9 +36,8 @@ Currently we use goouuuu-esp32 for demonstration.
 
  * Power Supply: GND & 5V
  * Communication: TTL
- > G4 Tx --> FC Rx
- >
- > G5 Rx --> FC Tx
+ > 1. G4 Tx --> FC Rx
+ > 2. G5 Rx --> FC Tx
 
 <image src="./images/goouuuu-esp32.png" width="200">
 

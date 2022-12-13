@@ -78,3 +78,7 @@ It's an education version of Snap Air Unit.
 
 详见：[How_to_Connect.md](./docs/How_to_Connect.md)
 
+## 3. 如何使用SnapAirUnit
+
+详见：[How_to_Use.md](./docs/How_to_Use.md)
+
