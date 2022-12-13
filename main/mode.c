@@ -26,14 +26,14 @@
 
 static uint16_t g_sw_mode              = SW_MODE_WIFI_AP;
 static enum_state_t g_sw_state         = SW_STATE_INVALID;
-static bool g_debug_mode               = false;
+static bool g_command_mode               = false;
 
-esp_err_t snap_sw_debug_set(int mode)
+esp_err_t snap_sw_command_set(int mode)
 {
     if (1 == mode){
-        g_debug_mode = true;
+        g_command_mode = true;
     } else if(0 == mode){
-        g_debug_mode = false;
+        g_command_mode = false;
     } else{
         return ESP_FAIL;
     }
@@ -41,9 +41,9 @@ esp_err_t snap_sw_debug_set(int mode)
     return ESP_OK;
 }
 
-bool snap_sw_debug_get(void)
+bool snap_sw_command_get(void)
 {
-    return g_debug_mode;
+    return g_command_mode;
 }
 
 void snap_sw_state_set(enum_state_t state)

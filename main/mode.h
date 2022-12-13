@@ -24,8 +24,8 @@ typedef enum {
     SW_STATE_NULL
 } enum_state_t;
 
-bool snap_sw_debug_get(void);
-esp_err_t snap_sw_debug_set(int mode);
+bool snap_sw_command_get(void);
+esp_err_t snap_sw_command_set(int mode);
 
 
 void snap_sw_state_set(enum_state_t state);

@@ -114,7 +114,7 @@ esp_err_t udp_debug(struct udp_data * data)
         return ESP_FAIL;
     }
 
-    return snap_sw_debug_set(atoi(data->param[0]));
+    return snap_sw_command_set(atoi(data->param[0]));
 }
 
 esp_err_t udp_reboot(struct udp_data * data)
@@ -122,6 +122,19 @@ esp_err_t udp_reboot(struct udp_data * data)
     snap_reboot(3);
     return ESP_OK;
 }
+
+esp_err_t udp_command(struct udp_data * data)
+{
+    snap_sw_command_set(true);
+    return ESP_OK;
+}
+
+esp_err_t udp_exit(struct udp_data * data)
+{
+    snap_sw_command_set(false);
+    return ESP_OK;
+}
+
 
 
 

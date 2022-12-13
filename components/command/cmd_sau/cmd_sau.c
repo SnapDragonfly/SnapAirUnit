@@ -66,7 +66,7 @@ static struct {
 static struct {
     struct arg_str *mode;
     struct arg_end *end;
-} debug_args;
+} command_args;
 
 
 static int sau_switch(int argc, char **argv)
@@ -236,17 +236,17 @@ static int sau_reboot(int argc, char **argv)
     return 0;
 }
 
-static int sau_debug(int argc, char **argv)
+static int sau_command(int argc, char **argv)
 {
-    int nerrors = arg_parse(argc, argv, (void **) &debug_args);
+    int nerrors = arg_parse(argc, argv, (void **) &command_args);
     if (nerrors != 0) {
-        arg_print_errors(stderr, debug_args.end, argv[0]);
+        arg_print_errors(stderr, command_args.end, argv[0]);
         return 1;
     }
 
-    int mode = strtol(debug_args.mode->sval[0], NULL, 0);
+    int mode = strtol(command_args.mode->sval[0], NULL, 0);
 
-    return snap_sw_debug_set(mode);
+    return snap_sw_command_set(mode);
 }
 
 void register_sau(void)
@@ -276,8 +276,8 @@ void register_sau(void)
 
     reboot_args.end        = arg_end(2);
 
-    debug_args.mode       = arg_str1(NULL, NULL, "<mode>", "debug mode");
-    debug_args.end        = arg_end(2);
+    command_args.mode      = arg_str1(NULL, NULL, "<mode>", "command mode");
+    command_args.end       = arg_end(2);
 
     const esp_console_cmd_t switch_cmd = {
         .command = "switch",
@@ -371,15 +371,15 @@ void register_sau(void)
         .argtable = &reboot_args
     };
 
-    const esp_console_cmd_t debug_cmd = {
-        .command = "debug",
-        .help = "debug <mode>, mode:false(0)/true(1).\n"
+    const esp_console_cmd_t command_cmd = {
+        .command = "command",
+        .help = "command <mode>, mode:false(0)/true(1).\n"
         "Examples:\n"
-        " debug 0 \n"
-        " debug 1 \n",
+        " command 0 \n"
+        " command 1 \n",
         .hint = NULL,
-        .func = &sau_debug,
-        .argtable = &debug_args
+        .func = &sau_command,
+        .argtable = &command_args
     };
 
     ESP_ERROR_CHECK(esp_console_cmd_register(&switch_cmd));
@@ -391,6 +391,6 @@ void register_sau(void)
     ESP_ERROR_CHECK(esp_console_cmd_register(&emergency_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&channel_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&reboot_cmd));
-    ESP_ERROR_CHECK(esp_console_cmd_register(&debug_cmd));
+    ESP_ERROR_CHECK(esp_console_cmd_register(&command_cmd));
 }
 
