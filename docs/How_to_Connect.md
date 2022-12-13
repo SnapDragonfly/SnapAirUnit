@@ -3,7 +3,7 @@
 
 # Snap Air Unit Form Factor Draft
 
-<image src="./images/snap_air_unit_draft_form_factor.png">
+<image src="./images/snap_air_unit_draft_form_factor.png" width="400">
 
 # Snap Air Unit Hardware Interface Definitions
 
@@ -37,8 +37,7 @@ Currently we use goouuuu-esp32 for demonstration.
 >
 > 4MB SPIFlash
 
-<image src="./images/goouuuu-esp32-pcba.png">
-<image src="./images/goouuuu-esp32-pcb.png">
+<image src="./images/goouuuu-esp32-pcba.png" width="200"> <image src="./images/goouuuu-esp32-pcb.png" width="120">
 
  # How to Connect Flight Controller
 
@@ -48,7 +47,7 @@ Currently we use goouuuu-esp32 for demonstration.
  >
  > G5 Rx --> FC Tx
 
-<image src="./images/goouuuu-esp32.png">
+<image src="./images/goouuuu-esp32.png" width="200">
 
 
 

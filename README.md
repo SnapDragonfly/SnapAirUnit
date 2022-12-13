@@ -66,11 +66,15 @@ It's an education version of Snap Air Unit.
 
      .
     ├──> docs
-    │   └──> Build_and_Flash.md
+    │   ├──> Build_and_Flash.md
+    │   └──> How_to_Connect.md
     └──> README.md
 
-## 1. 编译构建及固件更新方法
+## 1. 编译构建固件方法
 
 详见：[Build_and_Flash.md](./docs/Build_and_Flash.md)
 
+## 2. 硬件如何连接飞控
+
+详见：[How_to_Connect.md](./docs/How_to_Connect.md)
 
