@@ -65,8 +65,10 @@ It's an education version of Snap Air Unit.
 # Document
 
      .
-    ├──> docs
+    ├──> docs  //images used in *.md documents
+    │   ├──> images
     │   ├──> Build_and_Flash.md
+    │   ├──> How_to_Use.md
     │   └──> How_to_Connect.md
     └──> README.md
 
