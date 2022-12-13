@@ -40,7 +40,7 @@ Currently we use goouuuu-esp32 for demonstration.
  > 1. G4 Tx --> FC Rx
  > 2. G5 Rx --> FC Tx
 
-<image src="./images/goouuuu-esp32.png" width="200">
+<image src="./images/goouuuu-esp32.png" width="400">
 
 
 

@@ -3,7 +3,7 @@
 This is education version of Snap Air Unit, which is designed for youth (kids and adult) to get a basic understanding of auto pilot. And we hope it wil inspire people from knowing more about automation, physics, electronics，
 mathematics, computer, aviation, and etc. Ultimately, it might cultivate talents from generation to generation in scientific aeras.
 
-<image src="./images/snap_air_unit_draft_edu_hw_digram.png" width="400">
+<image src="./images/snap_air_unit_draft_edu_hw_digram.png" width="600">
 
 ** Note: MSP(DJI) Protocol is NOT used, since there is NO camera on education version hardware of Snap Air Unit.**
 
@@ -73,6 +73,7 @@ Currently, we do NOT support [Need Bonjour, broadcast, UPNP protocol for device 
 So......
 
 a) It's easy for us to get WiFi address when in AP mode.
+
 b) For WiFi STA mode, please check seiral debug log, something much more like below bold ip address
 
 > I (1912) wifi:connected with AutoLab, aid = 13, channel 6, 40D, bssid = d0:c7:c0:5c:ce:50
@@ -102,22 +103,22 @@ b) For WiFi STA mode, please check seiral debug log, something much more like be
 
 please consult: [蓝牙无线自制串口模块连接穿越机配置工具](https://blog.csdn.net/lida2003/article/details/127901773)
 
-<image src="./images/snap_air_unit_bt_spp_inva_configurator.png" width="400">
+<image src="./images/snap_air_unit_bt_spp_inva_configurator.png" width="600">
 
 ### 5.2 by UDP port
 
-<image src="./images/snap_air_unit_udp_inva_configurator.png" width="400">
+<image src="./images/snap_air_unit_udp_inva_configurator.png" width="600">
 
 ## Step 6: Communicate with Snap Air Unit with UDP tools
 
-<image src="./images/snap_air_unit_udp_tool_1.png" width="400">
+<image src="./images/snap_air_unit_udp_tool_1.png" width="600">
 
-<image src="./images/snap_air_unit_udp_tool_2.png" width="400">
+<image src="./images/snap_air_unit_udp_tool_2.png" width="600">
 
 
 ## Step 7: Communicate with Snap Air Unit with debug serial port
 
-<image src="./images/snap_air_unit_debug_serial.png" width="400">
+<image src="./images/snap_air_unit_debug_serial.png" width="600">
 
 ## Step 8: Scratch Programming
 
