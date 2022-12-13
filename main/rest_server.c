@@ -22,6 +22,7 @@
 #include "msp_protocol.h"
 #include "define.h"
 #include "module.h"
+#include "version.h"
 
 #if CONFIG_RESTFUL_WEB_DEPLOY_SD
 #include "driver/sdmmc_host.h"
@@ -209,12 +210,14 @@ static esp_err_t rc_data_post_handler(httpd_req_t *req)
 /* Simple handler for getting system handler */
 static esp_err_t system_info_get_handler(httpd_req_t *req)
 {
+    char str_version[STR_VERSION_LEN];
     httpd_resp_set_type(req, "application/json");
     cJSON *root = cJSON_CreateObject();
     esp_chip_info_t chip_info;
     esp_chip_info(&chip_info);
+    snprintf(str_version, STR_VERSION_LEN, "%s-%s", APP_VERSION, APP_DIRTYFLAG);
     cJSON_AddStringToObject(root, "sdk_version", IDF_VER);
-    cJSON_AddStringToObject(root, "app_version", APP_VERSION);
+    cJSON_AddStringToObject(root, "app_version", str_version);
     cJSON_AddNumberToObject(root, "model", chip_info.model);
     cJSON_AddNumberToObject(root, "cores", chip_info.cores);
     cJSON_AddNumberToObject(root, "revision", chip_info.revision);

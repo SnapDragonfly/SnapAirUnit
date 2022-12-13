@@ -19,6 +19,7 @@
 #include "mode.h"
 #include "define.h"
 #include "util.h"
+#include "version.h"
 
 static struct {
     struct arg_str *mode;
@@ -175,13 +176,15 @@ static int sau_wifi(int argc, char **argv)
 
 static int sau_sdk(int argc, char **argv)
 {
+    char str_version[STR_VERSION_LEN];
     int nerrors = arg_parse(argc, argv, (void **) &sdk_args);
     if (nerrors != 0) {
         arg_print_errors(stderr, sdk_args.end, argv[0]);
         return 1;
     }
 
-    ESP_LOGI(MODULE_CMD_SAU, "Version: SDK(%s) APP(%s)", IDF_VER, APP_VERSION);
+    snprintf(str_version, STR_VERSION_LEN, "%s-%s", APP_VERSION, APP_DIRTYFLAG);
+    ESP_LOGI(MODULE_CMD_SAU, "Version: SDK(%s) APP(%s)", IDF_VER, str_version);
     return 0;
 }
 

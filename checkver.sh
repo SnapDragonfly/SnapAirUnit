@@ -1,9 +1,12 @@
 #!/bin/bash
 
+rm -f version.h
 if [[ $(git diff --stat) != '' ]]; then
-  echo 'dirty'
+	echo -e "#define APP_DIRTYFLAG  \"dirty\"" > version.h
+	echo "dirty"
 else
-  echo 'clean'
+	echo -e "#define APP_DIRTYFLAG  \"clean\"" > version.h
+	echo "clean"
 fi
 
 

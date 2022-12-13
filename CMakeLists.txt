@@ -39,9 +39,12 @@ include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 set(APP_COMMITID "")
 Get_CommitID(APP_COMMITID)
 
+add_definitions(-DAPP_VERSION=\"${APP_VER_MAJOR}.${APP_VER_MINOR}.${APP_COMMITID}\")
+
+project(SnapAirUnit)
+
 set(APP_DIRTYFLAG "")
 Get_DIRTYFLAG(APP_DIRTYFLAG)
 
-add_definitions(-DAPP_VERSION=\"${APP_VER_MAJOR}.${APP_VER_MINOR}.${APP_COMMITID}-${APP_DIRTYFLAG}\")
+message( STATUS "Code: ${APP_DIRTYFLAG}" )
 
-project(SnapAirUnit)

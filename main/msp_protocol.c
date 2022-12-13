@@ -100,14 +100,24 @@ static mspPort_t esp_msp_port;
 static messageVersion_e g_esp_msg_center = MESSAGE_UNKNOW;
 
 uint16_t g_esp_rc_channel[MAX_SUPPORTED_RC_CHANNEL_COUNT] ={
-    1500,
-    1500,
-    885,
-    1500,
-    1400,
-    1500,
-    1500,
-    1500,
+    1500,    //1
+    1500,    //2
+    885,     //3
+    1500,    //4
+    1200,    //5
+    1200,    //6
+    1200,    //7
+    1200,    //8
+    1200,    //9
+    1200,    //10
+    1200,    //11
+    1200,    //12
+    1200,    //13
+    1200,    //14
+    1200,    //15
+    1200,    //16
+    1200,    //17
+    1200,    //18
 };
 
 uint8_t crc8_dvb_s2(uint8_t crc, unsigned char a)

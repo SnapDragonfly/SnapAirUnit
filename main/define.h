@@ -32,6 +32,7 @@ extern "C" {
 
 #define STR_BUFFER_LEN                         (128)
 #define STR_IP_LEN                             (16)
+#define STR_VERSION_LEN                        (32)
 
 
 #define TIME_DIFF_IN_MS(prev, curr)            ((curr - prev)/1000)

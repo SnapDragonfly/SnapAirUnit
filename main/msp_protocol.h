@@ -15,7 +15,7 @@ typedef enum {
 
 #define MSP_SET_RAW_RC                         200    //in message          8 rc chan
 
-#define MAX_SUPPORTED_RC_CHANNEL_COUNT         8
+#define MAX_SUPPORTED_RC_CHANNEL_COUNT         18
 
 
 esp_err_t handle_msp_protocol(uint8_t * buf, int len);
