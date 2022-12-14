@@ -9,7 +9,7 @@ extern "C" {
 #include "factory_setting.h"
 
 
-#define DEVICE_NAME_SNAP_AIR_UNIT              "Snap Air Unit"
+#define DEVICE_NAME_SNAP_AIR_UNIT              "SnapAirUnit"
 
 #define SAND_BOX_ALIVE_CHARACTER               ('.')
 #define SAND_BOX_REBOOT_PROMOTES               (10)

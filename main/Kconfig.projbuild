@@ -4,7 +4,7 @@ menu "Snap Air Unit"
 
         config ESP_WIFI_AP_SSID
             string "WiFi AP SSID"
-            default "Snap-Air-Unit"
+            default "SnapAirUnit"
             help
                 SSID (network name) for the example to connect to.
     

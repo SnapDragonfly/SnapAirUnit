@@ -41,10 +41,10 @@ Get_CommitID(APP_COMMITID)
 
 add_definitions(-DAPP_VERSION=\"${APP_VER_MAJOR}.${APP_VER_MINOR}.${APP_COMMITID}\")
 
-project(SnapAirUnit)
-
 set(APP_DIRTYFLAG "")
 Get_DIRTYFLAG(APP_DIRTYFLAG)
 
-message( STATUS "Code: ${APP_DIRTYFLAG}" )
+project(SnapAirUnit)
+
+
 
