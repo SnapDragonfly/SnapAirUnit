@@ -12,8 +12,8 @@ mathematics, computer, aviation, and etc. Ultimately, it might cultivate talents
 ## Step 1: Preparation of hardware and firmware
 
 Please consult: 
-1. [Build_and_Flash.md](./docs/Build_and_Flash.md)
-2. [How_to_Connect.md](./docs/How_to_Connect.md)
+1. [Build_and_Flash.md](./Build_and_Flash.md)
+2. [How_to_Connect.md](./How_to_Connect.md)
 
 ## Step 2: Software mode switching
 
