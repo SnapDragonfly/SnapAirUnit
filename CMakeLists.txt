@@ -34,17 +34,35 @@ macro(Get_DIRTYFLAG APP_DIRTYFLAG)
     endif()
 endmacro()
 
+macro(Get_DIRPART APP_PARTCHECK)
+    find_package(Git QUIET)
+    if(GIT_FOUND)
+      execute_process(
+        COMMAND ./checkpart.sh
+        OUTPUT_VARIABLE ${APP_PARTCHECK}
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        )
+    endif()
+endmacro()
+
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
 set(APP_COMMITID "")
 Get_CommitID(APP_COMMITID)
 
+set(APP_PARTCHECK "")
+Get_DIRPART(APP_PARTCHECK)
+
 add_definitions(-DAPP_VERSION=\"${APP_VER_MAJOR}.${APP_VER_MINOR}.${APP_COMMITID}\")
+
+project(SnapAirUnit)
 
 set(APP_DIRTYFLAG "")
 Get_DIRTYFLAG(APP_DIRTYFLAG)
 
-project(SnapAirUnit)
+message( STATUS "Code: ${APP_DIRTYFLAG}" )
 
 
 
