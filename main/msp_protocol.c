@@ -690,8 +690,11 @@ static void message_center_task(void *pvParameters)
             ESP_ERROR_CHECK(mspUpdateChannels());
         }
 
-        // TODO: sync time need to be considered
-        vTaskDelay(TIME_20_MS / portTICK_PERIOD_MS);  // around 50Hz RC commands update rate
+        /*
+         * around 10Hz > 5Hz RC commands update rate
+         * according to https://blog.csdn.net/lida2003/article/details/128328444
+         */
+        vTaskDelay(TIME_100_MS / portTICK_PERIOD_MS);
     }
     vTaskDelete(NULL);
 }
