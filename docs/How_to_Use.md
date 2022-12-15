@@ -99,13 +99,19 @@ b) For WiFi STA mode, please check seiral debug log, something much more like be
 
 ## Step 5: Communicate with Snap Air Unit with iNav configurator
 
-### 5.1 by virtual BT com port
+### 5.1 MSP Port Pre-configured throught USB
+
+**Please check which UART port is connect on FC, and enable it as MSP port ahead. Now we are using UART2, connecting Snap Air Unit**
+
+<image src="./images/fc_msp_port_configurator.png" width="600">
+
+### 5.2 BT by virtual com port
 
 please consult: [蓝牙无线自制串口模块连接穿越机配置工具](https://blog.csdn.net/lida2003/article/details/127901773)
 
 <image src="./images/snap_air_unit_bt_spp_inva_configurator.png" width="600">
 
-### 5.2 by UDP port(8889)
+### 5.3 WiFi by UDP port(8889)
 
 **WiFi STA, Please check IP of your Snap Air Unit**
 
