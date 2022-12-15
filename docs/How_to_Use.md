@@ -7,6 +7,16 @@ mathematics, computer, aviation, and etc. Ultimately, it might cultivate talents
 
 ** Note: MSP(DJI) Protocol is NOT used, since there is NO camera on education version hardware of Snap Air Unit.**
 
+# Tools for test
+
+## Snap Air Unit Test
+
+Please consult: [Snap Air Unit Test](https://github.com/lida2003/SnapAirUnitTest)
+
+## SPP BT Virtual COM
+
+<image src="./images/android_bt_spp_tool.png" width="600">
+
 # 101 lessons on How to use Snap Air Unit Module
 
 ## Step 1: Preparation of hardware and firmware
