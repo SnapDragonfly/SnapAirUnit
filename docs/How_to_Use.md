@@ -105,9 +105,15 @@ please consult: [蓝牙无线自制串口模块连接穿越机配置工具](http
 
 <image src="./images/snap_air_unit_bt_spp_inva_configurator.png" width="600">
 
-### 5.2 by UDP port
+### 5.2 by UDP port(8889)
 
-<image src="./images/snap_air_unit_udp_inva_configurator.png" width="600">
+**WiFi STA, Please check IP of your Snap Air Unit**
+
+<image src="./images/snap_air_unit_udp_sta_inva_configurator.png" width="600">
+
+**WiFi AP, default IP 192.168.4.1**
+
+<image src="./images/snap_air_unit_udp_ap_inva_configurator.png" width="600">
 
 ## Step 6: Communicate with Snap Air Unit with UDP tools
 
