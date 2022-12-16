@@ -74,7 +74,7 @@ static void task_start_ttl(void *pvParameters)
                         if(MESSAGE_CENTER == mspGetMessage()){
                             center_handle_msp_protocol(temp, event.size);
                         } else {
-                            esp_spp_write(esp_ssp_handle, event.size, temp);
+                            ttl_handle_bt_msp_protocol(temp, event.size);
                         }
                         mspSetMessage(MESSAGE_UNKNOW);
                     } else {
@@ -85,9 +85,9 @@ static void task_start_ttl(void *pvParameters)
                             if(MESSAGE_CENTER == mspGetMessage()){
                                 center_handle_msp_protocol(temp, event.size);
                             } else {
-                                ret = ttl_handle_msp_protocol(temp, event.size);
+                                ret = ttl_handle_wifi_msp_protocol(temp, event.size);
                                 if(ESP_OK != ret){
-                                    ttl_handle_tello_protocol(temp, event.size);
+                                    ttl_handle_wifi_tello_protocol(temp, event.size);
                                 }
                             }
                             mspSetMessage(MESSAGE_UNKNOW);

@@ -1,4 +1,5 @@
 
+#include "esp_spp_api.h"
 #include "esp_system.h"
 #include "esp_log.h"
 
@@ -565,7 +566,24 @@ static bool mspSerialProcessReceivedData(mspPort_t *mspPort, uint8_t c)
     return true;
 }
 
-esp_err_t ttl_handle_msp_protocol(uint8_t * buf, int len)
+esp_err_t ttl_handle_bt_msp_protocol(uint8_t * buf, int len)
+{
+    if (NULL == buf){
+        return ESP_FAIL;
+    }
+
+#if (DEBUG_MSP_PROTO)
+    ESP_LOGI(MODULE_MSP_PROTO, "ttl_handle_msp-enter %d bytes", len);
+    esp_log_buffer_hex(MODULE_MSP_PROTO, buf, len);
+#endif /* DEBUG_MSP_PROTO */
+
+    extern uint32_t esp_ssp_handle;
+
+    esp_spp_write(esp_ssp_handle, len, buf);
+    return ESP_OK;
+}
+
+esp_err_t ttl_handle_wifi_msp_protocol(uint8_t * buf, int len)
 {
     if (NULL == buf){
         return ESP_FAIL;

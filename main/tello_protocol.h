@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 esp_err_t udp_handle_tello_protocol(uint8_t * buf, int len);
-esp_err_t ttl_handle_tello_protocol(uint8_t * buf, int len);
+esp_err_t ttl_handle_wifi_tello_protocol(uint8_t * buf, int len);
 esp_err_t udp_handle_cli_protocol(uint8_t * buf, int len);
 
 
