@@ -51,6 +51,13 @@ static esp_err_t tello_protocol_parse(uint8_t * buf, int len)
     esp_log_buffer_hex(MODULE_TELLO_PROTO, szcmdline, len);
 #endif /* DEBUG_TELLO_PROTO */
 
+    if (1 == len && 0 == szcmdline[0]){
+        /* 
+         * Very rare case, which mightbe comes from  debug tool
+         */
+        return ESP_ERR_NOT_FOUND;
+    }
+
     char seps[]        = " ,\t\n";
     char *token = strtok(offset, seps);
     while (token != NULL) {
