@@ -7,7 +7,6 @@
 #include "esp_chip_info.h"
 #include "esp_flash.h"
 #include "nvs_flash.h"
-
 #include "util.h"
 #include "softap.h"
 #include "station.h"

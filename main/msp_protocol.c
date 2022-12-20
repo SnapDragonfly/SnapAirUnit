@@ -573,7 +573,7 @@ esp_err_t ttl_handle_bt_msp_protocol(uint8_t * buf, int len)
     }
 
 #if (DEBUG_MSP_PROTO)
-    ESP_LOGI(MODULE_MSP_PROTO, "ttl_handle_msp-enter %d bytes", len);
+    ESP_LOGI(MODULE_MSP_PROTO, "ttl_handle_bt_msp-exit %d bytes", len);
     esp_log_buffer_hex(MODULE_MSP_PROTO, buf, len);
 #endif /* DEBUG_MSP_PROTO */
 
@@ -589,8 +589,17 @@ esp_err_t ttl_handle_wifi_msp_protocol(uint8_t * buf, int len)
         return ESP_FAIL;
     }
 
+    if (*buf != '$' || len < 9){
+        return ESP_FAIL;
+    }
+
+    if (len > STR_BUFFER_LEN){
+        ESP_LOGW(MODULE_MSP_PROTO, "ttl_handle_wifi_msp-enter %d bytes", len);
+        return ESP_FAIL;
+    }
+
 #if (0)
-    ESP_LOGI(MODULE_MSP_PROTO, "ttl_handle_msp-enter %d bytes", len);
+    ESP_LOGI(MODULE_MSP_PROTO, "ttl_handle_wifi_msp-enter %d bytes", len);
     esp_log_buffer_hex(MODULE_MSP_PROTO, buf, len);
 #endif /* DEBUG_MSP_PROTO */
 
@@ -621,8 +630,6 @@ esp_err_t ttl_handle_wifi_msp_protocol(uint8_t * buf, int len)
                             }
                         }
                         rx_buffer[3 +sizeof(mspHeaderV2_t) + j] = esp_msp_port.checksum2;
-                        udp_send_msg(rx_buffer, 4+ sizeof(mspHeaderV2_t) + j);
-
 #if (DEBUG_MSP_PROTO)
                         sbuf_t sbuf_hdrv2;
                         mspHeaderV2_t hdrv2;
@@ -633,12 +640,14 @@ esp_err_t ttl_handle_wifi_msp_protocol(uint8_t * buf, int len)
                         hdrv2.cmd = sbufReadU16(&sbuf_hdrv2);
                         hdrv2.size = sbufReadU16(&sbuf_hdrv2);
                         
-                        ESP_LOGI(MODULE_MSP_PROTO, "ttl_handle_msp-exit %d bytes cmd 0x%04x-%d flag %d size %d", 
+                        ESP_LOGI(MODULE_MSP_PROTO, "ttl_handle_wifi_msp-exit %d bytes cmd 0x%04x-%d flag %d size %d", 
                                             4+ sizeof(mspHeaderV2_t) + j, hdrv2.cmd, hdrv2.cmd, hdrv2.flags, hdrv2.size);
                         esp_log_buffer_hex(MODULE_MSP_PROTO, rx_buffer, 4+ sizeof(mspHeaderV2_t) + j);
 #endif /* DEBUG_MSP_PROTO */
+                        (void)udp_send_msg(rx_buffer, 4+ sizeof(mspHeaderV2_t) + j);
+
                         return ESP_OK;
-                        
+
                         break;
                         
                     case MSP_V1:
@@ -653,6 +662,21 @@ esp_err_t ttl_handle_wifi_msp_protocol(uint8_t * buf, int len)
     }
 
     return ESP_FAIL;
+}
+
+esp_err_t ttl_handle_wifi_nomsp_protocol(uint8_t * buf, int len)
+{
+    if(NULL == buf){
+        return ESP_FAIL;
+    }
+
+#if (DEBUG_MSP_PROTO)
+    ESP_LOGI(MODULE_MSP_PROTO, "ttl_handle_wifi_nomsp-exit %d bytes", len);
+    esp_log_buffer_hex(MODULE_MSP_PROTO, buf, len);
+#endif /* DEBUG_MSP_PROTO */
+    (void)udp_send_msg(buf, len);
+
+    return ESP_OK;
 }
 
 esp_err_t handle_msp_protocol(uint8_t * buf, int len)

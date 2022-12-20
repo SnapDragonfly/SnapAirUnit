@@ -20,6 +20,7 @@ typedef enum {
 
 esp_err_t handle_msp_protocol(uint8_t * buf, int len);
 esp_err_t ttl_handle_wifi_msp_protocol(uint8_t * buf, int len);
+esp_err_t ttl_handle_wifi_nomsp_protocol(uint8_t * buf, int len);
 esp_err_t ttl_handle_bt_msp_protocol(uint8_t * buf, int len);
 esp_err_t center_handle_msp_protocol(uint8_t * buf, int len);
 

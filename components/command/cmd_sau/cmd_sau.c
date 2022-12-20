@@ -185,6 +185,7 @@ static int sau_sdk(int argc, char **argv)
 
     snprintf(str_version, STR_VERSION_LEN, "%s-%s", APP_VERSION, APP_DIRTYFLAG);
     ESP_LOGI(MODULE_CMD_SAU, "Version: SDK(%s) APP(%s)", IDF_VER, str_version);
+    ESP_LOGI(MODULE_CMD_SAU, "%s: free_heap_size = %d\n", DEVICE_NAME_SNAP_AIR_UNIT, esp_get_free_heap_size());
     return 0;
 }
 

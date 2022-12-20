@@ -25,7 +25,11 @@
 
 #define TTL_UART_TXD        (CONFIG_MSP_TTL_TXD)
 #define TTL_UART_RXD        (CONFIG_MSP_TTL_RXD)
-#define TTL_BUF_SIZE        (1024)
+//#define TTL_BUF_SIZE        (4096)
+#define TTL_RX_BUF_SIZE     1024
+#define TTL_TX_BUF_SIZE     2048
+#define TTL_RX_EVENT_SIZE   10
+
 
 static QueueHandle_t ttl_uart_queue = NULL;
 
@@ -87,7 +91,7 @@ static void task_start_ttl(void *pvParameters)
                             } else {
                                 ret = ttl_handle_wifi_msp_protocol(temp, event.size);
                                 if(ESP_OK != ret){
-                                    ttl_handle_wifi_tello_protocol(temp, event.size);
+                                    (void) ttl_handle_wifi_nomsp_protocol(temp, event.size);
                                 }
                             }
                             mspSetMessage(MESSAGE_UNKNOW);
@@ -97,6 +101,7 @@ static void task_start_ttl(void *pvParameters)
                     free(temp);
                 }
                 break;
+
             default:
                 break;
             }
@@ -112,13 +117,13 @@ esp_err_t module_ttl_start(void)
         .data_bits = UART_DATA_8_BITS,
         .parity = UART_PARITY_DISABLE,
         .stop_bits = UART_STOP_BITS_1,
-        .flow_ctrl = UART_HW_FLOWCTRL_RTS,
-        .rx_flow_ctrl_thresh = 122,
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+        .rx_flow_ctrl_thresh = 127,
         .source_clk = UART_SCLK_DEFAULT,
     };
 
     //Install UART driver, and get the queue.
-    uart_driver_install(UART_NUM_1, TTL_BUF_SIZE * 2, 8192, 10, &ttl_uart_queue, 0);
+    uart_driver_install(UART_NUM_1, TTL_RX_BUF_SIZE, TTL_TX_BUF_SIZE, TTL_RX_EVENT_SIZE, &ttl_uart_queue, 0);
     //Set UART parameters
     uart_param_config(UART_NUM_1, &uart_config);
     //Set UART pins

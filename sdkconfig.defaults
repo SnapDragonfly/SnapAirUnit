@@ -1,5 +1,4 @@
-# Override some defaults so BT stack is enabled
-# and WiFi disabled by default in this example
+# Override some defaults so BT stack is enabled and WiFi disabled by default
 CONFIG_BT_ENABLED=y
 CONFIG_BTDM_CTRL_MODE_BLE_ONLY=n
 CONFIG_BTDM_CTRL_MODE_BR_EDR_ONLY=y

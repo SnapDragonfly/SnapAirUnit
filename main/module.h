@@ -39,8 +39,8 @@ extern "C" {
 #define MODULE_UART                "ttl"
 
 // Service Module
-#define DEBUG_WIFI_AP             1
-#define DEBUG_WIFI_STA            1
+#define DEBUG_WIFI_AP             0
+#define DEBUG_WIFI_STA            0
 #define DEBUG_BT_SPP              0
 
 #define MODULE_WIFI_AP             "sap"

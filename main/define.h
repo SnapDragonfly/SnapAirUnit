@@ -30,7 +30,7 @@ extern "C" {
 #define TIME_ONE_SECOND_IN_MS                  (1000)
 #define TIME_TWO_SECOND_IN_MS                  (2000)
 
-#define STR_BUFFER_LEN                         (128)
+#define STR_BUFFER_LEN                         (256)
 #define STR_IP_LEN                             (16)
 #define STR_VERSION_LEN                        (32)
 

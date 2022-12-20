@@ -46,9 +46,7 @@ esp_err_t udp_send_msg(uint8_t * buf, int len)
     int err = sendto(g_server_sock, buf, len, 0, (struct sockaddr *)&g_source_addr, sizeof(g_source_addr));
     if (err < 0) {
         snap_sw_state_degrade(SW_STATE_HALF_DUPLEX);
-#if (DEBUG_UDP_SRV)
         ESP_LOGE(MODULE_UDP_SRV, "Error occurred during sending: errno %d", errno);
-#endif /* DEBUG_UDP_SRV */
     }
 
     return err;
@@ -206,7 +204,7 @@ static void udp_server_task(void *pvParameters)
                         ret = udp_handle_tello_protocol((uint8_t *)rx_buffer, len);
                         if(ESP_ERR_NOT_SUPPORTED == ret){
                             snap_sw_state_upgrade(SW_STATE_CLI);
-                            vTaskDelay(TIME_50_MS / portTICK_PERIOD_MS);
+                            //vTaskDelay(TIME_50_MS / portTICK_PERIOD_MS);
                             ESP_ERROR_CHECK(ttl_send((uint8_t *)rx_buffer, len));
                         } else if(ESP_OK != ret){
                             snap_sw_state_degrade(SW_STATE_FULL_DUPLEX);

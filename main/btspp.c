@@ -93,6 +93,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 #if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_OPEN_EVT");
 #endif /* DEBUG_BT_SPP */
+        snap_sw_state_upgrade(SW_STATE_FULL_DUPLEX);
         break;
     
     case ESP_SPP_CLOSE_EVT:
@@ -143,6 +144,13 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 #endif /* DEBUG_BT_SPP */
 
         if(snap_sw_state_active(SW_MODE_BT_SPP)){
+
+#if 1
+#if (DEBUG_BT_SPP)
+            ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_DATA_IND_EVT ttl_send");
+#endif /* DEBUG_BT_SPP */
+            ESP_ERROR_CHECK(ttl_send(param->data_ind.data, param->data_ind.len));
+#else
             snap_sw_state_upgrade(SW_STATE_FULL_DUPLEX);
             //handle_msp_protocol(param->data_ind.data, param->data_ind.len);
             esp_err_t ret;
@@ -170,7 +178,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
                     ret = udp_handle_tello_protocol(param->data_ind.data, param->data_ind.len);
                     if(ESP_ERR_NOT_SUPPORTED == ret){
                         snap_sw_state_upgrade(SW_STATE_CLI);
-                        vTaskDelay(TIME_50_MS / portTICK_PERIOD_MS);
+                        //vTaskDelay(TIME_50_MS / portTICK_PERIOD_MS);
                         ESP_ERROR_CHECK(ttl_send(param->data_ind.data, param->data_ind.len));
                     } else if(ESP_OK != ret){
                         snap_sw_state_degrade(SW_STATE_FULL_DUPLEX);
@@ -191,7 +199,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 
                     break;
                 }
-
+#endif
         }
         break;
         
