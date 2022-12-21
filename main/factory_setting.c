@@ -1,5 +1,8 @@
 
 
+/*
+ * idf header files
+ */
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
@@ -11,17 +14,35 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
 #include "esp_err.h"
-#include "cmd_nvs.h"
 #include "nvs.h"
 
+/*
+ * basic header files
+ */
+#include "config.h"
+#include "define.h"
+
+
+/*
+ * module header files
+ */
 #include "module.h"
 #include "factory_setting.h"
+#include "cmd_nvs.h"
 
-char g_str_ap_ssid[SSID_LENGTH];
-char g_str_ap_pass[PASS_LENGTH];
 
-char g_str_sta_ssid[SSID_LENGTH];
-char g_str_sta_pass[PASS_LENGTH];
+/*
+ * service header files
+ */
+//TBD
+
+static char g_str_ap_ssid[SSID_LENGTH];
+static char g_str_ap_pass[PASS_LENGTH];
+
+static char g_str_sta_ssid[SSID_LENGTH];
+static char g_str_sta_pass[PASS_LENGTH];
+
+static char g_str_version[STR_VERSION_LEN];
 
 esp_err_t restore_ap_settings(void)
 {
@@ -201,5 +222,16 @@ char * get_sta_pass(void)
     return &g_str_sta_pass[0];
 }
 
+char * get_idf_versions(void)
+{
+    return IDF_VER;
+}
+
+char * get_app_versions(void)
+{
+    memset(g_str_version, 0, STR_VERSION_LEN);
+    snprintf(g_str_version, STR_VERSION_LEN, "%s-%s", APP_VERSION, APP_DIRTYFLAG);
+    return g_str_version;
+}
 
 

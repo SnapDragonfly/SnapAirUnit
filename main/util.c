@@ -1,4 +1,8 @@
 
+
+/*
+ * idf header files
+ */
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
@@ -11,8 +15,20 @@
 #include "sys/time.h"
 #include "sdkconfig.h"
 
+/*
+ * basic header files
+ */
 #include "define.h"
+
+/*
+ * module header files
+ */
 #include "util.h"
+
+/*
+ * service header files
+ */
+//TBD
 
 void snap_reboot(int times)
 {

@@ -1,15 +1,8 @@
-/* LED for status and mode
 
-   1) Status LED:
-   
-   2) Mode LED:
 
-   TODO:
-   1) Button IO needs to be checked with HW engineer.
-   2) Only on led port is defined.
-   
-*/
-
+/*
+ * idf header files
+ */
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -18,9 +11,25 @@
 #include "led_strip.h"
 #include "sdkconfig.h"
 
+
+/*
+ * basic header files
+ */
 #include "module.h"
 #include "define.h"
+
+
+
+/*
+ * module header files
+ */
+//TBD
+
+/*
+ * service header files
+ */
 #include "blink.h"
+
 
 static void led_init(struct blink_led *led, uint8_t io_num)
 {

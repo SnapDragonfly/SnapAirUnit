@@ -1,27 +1,38 @@
-/* Console example — NVS commands
 
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
 
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
-
+/*
+ * idf header files
+ */
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/event_groups.h"
 #include "esp_log.h"
 #include "esp_console.h"
 #include "argtable3/argtable3.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/event_groups.h"
 #include "esp_err.h"
-#include "cmd_nvs.h"
 #include "nvs.h"
 
+/*
+ * basic header files
+ */
+//TBD
+
+/*
+ * module header files
+ */
 #include "module.h"
+#include "cmd_nvs.h"
+
+
+/*
+ * service header files
+ */
+//TBD
+
 
 typedef struct {
     nvs_type_t type;

@@ -1,4 +1,8 @@
 
+
+/*
+ * idf header files
+ */
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -12,11 +16,27 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
+/*
+ * basic header files
+ */
+#include "config.h"
 #include "define.h"
+
+
+/*
+ * module header files
+ */
+#include "factory_setting.h"
 #include "module.h"
 #include "mode.h"
+
+
+/*
+ * service header files
+ */
 #include "station.h"
 #include "rest_server.h"
+
 
 #if CONFIG_ESP_WIFI_AUTH_OPEN
 #define ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD WIFI_AUTH_OPEN

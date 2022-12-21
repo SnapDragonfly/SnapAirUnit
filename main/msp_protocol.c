@@ -1,14 +1,31 @@
 
+
+/*
+ * idf header files
+ */
 #include "esp_spp_api.h"
 #include "esp_system.h"
 #include "esp_log.h"
 
+/*
+ * basic header files
+ */
+#include "define.h"
+
+
+/*
+ * module header files
+ */
 #include "module.h"
 #include "mode.h"
-#include "define.h"
+#include "msp_protocol.h"
+
+
+/*
+ * service header files
+ */
 #include "ttl.h"
 #include "udp_server.h"
-#include "msp_protocol.h"
 
 typedef enum {
     MSP_IDLE                               = 0,

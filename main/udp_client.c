@@ -1,4 +1,8 @@
 
+
+/*
+ * idf header files
+ */
 #include <string.h>
 #include <sys/param.h>
 #include "freertos/FreeRTOS.h"
@@ -16,10 +20,24 @@
 #include "lwip/sys.h"
 #include <lwip/netdb.h>
 
+/*
+ * basic header files
+ */
+#include "define.h"
+
+
+/*
+ * module header files
+ */
 #include "module.h"
 #include "mode.h"
-#include "define.h"
+
+
+/*
+ * service header files
+ */
 #include "udp_client.h"
+
 
 #define STATUS_PORT CONFIG_STATUS_SERVER_PORT
 

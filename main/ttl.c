@@ -1,4 +1,9 @@
 
+
+
+/*
+ * idf header files
+ */
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
@@ -12,26 +17,30 @@
 #include "esp_gap_bt_api.h"
 #include "esp_bt_device.h"
 
+/*
+ * basic header files
+ */
+#include "config.h"
+#include "define.h"
+
+
+/*
+ * module header files
+ */
 #include "module.h"
 #include "mode.h"
-#include "define.h"
-#include "ttl.h"
-#include "udp_server.h"
 #include "msp_protocol.h"
 #include "tello_protocol.h"
 
 
-#define TTL_UART_NUM        (UART_NUM_1)
-
-#define TTL_UART_TXD        (CONFIG_MSP_TTL_TXD)
-#define TTL_UART_RXD        (CONFIG_MSP_TTL_RXD)
-//#define TTL_BUF_SIZE        (4096)
-#define TTL_RX_BUF_SIZE     1024
-#define TTL_TX_BUF_SIZE     2048
-#define TTL_RX_EVENT_SIZE   10
+/*
+ * service header files
+ */
+#include "ttl.h"
+#include "udp_server.h"
 
 
-static QueueHandle_t ttl_uart_queue = NULL;
+static QueueHandle_t g_msp_uart_queue = NULL;
 
 extern uint32_t esp_ssp_handle;
 
@@ -40,7 +49,7 @@ esp_err_t ttl_send(uint8_t * buf, int len)
     if(NULL == buf){
         return ESP_FAIL;
     }
-    uart_write_bytes(TTL_UART_NUM, buf, len);
+    uart_write_bytes(MSP_UART_PORT, buf, len);
     return ESP_OK;
 }
 
@@ -51,7 +60,7 @@ static void task_start_ttl(void *pvParameters)
 
     for (;;) {
         //Waiting for UART event.
-        if (xQueueReceive(ttl_uart_queue, (void * )&event, (TickType_t)portMAX_DELAY)) {
+        if (xQueueReceive(g_msp_uart_queue, (void * )&event, (TickType_t)portMAX_DELAY)) {
             switch (event.type) {
             //Event of UART receving data
             case UART_DATA:
@@ -64,7 +73,7 @@ static void task_start_ttl(void *pvParameters)
                         break;
                     }
                     memset(temp,0x0,event.size);
-                    uart_read_bytes(TTL_UART_NUM, temp, event.size, portMAX_DELAY);
+                    uart_read_bytes(MSP_UART_PORT, temp, event.size, portMAX_DELAY);
 
 #if (DEBUG_UART)
                     ESP_LOGI(MODULE_UART, "ttl read %d Bytes\n", event.size);
@@ -123,11 +132,11 @@ esp_err_t module_ttl_start(void)
     };
 
     //Install UART driver, and get the queue.
-    uart_driver_install(UART_NUM_1, TTL_RX_BUF_SIZE, TTL_TX_BUF_SIZE, TTL_RX_EVENT_SIZE, &ttl_uart_queue, 0);
+    uart_driver_install(MSP_UART_PORT, MSP_RX_BUF_SIZE, MSP_TX_BUF_SIZE, MSP_RX_EVENT_SIZE, &g_msp_uart_queue, 0);
     //Set UART parameters
-    uart_param_config(UART_NUM_1, &uart_config);
+    uart_param_config(MSP_UART_PORT, &uart_config);
     //Set UART pins
-    uart_set_pin(UART_NUM_1, TTL_UART_TXD, TTL_UART_RXD, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+    uart_set_pin(MSP_UART_PORT, MSP_UART_TXD, MSP_UART_RXD, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
     ESP_ERROR_CHECK(snap_sw_module_start(task_start_ttl, true, TASK_LARGE_BUFFER, MODULE_UART));
 

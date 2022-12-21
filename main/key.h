@@ -8,7 +8,6 @@ extern "C" {
 
 #include "iot_button.h"
 
-#define KEY_MODE CONFIG_KEY_MODE
 
 button_handle_t module_key_start(uint8_t num);
 void mode_key_lock(void);

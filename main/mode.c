@@ -1,4 +1,8 @@
 
+
+/*
+ * idf header files
+ */
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
@@ -9,20 +13,32 @@
 #include "esp_system.h"
 #include "time.h"
 #include "sys/time.h"
-#include "sdkconfig.h"
 #include "esp_wifi.h"
 #include "esp_spp_api.h"
 #include "esp_check.h"
 #include "esp_bt.h"
+#include "sdkconfig.h"
 
-#include "module.h"
+/*
+ * basic header files
+ */
 #include "define.h"
 
+
+/*
+ * module header files
+ */
+#include "module.h"
+#include "mode.h"
+#include "key.h"
+
+/*
+ * service header files
+ */
 #include "softap.h"
 #include "station.h"
 #include "btspp.h"
-#include "mode.h"
-#include "key.h"
+
 
 static uint16_t g_sw_mode              = SW_MODE_WIFI_AP;
 static enum_state_t g_sw_state         = SW_STATE_INVALID;

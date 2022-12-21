@@ -1,13 +1,17 @@
 
+
+/*
+ * idf header files
+ */
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include "nvs.h"
-#include "nvs_flash.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
 #include "freertos/task.h"
+#include "nvs.h"
+#include "nvs_flash.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include "esp_bt.h"
@@ -21,13 +25,29 @@
 #include "time.h"
 #include "sys/time.h"
 #include "sdkconfig.h"
+
+/*
+ * basic header files
+ */
+#include "config.h"
 #include "define.h"
-#include "ttl.h"
+
+
+/*
+ * module header files
+ */
 #include "module.h"
 #include "mode.h"
-#include "btspp.h"
 #include "msp_protocol.h"
 #include "tello_protocol.h"
+
+
+/*
+ * service header files
+ */
+#include "ttl.h"
+#include "btspp.h"
+
 
 #define SPP_SERVER_NAME     DEVICE_NAME_SNAP_AIR_UNIT
 #define SPP_DEVICE_NAME     DEVICE_NAME_SNAP_AIR_UNIT

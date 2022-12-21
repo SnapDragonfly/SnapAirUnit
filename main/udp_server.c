@@ -1,11 +1,6 @@
-/* BSD Socket API Example
-
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
+/*
+ * idf header files
+ */
 #include <string.h>
 #include <sys/param.h>
 #include "freertos/FreeRTOS.h"
@@ -22,12 +17,24 @@
 #include "lwip/sys.h"
 #include <lwip/netdb.h>
 
+/*
+ * basic header files
+ */
+#include "define.h"
+
+/*
+ * module header files
+ */
 #include "msp_protocol.h"
 #include "tello_protocol.h"
 #include "module.h"
 #include "mode.h"
+
+/*
+ * service header files
+ */
 #include "ttl.h"
-#include "define.h"
+
 
 #define PORT CONFIG_CONTROL_SERVER_PORT
 

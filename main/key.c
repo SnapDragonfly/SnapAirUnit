@@ -1,4 +1,8 @@
 
+
+/*
+ * idf header files
+ */
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -7,11 +11,25 @@
 #include "esp_timer.h"
 #include "sdkconfig.h"
 
+/*
+ * basic header files
+ */
+#include "config.h"
+#include "define.h"
+#include "handle.h"
+
+/*
+ * module header files
+ */
 #include "key.h"
 #include "module.h"
-#include "define.h"
 #include "process.h"
-#include "handle.h"
+
+/*
+ * module header files
+ */
+//TBD
+
 
 #if (DEBUG_KEY_MODE)
 static int64_t key_press_time = 0;

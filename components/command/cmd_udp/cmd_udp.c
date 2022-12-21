@@ -1,5 +1,6 @@
-
-
+/*
+ * idf header files
+ */
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
@@ -8,15 +9,34 @@
 #include "freertos/FreeRTOS.h"
 #include "esp_err.h"
 #include "esp_log.h"
-#include "cmd_udp.h"
 
-#include "util.h"
+/*
+ * basic header files
+ */
+#include "config.h"
+#include "define.h"
+
+
+/*
+ * module header files
+ */
 #include "module.h"
 #include "mode.h"
-#include "define.h"
-#include "udp_server.h"
+#include "cmd_udp.h"
+#include "util.h"
+#include "factory_setting.h"
 #include "msp_protocol.h"
-#include "version.h"
+
+
+
+/*
+ * service header files
+ */
+#include "udp_server.h"
+
+
+
+
 
 esp_err_t udp_bluetooth(struct udp_data * data)
 {

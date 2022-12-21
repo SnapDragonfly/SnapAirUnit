@@ -1,4 +1,8 @@
 
+
+/*
+ * idf header files
+ */
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
@@ -9,14 +13,28 @@
 #include "esp_wifi.h"
 #include "esp_event_base.h"
 
-#include "util.h"
-#include "module.h"
+/*
+ * basic header files
+ */
+#include "config.h"
 #include "define.h"
-#include "process.h"
-#include "mode.h"
 #include "handle.h"
 
-#define CONFIG_KEY_RESERVE_TIME_IN_MS      (CONFIG_KEY_PRESS_RESERVE*1000)
+
+/*
+ * module header files
+ */
+#include "util.h"
+#include "module.h"
+#include "process.h"
+#include "mode.h"
+
+
+/*
+ * service header files
+ */
+//TBD
+
 
 /* Event source related definitions */
 ESP_EVENT_DEFINE_BASE(EVT_PROCESS);

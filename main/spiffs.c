@@ -1,11 +1,6 @@
-/* SPIFFS filesystem example.
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
-
+/*
+ * idf header files
+ */
 #include <stdio.h>
 #include <string.h>
 #include <sys/unistd.h>
@@ -14,9 +9,27 @@
 #include "esp_log.h"
 #include "esp_spiffs.h"
 
+/*
+ * basic header files
+ */
 #include "define.h"
+
+/*
+ * module header files
+ */
+
 #include "module.h"
 #include "spiffs.h"
+
+/*
+ * service header files
+ */
+//TBD
+
+
+
+
+
 
 static esp_vfs_spiffs_conf_t g_spiffs_conf = {
   .base_path = CONFIG_SPIFFS_MOUNT_POINT,

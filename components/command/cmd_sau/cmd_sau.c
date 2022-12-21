@@ -1,25 +1,43 @@
-
-
+/*
+ * idf header files
+ */
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
 #include <inttypes.h>
-#include "esp_log.h"
-#include "esp_console.h"
-#include "argtable3/argtable3.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
+#include "esp_log.h"
+#include "esp_console.h"
 #include "esp_err.h"
+#include "argtable3/argtable3.h"
+
+
+/*
+ * basic header files
+ */
+#include "define.h"
+
+/*
+ * module header files
+ */
+#include "module.h"
 #include "cmd_sau.h"
 #include "cmd_udp.h"
-
 #include "msp_protocol.h"
-#include "module.h"
 #include "mode.h"
-#include "define.h"
 #include "util.h"
-#include "version.h"
+#include "factory_setting.h"
+
+/*
+ * service header files
+ */
+
+//TBD.
+
+
+
 
 static struct {
     struct arg_str *mode;
@@ -176,15 +194,13 @@ static int sau_wifi(int argc, char **argv)
 
 static int sau_sdk(int argc, char **argv)
 {
-    char str_version[STR_VERSION_LEN];
     int nerrors = arg_parse(argc, argv, (void **) &sdk_args);
     if (nerrors != 0) {
         arg_print_errors(stderr, sdk_args.end, argv[0]);
         return 1;
     }
 
-    snprintf(str_version, STR_VERSION_LEN, "%s-%s", APP_VERSION, APP_DIRTYFLAG);
-    ESP_LOGI(MODULE_CMD_SAU, "Version: SDK(%s) APP(%s)", IDF_VER, str_version);
+    ESP_LOGI(MODULE_CMD_SAU, "Version: SDK(%s) APP(%s)", get_idf_versions(), get_app_versions());
     ESP_LOGI(MODULE_CMD_SAU, "%s: free_heap_size = %d\n", DEVICE_NAME_SNAP_AIR_UNIT, esp_get_free_heap_size());
     return 0;
 }

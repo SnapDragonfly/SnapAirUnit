@@ -1,4 +1,8 @@
 
+
+/*
+ * idf header files
+ */
 #include <string.h>
 #include <fcntl.h>
 #include "esp_vfs_semihost.h"
@@ -11,22 +15,39 @@
 #include "esp_netif.h"
 #include "esp_event.h"
 #include "esp_vfs.h"
-#include "cJSON.h"
 #include "sdkconfig.h"
 #include "driver/gpio.h"
 #include "sdmmc_cmd.h"
+#if CONFIG_RESTFUL_WEB_DEPLOY_SD
+#include "driver/sdmmc_host.h"
+#endif
 #include "nvs_flash.h"
 #include "mdns.h"
 #include "lwip/apps/netbiosns.h"
 
-#include "msp_protocol.h"
+/*
+ * basic header files
+ */
 #include "define.h"
-#include "module.h"
-#include "version.h"
 
-#if CONFIG_RESTFUL_WEB_DEPLOY_SD
-#include "driver/sdmmc_host.h"
-#endif
+/*
+ * module header files
+ */
+#include "module.h"
+#include "cJSON.h"
+#include "msp_protocol.h"
+
+
+/*
+ * service header files
+ */
+//TBD
+
+
+
+
+
+
 
 #define MDNS_INSTANCE "snap air unit web server"
 

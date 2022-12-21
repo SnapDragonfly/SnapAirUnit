@@ -1,30 +1,48 @@
 
+
+
+/*
+ * idf header files
+ */
 #include <stdio.h>
-#include "sdkconfig.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_task_wdt.h"
 #include "esp_chip_info.h"
 #include "esp_flash.h"
 #include "nvs_flash.h"
+#include "sdkconfig.h"
+
+/*
+ * basic header files
+ */
+#include "config.h"
+#include "define.h"
+
+/*
+ * module header files
+ */
+#include "module.h"
+#include "msp_protocol.h"
 #include "util.h"
+#include "mode.h"
+#include "process.h"
+#include "spiffs.h"
+#include "console.h"
+#include "factory_setting.h"
+
+/*
+ * service header files
+ */
 #include "softap.h"
 #include "station.h"
 #include "btspp.h"
-#include "mode.h"
-
-#include "module.h"
-#include "define.h"
 #include "blink.h"
 #include "key.h"
 #include "ttl.h"
-#include "process.h"
-#include "rest_server.h"
-#include "msp_protocol.h"
 #include "udp_server.h"
 #include "udp_client.h"
-#include "spiffs.h"
-#include "console.h"
+#include "rest_server.h"
 
 void sand_box(void)
 {

@@ -1,4 +1,8 @@
 
+
+/*
+ * idf header files
+ */
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
@@ -10,11 +14,23 @@
 #include "esp_check.h"
 #include "esp_event.h"
 
-#include "ttl.h"
+
+/*
+ * basic header files
+ */
+#include "define.h"
+
+/*
+ * module header files
+ */
 #include "mode.h"
 #include "module.h"
-#include "define.h"
 #include "key.h"
+
+/*
+ * service header files
+ */
+#include "ttl.h"
 
 esp_err_t snap_sw_module_start(TaskFunction_t pxTaskCode, bool task, const uint32_t stackDepth, const char * const pcName)
 {

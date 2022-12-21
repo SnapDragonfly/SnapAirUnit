@@ -1,4 +1,8 @@
 
+
+/*
+ * idf header files
+ */
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -9,16 +13,28 @@
 #include "esp_spp_api.h"
 #include "esp_check.h"
 #include "esp_bt.h"
-
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
-#include "module.h"
+/*
+ * basic header files
+ */
+#include "config.h"
 #include "define.h"
 
+/*
+ * module header files
+ */
+#include "module.h"
+#include "factory_setting.h"
 #include "mode.h"
+
+/*
+ * service header files
+ */
 #include "softap.h"
 #include "rest_server.h"
+
 
 static esp_event_handler_instance_t softap_instance_any_id;
 static esp_netif_t* softap_instance_netif = NULL;
