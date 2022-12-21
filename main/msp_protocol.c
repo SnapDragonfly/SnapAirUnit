@@ -736,20 +736,28 @@ esp_err_t center_handle_msp_protocol(uint8_t * buf, int len)
     return ESP_OK;
 }
 
-
 static void message_center_task(void *pvParameters)
 {
+#define MESSAGE_CENTER_TEST    0
     while (1) {
         if (SW_STATE_CLI != snap_sw_state_get() && !snap_sw_state_active(SW_MODE_BT_SPP) && snap_sw_command_get()){
             /* Used for Air Unit RC control in WiFi AP/STA MSP comunication */
             ESP_ERROR_CHECK(mspUpdateChannels());
+#if (MESSAGE_CENTER_TEST)
+            ESP_LOGI(MODULE_MSP_PROTO, "message center rc sent.");
+#endif /* MESSAGE_CENTER_TEST */
+
         }
 
         /*
          * around 10Hz > 5Hz RC commands update rate
          * according to https://blog.csdn.net/lida2003/article/details/128328444
          */
+#if (MESSAGE_CENTER_TEST)
+        vTaskDelay(TIME_ONE_SECOND_IN_MS / portTICK_PERIOD_MS);
+#else
         vTaskDelay(TIME_100_MS / portTICK_PERIOD_MS);
+#endif /* MESSAGE_CENTER_TEST */
     }
     vTaskDelete(NULL);
 }

@@ -28,6 +28,7 @@
 #include "util.h"
 #include "factory_setting.h"
 #include "msp_protocol.h"
+#include "factory_setting.h"
 
 /*
  * service header files
@@ -96,11 +97,9 @@ esp_err_t udp_wifi(struct udp_data * data)
 
 esp_err_t udp_sdk(struct udp_data * data)
 {
-    char str_version[STR_VERSION_LEN];
     UNUSED(data);
 
-    snprintf(str_version, STR_VERSION_LEN, "%s-%s", APP_VERSION, APP_DIRTYFLAG);
-    udp_send_msg((uint8_t *)str_version, strlen(str_version));
+    udp_send_msg((uint8_t *)get_app_versions(), strlen(get_idf_versions()));
     return ESP_ERR_INVALID_RESPONSE;
 }
 

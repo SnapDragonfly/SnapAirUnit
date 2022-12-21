@@ -36,6 +36,8 @@
 #include "module.h"
 #include "cJSON.h"
 #include "msp_protocol.h"
+#include "mode.h"
+#include "factory_setting.h"
 
 /*
  * service header files
@@ -170,6 +172,53 @@ static esp_err_t light_brightness_post_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+static esp_err_t command_post_handler(httpd_req_t *req)
+{
+    int total_len = req->content_len;
+    int cur_len = 0;
+    char *buf = ((rest_server_context_t *)(req->user_ctx))->scratch;
+    int received = 0;
+    if (total_len >= SCRATCH_BUFSIZE) {
+        /* Respond with 500 Internal Server Error */
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "content too long");
+        return ESP_FAIL;
+    }
+    while (cur_len < total_len) {
+        received = httpd_req_recv(req, buf + cur_len, total_len);
+        if (received <= 0) {
+            /* Respond with 500 Internal Server Error */
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to post control value");
+            return ESP_FAIL;
+        }
+        cur_len += received;
+    }
+    buf[total_len] = '\0';
+
+    int mode = 0;
+    cJSON *root = cJSON_Parse(buf);
+    struct cJSON *item = cJSON_GetObjectItem(root, "mode");
+    if(NULL != item){
+        if(cJSON_Number == item->type){
+            mode = item->valueint;
+        } else if (cJSON_String == item->type){
+            mode = atoi(item->valuestring);
+        } else{
+            ESP_LOGW(MODULE_HTTP, "Can't be HERE json type 0x%01x", item->type);
+        }
+    }
+
+    snap_sw_command_set(mode);
+
+#if (DEBUG_HTTP)
+    ESP_LOGI(MODULE_HTTP, "command: %s, set to %d", buf, mode);
+#endif /* DEBUG_HTTP */
+
+    cJSON_Delete(root);
+    httpd_resp_sendstr(req, "Post control value successfully");
+    return ESP_OK;
+}
+
+
 extern uint16_t g_esp_rc_channel[];
 static esp_err_t rc_data_post_handler(httpd_req_t *req)
 {
@@ -204,6 +253,10 @@ static esp_err_t rc_data_post_handler(httpd_req_t *req)
         nth_rc_channel[5] = 0;
 
         struct cJSON *item = cJSON_GetObjectItem(root, nth_rc_channel);
+        if(NULL == item){
+            continue;
+        }
+
         if(cJSON_Number == item->type){
             g_esp_rc_channel[i] = item->valueint;
         } else if (cJSON_String == item->type){
@@ -225,14 +278,12 @@ static esp_err_t rc_data_post_handler(httpd_req_t *req)
 /* Simple handler for getting system handler */
 static esp_err_t system_info_get_handler(httpd_req_t *req)
 {
-    char str_version[STR_VERSION_LEN];
     httpd_resp_set_type(req, "application/json");
     cJSON *root = cJSON_CreateObject();
     esp_chip_info_t chip_info;
     esp_chip_info(&chip_info);
-    snprintf(str_version, STR_VERSION_LEN, "%s-%s", APP_VERSION, APP_DIRTYFLAG);
-    cJSON_AddStringToObject(root, "sdk_version", IDF_VER);
-    cJSON_AddStringToObject(root, "app_version", str_version);
+    cJSON_AddStringToObject(root, "sdk_version", get_idf_versions());
+    cJSON_AddStringToObject(root, "app_version", get_app_versions());
     cJSON_AddNumberToObject(root, "model", chip_info.model);
     cJSON_AddNumberToObject(root, "cores", chip_info.cores);
     cJSON_AddNumberToObject(root, "revision", chip_info.revision);
@@ -286,6 +337,14 @@ httpd_uri_t light_brightness_post_uri = {
 	.user_ctx = &g_rest_context
 };
 
+/* URI handler for posting command */
+httpd_uri_t command_post_uri = {
+	.uri = "/api/v1/command/post",
+	.method = HTTP_POST,
+	.handler = command_post_handler,
+	.user_ctx = &g_rest_context
+};
+
 /* URI handler for posting rc data */
 httpd_uri_t rc_data_post_uri = {
 	.uri = "/api/v1/rc/post",
@@ -329,6 +388,8 @@ esp_err_t start_rest_server(const char *base_path)
 
     httpd_register_uri_handler(g_rest_server, &rc_data_post_uri);
 
+    httpd_register_uri_handler(g_rest_server, &command_post_uri);
+
     httpd_register_uri_handler(g_rest_server, &light_brightness_post_uri);
 
     httpd_register_uri_handler(g_rest_server, &common_get_uri);
@@ -352,12 +413,12 @@ esp_err_t stop_rest_server(void)
 
     httpd_unregister_uri_handler(g_rest_server, system_info_get_uri.uri, system_info_get_uri.method);
 
+    httpd_unregister_uri_handler(g_rest_server, command_post_uri.uri, command_post_uri.method);
+
     ESP_ERROR_CHECK(httpd_stop(g_rest_server));
 
     return ESP_OK;
 }
-
-
 
 static void initialise_mdns(void)
 {
