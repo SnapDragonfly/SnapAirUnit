@@ -1,3 +1,5 @@
+/// @file spiffs.c
+
 /*
  * idf header files
  */
@@ -17,7 +19,6 @@
 /*
  * module header files
  */
-
 #include "module.h"
 #include "spiffs.h"
 
@@ -28,18 +29,12 @@
 
 
 
-
-
-
 static esp_vfs_spiffs_conf_t g_spiffs_conf = {
   .base_path = CONFIG_SPIFFS_MOUNT_POINT,
   .partition_label = "storage",
   .max_files = 5,
   .format_if_mount_failed = true
 };
-
-#define TEST_FILE1 "/hello.txt"
-#define TEST_FILE2 "/foo.txt"
 
 esp_err_t stop_spiffs(void)
 {
@@ -49,6 +44,12 @@ esp_err_t stop_spiffs(void)
 
     return ESP_OK;
 }
+
+
+#if (0)
+
+#define TEST_FILE1 "/hello.txt"
+#define TEST_FILE2 "/foo.txt"
 
 esp_err_t spiffs_test(void)
 {
@@ -108,6 +109,7 @@ esp_err_t spiffs_test(void)
     return ESP_OK;
 }
 
+#endif
 
 esp_err_t start_spiffs(void)
 

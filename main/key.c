@@ -1,4 +1,4 @@
-
+/// @file key.c
 
 /*
  * idf header files
@@ -32,10 +32,10 @@
 
 
 #if (DEBUG_KEY_MODE)
-static int64_t key_press_time = 0;
+static int64_t g_key_press_time = 0;
 #endif /* DEBUG_KEY_MODE */
 
-static bool   g_key_filter    = false;
+static bool    g_key_filter     = false;
 
 void mode_key_lock(void)
 {
@@ -53,7 +53,7 @@ void mode_key_long_press(void* arg)
     int64_t curr_time;
 
     curr_time = esp_timer_get_time();
-    ESP_LOGI(MODULE_KEY_MODE, "%s %lld", arg, TIME_DIFF_IN_MS(key_press_time, curr_time));
+    ESP_LOGI(MODULE_KEY_MODE, "%s %lld", arg, TIME_DIFF_IN_MS(g_key_press_time, curr_time));
 #endif /* DEBUG_KEY_MODE */
 
     if(g_key_filter){
@@ -71,8 +71,8 @@ void mode_key_long_press(void* arg)
 void mode_key_pressed(void* arg)
 {
 #if (DEBUG_KEY_MODE)
-    key_press_time = esp_timer_get_time();
-    ESP_LOGI(MODULE_KEY_MODE, "%s %lld", arg, key_press_time);
+    g_key_press_time = esp_timer_get_time();
+    ESP_LOGI(MODULE_KEY_MODE, "%s %lld", arg, g_key_press_time);
 #endif /* DEBUG_KEY_MODE */
 
     if(g_key_filter){
@@ -94,7 +94,7 @@ void mode_key_released(void* arg)
     int64_t curr_time;
 
     curr_time = esp_timer_get_time();
-    ESP_LOGI(MODULE_KEY_MODE, "%s %lld", arg, TIME_DIFF_IN_MS(key_press_time, curr_time));
+    ESP_LOGI(MODULE_KEY_MODE, "%s %lld", arg, TIME_DIFF_IN_MS(g_key_press_time, curr_time));
 #endif /* DEBUG_KEY_MODE */
 
     if(g_key_filter){

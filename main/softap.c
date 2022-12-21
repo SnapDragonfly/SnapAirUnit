@@ -1,4 +1,4 @@
-
+/// @file softap.c
 
 /*
  * idf header files
@@ -35,9 +35,8 @@
 #include "softap.h"
 #include "rest_server.h"
 
-
-static esp_event_handler_instance_t softap_instance_any_id;
-static esp_netif_t* softap_instance_netif = NULL;
+static esp_event_handler_instance_t g_softap_instance_any_id;
+static esp_netif_t*               g_softap_instance_netif = NULL;
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                                     int32_t event_id, void* event_data)
@@ -57,7 +56,7 @@ static void task_wifi_start_softap(void* args)
 {
     //ESP_ERROR_CHECK(esp_netif_init());
     //ESP_ERROR_CHECK(esp_event_loop_create_default());
-    softap_instance_netif = esp_netif_create_default_wifi_ap();
+    g_softap_instance_netif = esp_netif_create_default_wifi_ap();
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
@@ -66,7 +65,7 @@ static void task_wifi_start_softap(void* args)
                                                         ESP_EVENT_ANY_ID,
                                                         &wifi_event_handler,
                                                         NULL,
-                                                        &softap_instance_any_id));
+                                                        &g_softap_instance_any_id));
 
     wifi_config_t wifi_config = {
         .ap = {
@@ -82,9 +81,9 @@ static void task_wifi_start_softap(void* args)
         },
     };
     
-    memset(wifi_config.ap.ssid, 0, SSID_LENGTH);
+    memset(wifi_config.ap.ssid, 0, WIFI_SSID_LENGTH);
     strcpy((char *)wifi_config.ap.ssid, get_ap_ssid());
-    memset(wifi_config.ap.password, 0, SSID_LENGTH);
+    memset(wifi_config.ap.password, 0, WIFI_SSID_LENGTH);
     strcpy((char *)wifi_config.ap.password, get_ap_pass());
 
     if (strlen(get_ap_pass()) == 0) {
@@ -116,11 +115,11 @@ void wifi_stop_softap(void)
     ESP_ERROR_CHECK(stop_rest_server());
 
     ESP_ERROR_CHECK(esp_wifi_stop());
-    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &softap_instance_any_id));
+    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &g_softap_instance_any_id));
     ESP_ERROR_CHECK(esp_wifi_deinit());
-    esp_netif_destroy_default_wifi(softap_instance_netif);
+    esp_netif_destroy_default_wifi(g_softap_instance_netif);
     //ESP_ERROR_CHECK(esp_netif_deinit());
-    softap_instance_netif = NULL;
+    g_softap_instance_netif = NULL;
 }
 
 

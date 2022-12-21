@@ -1,5 +1,4 @@
-
-
+/// @file ttl.c
 
 /*
  * idf header files
@@ -22,7 +21,7 @@
  */
 #include "config.h"
 #include "define.h"
-
+#include "handle.h"
 
 /*
  * module header files
@@ -32,7 +31,6 @@
 #include "msp_protocol.h"
 #include "tello_protocol.h"
 
-
 /*
  * service header files
  */
@@ -41,8 +39,6 @@
 
 
 static QueueHandle_t g_msp_uart_queue = NULL;
-
-extern uint32_t esp_ssp_handle;
 
 esp_err_t ttl_send(uint8_t * buf, int len)
 {
@@ -83,7 +79,7 @@ static void task_start_ttl(void *pvParameters)
 #endif /* DEBUG_UART */
 
                     // To do send to BT SPP
-                    if (esp_ssp_handle && snap_sw_state_active(SW_MODE_BT_SPP)){
+                    if (g_esp_ssp_handle && snap_sw_state_active(SW_MODE_BT_SPP)){
                         if(MESSAGE_CENTER == mspGetMessage()){
                             center_handle_msp_protocol(temp, event.size);
                         } else {

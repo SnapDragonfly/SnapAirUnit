@@ -1,4 +1,4 @@
-
+/// @file tello_protocol.c
 
 /*
  * idf header files
@@ -10,12 +10,10 @@
 #include "esp_system.h"
 #include "esp_log.h"
 
-
 /*
  * basic header files
  */
 #include "define.h"
-
 
 /*
  * module header files
@@ -24,15 +22,11 @@
 #include "cmd_udp.h"
 #include "tello_protocol.h"
 
-
 /*
  * service header files
  */
 #include "ttl.h"
 #include "udp_server.h"
-
-#define TELLO_RESPONSE_OK       "ok"
-#define TELLO_RESPONSE_ERR      "error"
 
 struct udp_command {
     const char command[UDP_COMMAND_LENGTH];

@@ -1,4 +1,4 @@
-
+/// @file btspp.c
 
 /*
  * idf header files
@@ -32,7 +32,6 @@
 #include "config.h"
 #include "define.h"
 
-
 /*
  * module header files
  */
@@ -41,24 +40,21 @@
 #include "msp_protocol.h"
 #include "tello_protocol.h"
 
-
 /*
  * service header files
  */
 #include "ttl.h"
 #include "btspp.h"
 
+static struct timeval g_time_new;
+static struct timeval g_time_old;
 
-#define SPP_SERVER_NAME     DEVICE_NAME_SNAP_AIR_UNIT
-#define SPP_DEVICE_NAME     DEVICE_NAME_SNAP_AIR_UNIT
+static long  g_data_num                    = 0;
+uint32_t     g_esp_ssp_handle              = 0;
 
-static struct timeval time_new, time_old;
-static long data_num = 0;
-static const esp_spp_mode_t esp_spp_mode = ESP_SPP_MODE_CB;
-static const esp_spp_sec_t sec_mask = ESP_SPP_SEC_AUTHENTICATE;
-static const esp_spp_role_t role_slave = ESP_SPP_ROLE_SLAVE;
-
-uint32_t esp_ssp_handle = 0;
+static const esp_spp_mode_t g_esp_spp_mode   = ESP_SPP_MODE_CB;
+static const esp_spp_sec_t g_sec_mask      = ESP_SPP_SEC_AUTHENTICATE;
+static const esp_spp_role_t g_role_slave     = ESP_SPP_ROLE_SLAVE;
 
 static char *bda2str(uint8_t * bda, char *str, size_t size)
 {
@@ -74,14 +70,14 @@ static char *bda2str(uint8_t * bda, char *str, size_t size)
 
 static void print_speed(void)
 {
-    float time_old_s = time_old.tv_sec + time_old.tv_usec / 1000000.0;
-    float time_new_s = time_new.tv_sec + time_new.tv_usec / 1000000.0;
+    float time_old_s = g_time_old.tv_sec + g_time_old.tv_usec / 1000000.0;
+    float time_new_s = g_time_new.tv_sec + g_time_new.tv_usec / 1000000.0;
     float time_interval = time_new_s - time_old_s;
-    float speed = data_num * 8 / time_interval / 1000.0;
+    float speed = g_data_num * 8 / time_interval / 1000.0;
     ESP_LOGI(MODULE_BT_SPP, "speed(%fs ~ %fs): %f kbit/s" , time_old_s, time_new_s, speed);
-    data_num = 0;
-    time_old.tv_sec = time_new.tv_sec;
-    time_old.tv_usec = time_new.tv_usec;
+    g_data_num = 0;
+    g_time_old.tv_sec = g_time_new.tv_sec;
+    g_time_old.tv_usec = g_time_new.tv_usec;
 }
 
 static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
@@ -94,7 +90,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 #if (DEBUG_BT_SPP)
             ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_INIT_EVT");
 #endif /* DEBUG_BT_SPP */
-            esp_spp_start_srv(sec_mask, role_slave, 0, SPP_SERVER_NAME);
+            esp_spp_start_srv(g_sec_mask, g_role_slave, 0, SPP_SERVER_NAME);
         } 
 #if (DEBUG_BT_SPP)
         else {
@@ -153,9 +149,9 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         if (param->data_ind.len < STR_BUFFER_LEN) {
             esp_log_buffer_hex(MODULE_BT_SPP, param->data_ind.data, param->data_ind.len);
         }else{
-            gettimeofday(&time_new, NULL);
-            data_num += param->data_ind.len;
-            if (time_new.tv_sec - time_old.tv_sec >= 3) {
+            gettimeofday(&g_time_new, NULL);
+            g_data_num += param->data_ind.len;
+            if (g_time_new.tv_sec - g_time_old.tv_sec >= 3) {
                 print_speed();
             }
         }
@@ -243,15 +239,15 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         UNUSED(bda_str);
 #endif /* DEBUG_BT_SPP */
         snap_sw_state_set(SW_STATE_FULL_DUPLEX);
-        esp_ssp_handle = param->srv_open.handle;
-        gettimeofday(&time_old, NULL);
+        g_esp_ssp_handle = param->srv_open.handle;
+        gettimeofday(&g_time_old, NULL);
         break;
         
     case ESP_SPP_SRV_STOP_EVT:
 #if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_SRV_STOP_EVT");
 #endif /* DEBUG_BT_SPP */
-        esp_ssp_handle = 0;
+        g_esp_ssp_handle = 0;
         break;
         
     case ESP_SPP_UNINIT_EVT:
@@ -411,7 +407,7 @@ static void task_bt_start_spp(void* args)
         return;
     }
 
-    if ((ret = esp_spp_init(esp_spp_mode)) != ESP_OK) {
+    if ((ret = esp_spp_init(g_esp_spp_mode)) != ESP_OK) {
         ESP_LOGE(MODULE_BT_SPP, "%s spp init failed: %s\n", __func__, esp_err_to_name(ret));
         return;
     }

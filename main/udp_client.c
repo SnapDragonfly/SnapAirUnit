@@ -1,4 +1,4 @@
-
+/// @file udp_client.c
 
 /*
  * idf header files
@@ -23,8 +23,8 @@
 /*
  * basic header files
  */
+#include "config.h"
 #include "define.h"
-
 
 /*
  * module header files
@@ -32,14 +32,10 @@
 #include "module.h"
 #include "mode.h"
 
-
 /*
  * service header files
  */
 #include "udp_client.h"
-
-
-#define STATUS_PORT CONFIG_STATUS_SERVER_PORT
 
 extern char g_addr_str[STR_IP_LEN];
 

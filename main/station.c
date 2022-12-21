@@ -1,4 +1,4 @@
-
+/// @file station.c
 
 /*
  * idf header files
@@ -22,14 +22,12 @@
 #include "config.h"
 #include "define.h"
 
-
 /*
  * module header files
  */
 #include "factory_setting.h"
 #include "module.h"
 #include "mode.h"
-
 
 /*
  * service header files
@@ -57,7 +55,15 @@
 #endif
 
 /* FreeRTOS event group to signal when we are connected*/
-static EventGroupHandle_t s_wifi_event_group;
+static EventGroupHandle_t g_wifi_event_group;
+
+static esp_event_handler_instance_t sta_instance_any_id;
+static esp_event_handler_instance_t sta_instance_got_ip;
+
+static int  g_retry_num                 = 0;
+bool        g_wifi_sta_start            = true;
+static esp_netif_t* g_sta_instance_netif = NULL;
+
 
 /* The event group allows multiple bits for each event, but we only care about two events:
  * - we are connected to the AP with an IP
@@ -65,33 +71,26 @@ static EventGroupHandle_t s_wifi_event_group;
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT      BIT1
 
-static int  s_retry_num       = 0;
-bool g_wifi_sta_start  = true;
-
-static esp_event_handler_instance_t sta_instance_any_id;
-static esp_event_handler_instance_t sta_instance_got_ip;
-static esp_netif_t* sta_instance_netif = NULL;
-
 static void event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
 {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         esp_wifi_connect();
     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
-        if (s_retry_num < FACTORY_ESP_MAXIMUM_RETRY) {
+        if (g_retry_num < FACTORY_ESP_MAXIMUM_RETRY) {
             esp_wifi_connect();
-            s_retry_num++;
+            g_retry_num++;
             ESP_LOGI(MODULE_WIFI_STA, "retry to connect to the AP");
         } else {
-            xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
+            xEventGroupSetBits(g_wifi_event_group, WIFI_FAIL_BIT);
         }
         ESP_LOGI(MODULE_WIFI_STA,"connect to the AP fail");
         snap_sw_state_set(SW_STATE_INVALID);
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
         ESP_LOGI(MODULE_WIFI_STA, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
-        s_retry_num = 0;
-        xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+        g_retry_num = 0;
+        xEventGroupSetBits(g_wifi_event_group, WIFI_CONNECTED_BIT);
         snap_sw_state_set(SW_STATE_IDLE);
     }
 }
@@ -100,11 +99,11 @@ static void task_wifi_start_sta(void* args)
 {
     snap_sw_state_set(SW_STATE_INVALID);
 
-    s_wifi_event_group = xEventGroupCreate();
+    g_wifi_event_group = xEventGroupCreate();
 
     //ESP_ERROR_CHECK(esp_netif_init());
     //ESP_ERROR_CHECK(esp_event_loop_create_default());
-    sta_instance_netif = esp_netif_create_default_wifi_sta();
+    g_sta_instance_netif = esp_netif_create_default_wifi_sta();
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
@@ -134,9 +133,9 @@ static void task_wifi_start_sta(void* args)
         },
     };
 
-    memset(wifi_config.sta.ssid, 0, SSID_LENGTH);
+    memset(wifi_config.sta.ssid, 0, WIFI_SSID_LENGTH);
     strcpy((char *)wifi_config.sta.ssid, get_sta_ssid());
-    memset(wifi_config.sta.password, 0, SSID_LENGTH);
+    memset(wifi_config.sta.password, 0, WIFI_SSID_LENGTH);
     strcpy((char *)wifi_config.sta.password, get_sta_pass());
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
@@ -151,7 +150,7 @@ static void task_wifi_start_sta(void* args)
         
         /* Waiting until either the connection is established (WIFI_CONNECTED_BIT) or connection failed for the maximum
          * number of re-tries (WIFI_FAIL_BIT). The bits are set by event_handler() (see above) */
-        EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
+        EventBits_t bits = xEventGroupWaitBits(g_wifi_event_group,
                 WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
                 pdFALSE,
                 pdFALSE,
@@ -194,7 +193,7 @@ static void task_wifi_start_sta(void* args)
 
 void wifi_init_sta(void)
 {
-    s_retry_num = 0;
+    g_retry_num = 0;
     ESP_ERROR_CHECK(snap_sw_module_start(task_wifi_start_sta, true, TASK_EXLARGE_BUFFER, MODULE_WIFI_STA));
 }
 
@@ -213,10 +212,10 @@ void wifi_stop_sta(void)
     ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, &sta_instance_got_ip));
     ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &sta_instance_any_id));
     ESP_ERROR_CHECK(esp_wifi_deinit());
-    esp_netif_destroy_default_wifi(sta_instance_netif);
+    esp_netif_destroy_default_wifi(g_sta_instance_netif);
     //ESP_ERROR_CHECK(esp_netif_deinit());
-    vEventGroupDelete(s_wifi_event_group);
-    sta_instance_netif = NULL;
+    vEventGroupDelete(g_wifi_event_group);
+    g_sta_instance_netif = NULL;
 }
 
 

@@ -1,4 +1,4 @@
-
+/// @file mode.c
 
 /*
  * idf header files
@@ -24,7 +24,6 @@
  */
 #include "define.h"
 
-
 /*
  * module header files
  */
@@ -39,10 +38,9 @@
 #include "station.h"
 #include "btspp.h"
 
-
-static uint16_t g_sw_mode              = SW_MODE_WIFI_AP;
-static enum_state_t g_sw_state         = SW_STATE_INVALID;
-static bool g_command_mode               = false;
+static uint16_t     g_sw_mode              = SW_MODE_WIFI_AP;
+static enum_state_t g_sw_state             = SW_STATE_INVALID;
+static bool         g_command_mode         = false;
 
 esp_err_t snap_sw_command_set(int mode)
 {

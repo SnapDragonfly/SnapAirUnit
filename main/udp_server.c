@@ -1,3 +1,5 @@
+/// @file udp_server.c
+
 /*
  * idf header files
  */
@@ -20,6 +22,7 @@
 /*
  * basic header files
  */
+#include "config.h"
 #include "define.h"
 
 /*
@@ -35,13 +38,9 @@
  */
 #include "ttl.h"
 
-
-#define PORT CONFIG_CONTROL_SERVER_PORT
-
-static int g_server_sock;
-char g_addr_str[STR_IP_LEN];
-
-static struct sockaddr_storage g_source_addr; // Large enough for both IPv4 or IPv6
+static int                   g_server_sock;
+static struct sockaddr_storage g_source_addr;
+char                          g_addr_str[STR_IP_LEN];
 
 esp_err_t udp_send_msg(uint8_t * buf, int len)
 {
@@ -81,12 +80,12 @@ static void udp_server_task(void *pvParameters)
             struct sockaddr_in *dest_addr_ip4 = (struct sockaddr_in *)&dest_addr;
             dest_addr_ip4->sin_addr.s_addr = htonl(INADDR_ANY);
             dest_addr_ip4->sin_family = AF_INET;
-            dest_addr_ip4->sin_port = htons(PORT);
+            dest_addr_ip4->sin_port = htons(CONTROL_PORT);
             ip_protocol = IPPROTO_IP;
         } else if (addr_family == AF_INET6) {
             bzero(&dest_addr.sin6_addr.un, sizeof(dest_addr.sin6_addr.un));
             dest_addr.sin6_family = AF_INET6;
-            dest_addr.sin6_port = htons(PORT);
+            dest_addr.sin6_port = htons(CONTROL_PORT);
             ip_protocol = IPPROTO_IPV6;
         }
 
@@ -124,7 +123,7 @@ static void udp_server_task(void *pvParameters)
             ESP_LOGE(MODULE_UDP_SRV, "Socket unable to bind: errno %d", errno);
         }
 #if (DEBUG_UDP_SRV)
-        ESP_LOGI(MODULE_UDP_SRV, "Socket bound, port %d", PORT);
+        ESP_LOGI(MODULE_UDP_SRV, "Socket bound, port %d", CONTROL_PORT);
 #endif /* DEBUG_UDP_SRV */
         socklen_t socklen = sizeof(g_source_addr);
 

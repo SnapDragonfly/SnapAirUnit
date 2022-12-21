@@ -10,13 +10,21 @@ extern "C" {
 #endif
 
 
-#define SSID_LENGTH                    16
-#define PASS_LENGTH                    16
+#define WIFI_SSID_LENGTH                    16
+#define WIFI_PASS_LENGTH                    16
 
-#define MSP_UART_PORT                  UART_NUM_1
-#define MSP_RX_BUF_SIZE               (TTL_BUF_BASIC_SIZE * 2)
-#define MSP_TX_BUF_SIZE               (TTL_BUF_BASIC_SIZE * 4)
-#define MSP_RX_EVENT_SIZE              10
+#define SPP_SERVER_NAME                     DEVICE_NAME_SNAP_AIR_UNIT
+#define SPP_DEVICE_NAME                     DEVICE_NAME_SNAP_AIR_UNIT
+
+#define MSP_UART_PORT                       UART_NUM_1
+#define MSP_RX_BUF_SIZE                    (TTL_BUF_BASIC_SIZE * 2)
+#define MSP_TX_BUF_SIZE                    (TTL_BUF_BASIC_SIZE * 4)
+#define MSP_RX_EVENT_SIZE                   10
+
+#define CONSOLE_PROMPT_STR                  DEVICE_NAME_SNAP_AIR_UNIT
+
+#define TELLO_RESPONSE_OK                  "ok"
+#define TELLO_RESPONSE_ERR                 "error"
 
 #ifdef __cplusplus
 }

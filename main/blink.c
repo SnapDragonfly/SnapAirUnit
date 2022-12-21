@@ -1,4 +1,4 @@
-
+/// @file blink.c
 
 /*
  * idf header files
@@ -11,14 +11,11 @@
 #include "led_strip.h"
 #include "sdkconfig.h"
 
-
 /*
  * basic header files
  */
 #include "module.h"
 #include "define.h"
-
-
 
 /*
  * module header files
@@ -29,7 +26,6 @@
  * service header files
  */
 #include "blink.h"
-
 
 static void led_init(struct blink_led *led, uint8_t io_num)
 {
@@ -99,7 +95,6 @@ static void led_configure(struct blink_led *led)
 }
 
 #endif /* CONFIG_BLINK_LED_RMT CONFIG_BLINK_LED_GPIO */
-
 
 static void task_led_blink(void* args)
 {

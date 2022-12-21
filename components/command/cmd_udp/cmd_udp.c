@@ -1,3 +1,5 @@
+/// @file cmd_udp.c
+
 /*
  * idf header files
  */
@@ -27,16 +29,10 @@
 #include "factory_setting.h"
 #include "msp_protocol.h"
 
-
-
 /*
  * service header files
  */
 #include "udp_server.h"
-
-
-
-
 
 esp_err_t udp_bluetooth(struct udp_data * data)
 {

@@ -30,6 +30,10 @@ extern "C" {
 #define MSP_UART_TXD                        CONFIG_MSP_TTL_TXD
 #define MSP_UART_RXD                        CONFIG_MSP_TTL_RXD
 
+// for UDP client port
+#define STATUS_PORT                         CONFIG_STATUS_SERVER_PORT
+#define CONTROL_PORT                        CONFIG_CONTROL_SERVER_PORT
+
 
 #ifdef __cplusplus
 }

@@ -1,3 +1,5 @@
+/// @file cmd_sau.c
+
 /*
  * idf header files
  */
@@ -12,7 +14,6 @@
 #include "esp_console.h"
 #include "esp_err.h"
 #include "argtable3/argtable3.h"
-
 
 /*
  * basic header files
@@ -33,11 +34,7 @@
 /*
  * service header files
  */
-
 //TBD.
-
-
-
 
 static struct {
     struct arg_str *mode;

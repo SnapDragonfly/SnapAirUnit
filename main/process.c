@@ -1,4 +1,4 @@
-
+/// @file process.c
 
 /*
  * idf header files
@@ -20,7 +20,6 @@
 #include "define.h"
 #include "handle.h"
 
-
 /*
  * module header files
  */
@@ -28,7 +27,6 @@
 #include "module.h"
 #include "process.h"
 #include "mode.h"
-
 
 /*
  * service header files
@@ -39,8 +37,8 @@
 /* Event source related definitions */
 ESP_EVENT_DEFINE_BASE(EVT_PROCESS);
 
-static esp_event_loop_handle_t loop_with_task;
-static TaskHandle_t application_task_hdl;
+static esp_event_loop_handle_t g_loop_with_task;
+static TaskHandle_t          g_application_task_hdl;
 
 static int64_t press_act_time                   = 0;
 static int64_t press_rel_time                   = 0;
@@ -70,7 +68,7 @@ static void task_evt_process(void* args)
         }
         
         //ESP_LOGI(MODULE_EVT_PROC, "application_task: running application task");
-        //esp_event_loop_run(loop_with_task, 100);
+        //esp_event_loop_run(g_loop_with_task, 100);
         vTaskDelay(10);
     }
 }
@@ -151,19 +149,19 @@ esp_event_loop_handle_t module_evt_start(void)
     };
 
     // Create the event loops
-    ESP_ERROR_CHECK(esp_event_loop_create(&loop_with_task_args, &loop_with_task));
+    ESP_ERROR_CHECK(esp_event_loop_create(&loop_with_task_args, &g_loop_with_task));
 
     // Register the handler for task iteration event. Notice that the same handler is used for handling event on different loops.
     // The loop handle is provided as an argument in order for this example to display the loop the handler is being run on.
-    ESP_ERROR_CHECK(esp_event_handler_instance_register_with(loop_with_task, EVT_PROCESS, ESP_EVENT_ANY_ID, evt_process_handler, loop_with_task, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register_with(g_loop_with_task, EVT_PROCESS, ESP_EVENT_ANY_ID, evt_process_handler, g_loop_with_task, NULL));
 
     // Create the application task
-    xTaskCreate(task_evt_process, MODULE_EVT_PROC, 3072, NULL, uxTaskPriorityGet(NULL) + 1, &application_task_hdl);
+    xTaskCreate(task_evt_process, MODULE_EVT_PROC, 3072, NULL, uxTaskPriorityGet(NULL) + 1, &g_application_task_hdl);
 
     // Start the application task to run the event handlers
-    xTaskNotifyGive(application_task_hdl);
+    xTaskNotifyGive(g_application_task_hdl);
 
-    return loop_with_task;
+    return g_loop_with_task;
 }
 
 

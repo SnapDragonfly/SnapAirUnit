@@ -1,4 +1,4 @@
-
+/// @file util.c
 
 /*
  * idf header files
@@ -18,6 +18,7 @@
 /*
  * basic header files
  */
+#include "config.h"
 #include "define.h"
 
 /*

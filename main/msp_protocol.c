@@ -1,4 +1,4 @@
-
+/// @file msp_protocol.c
 
 /*
  * idf header files
@@ -11,7 +11,7 @@
  * basic header files
  */
 #include "define.h"
-
+#include "handle.h"
 
 /*
  * module header files
@@ -19,7 +19,6 @@
 #include "module.h"
 #include "mode.h"
 #include "msp_protocol.h"
-
 
 /*
  * service header files
@@ -113,8 +112,7 @@ typedef struct mspPacket_s {
 } mspPacket_t;
 
 
-
-static mspPort_t esp_msp_port;
+static mspPort_t g_esp_msp_port;
 static messageVersion_e g_esp_msg_center = MESSAGE_UNKNOW;
 
 uint16_t g_esp_rc_channel[MAX_SUPPORTED_RC_CHANNEL_COUNT] ={
@@ -594,9 +592,7 @@ esp_err_t ttl_handle_bt_msp_protocol(uint8_t * buf, int len)
     esp_log_buffer_hex(MODULE_MSP_PROTO, buf, len);
 #endif /* DEBUG_MSP_PROTO */
 
-    extern uint32_t esp_ssp_handle;
-
-    esp_spp_write(esp_ssp_handle, len, buf);
+    esp_spp_write(g_esp_ssp_handle, len, buf);
     return ESP_OK;
 }
 
@@ -620,38 +616,38 @@ esp_err_t ttl_handle_wifi_msp_protocol(uint8_t * buf, int len)
     esp_log_buffer_hex(MODULE_MSP_PROTO, buf, len);
 #endif /* DEBUG_MSP_PROTO */
 
-    esp_msp_port.c_state = MSP_IDLE;
+    g_esp_msp_port.c_state = MSP_IDLE;
 
     for(int i = 0; i < len; i++){
-        mspSerialProcessReceivedData(&esp_msp_port, *(buf +i));
-        if(MSP_COMMAND_RECEIVED == esp_msp_port.c_state){
+        mspSerialProcessReceivedData(&g_esp_msp_port, *(buf +i));
+        if(MSP_COMMAND_RECEIVED == g_esp_msp_port.c_state){
 #if (0)
             ESP_LOGI(MODULE_MSP_PROTO, "ttl_handle_msp-recv version %d wifi %d sta %d", 
-                    esp_msp_port.mspVersion, snap_sw_state_active(SW_MODE_WIFI_AP), snap_sw_state_active(SW_MODE_WIFI_STA));
+                    g_esp_msp_port.mspVersion, snap_sw_state_active(SW_MODE_WIFI_AP), snap_sw_state_active(SW_MODE_WIFI_STA));
 #endif /* DEBUG_MSP_PROTO */
             if(snap_sw_state_active(SW_MODE_WIFI_AP) || snap_sw_state_active(SW_MODE_WIFI_STA)){
                 uint8_t rx_buffer[STR_BUFFER_LEN];
-                switch(esp_msp_port.mspVersion){
+                switch(g_esp_msp_port.mspVersion){
                     case MSP_V2_NATIVE:
                         rx_buffer[0] = '$';
                         rx_buffer[1] = 'X';
                         rx_buffer[2] = '>';
                         int j = 0;
                         for(; j < sizeof(mspHeaderV2_t); j++){
-                            rx_buffer[3 + j] = esp_msp_port.headBuf[j];
+                            rx_buffer[3 + j] = g_esp_msp_port.headBuf[j];
                         }
                         j = 0;
-                        if (esp_msp_port.dataSize > 0){
-                            for(; j < esp_msp_port.offset; j++){
-                                rx_buffer[3 +sizeof(mspHeaderV2_t) + j] = esp_msp_port.inBuf[j];
+                        if (g_esp_msp_port.dataSize > 0){
+                            for(; j < g_esp_msp_port.offset; j++){
+                                rx_buffer[3 +sizeof(mspHeaderV2_t) + j] = g_esp_msp_port.inBuf[j];
                             }
                         }
-                        rx_buffer[3 +sizeof(mspHeaderV2_t) + j] = esp_msp_port.checksum2;
+                        rx_buffer[3 +sizeof(mspHeaderV2_t) + j] = g_esp_msp_port.checksum2;
 #if (DEBUG_MSP_PROTO)
                         sbuf_t sbuf_hdrv2;
                         mspHeaderV2_t hdrv2;
                         
-                        sbufInit(&sbuf_hdrv2, &esp_msp_port.headBuf[0], &esp_msp_port.headBuf[MSP_PORT_INBUF_SIZE]);
+                        sbufInit(&sbuf_hdrv2, &g_esp_msp_port.headBuf[0], &g_esp_msp_port.headBuf[MSP_PORT_INBUF_SIZE]);
                         
                         hdrv2.flags = sbufReadU8(&sbuf_hdrv2);
                         hdrv2.cmd = sbufReadU16(&sbuf_hdrv2);

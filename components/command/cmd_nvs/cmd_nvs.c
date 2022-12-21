@@ -1,4 +1,4 @@
-
+/// @file cmd_nvs.c
 
 /*
  * idf header files
@@ -27,12 +27,10 @@
 #include "module.h"
 #include "cmd_nvs.h"
 
-
 /*
  * service header files
  */
 //TBD
-
 
 typedef struct {
     nvs_type_t type;
@@ -91,7 +89,6 @@ static struct {
     struct arg_str *type;
     struct arg_end *end;
 } list_args;
-
 
 static nvs_type_t str_to_type(const char *type)
 {

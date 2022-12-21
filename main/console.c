@@ -1,3 +1,5 @@
+/// @file console.c
+
 /*
  * idf header files
  */
@@ -29,7 +31,6 @@
 #include "mode.h"
 #include "process.h"
 
-
 /*
  * service header files
  */
@@ -40,7 +41,6 @@
 #error This example is incompatible with USB CDC console. Please try "console_usb" example instead.
 #endif // CONFIG_ESP_CONSOLE_USB_CDC
 
-#define PROMPT_STR DEVICE_NAME_SNAP_AIR_UNIT
 
 /* Console command history can be stored to and loaded from a file.
  * The easiest way to do this is to use FATFS filesystem on top of
@@ -142,7 +142,7 @@ esp_err_t module_console_start(void)
     /* Prompt to be printed before each line.
      * This can be customized, made dynamic, etc.
      */
-    const char* prompt = LOG_COLOR_I PROMPT_STR "> " LOG_RESET_COLOR;
+    const char* prompt = LOG_COLOR_I CONSOLE_PROMPT_STR "> " LOG_RESET_COLOR;
 
     printf("\n"
            "This is Snap Air Unit Console.\n"
@@ -163,7 +163,7 @@ esp_err_t module_console_start(void)
         /* Since the terminal doesn't support escape sequences,
          * don't use color codes in the prompt.
          */
-        prompt = PROMPT_STR "> ";
+        prompt = CONSOLE_PROMPT_STR "> ";
 #endif //CONFIG_LOG_COLORS
     }
 

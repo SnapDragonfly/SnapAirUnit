@@ -1,4 +1,4 @@
-
+/// @file rest_server.c
 
 /*
  * idf header files
@@ -37,16 +37,10 @@
 #include "cJSON.h"
 #include "msp_protocol.h"
 
-
 /*
  * service header files
  */
 //TBD
-
-
-
-
-
 
 
 #define MDNS_INSTANCE "snap air unit web server"
