@@ -17,6 +17,7 @@ idf_component_register(SRCS "main.c"
                             "msp_protocol.c"
                             "console.c"
                             "factory_setting.c"
+                            "handle.c"
                        INCLUDE_DIRS ".")
 
 if(CONFIG_RESTFUL_WEB_DEPLOY_SF)

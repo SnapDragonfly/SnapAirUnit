@@ -17,6 +17,7 @@
  */
 #include "config.h"
 #include "define.h"
+#include "handle.h"
 
 /*
  * module header files
@@ -43,6 +44,10 @@
 #include "udp_client.h"
 #include "rest_server.h"
 
+/**
+ * This is experimental code of the application.
+ * 
+*/
 void sand_box(void)
 {
     /* 
@@ -55,22 +60,22 @@ void sand_box(void)
     //stop_spiffs();
 
 
-    // Console for back dorr debug
+    /*
+     * Console for back door debug
+     * Which never returns.
+     */
     ESP_ERROR_CHECK(module_console_start());
 
-    snap_alive(SAND_BOX_ALIVE_CHARACTER);
-    snap_reboot(SAND_BOX_REBOOT_PROMOTES);
+    /* Shouldn't BE HERE!!! */
+    (void)snap_alive(SAND_BOX_ALIVE_CHARACTER);
+    (void)snap_reboot(SAND_BOX_REBOOT_PROMOTES);
 
 }
 
-/* 
- * Snap Air Unit: Main
- */
-
-blink_led_handle_t             g_led_handle = NULL;
-button_handle_t                g_key_handle = NULL;
-esp_event_loop_handle_t        g_evt_handle = NULL;
-
+/**
+ * This is initialization code of the application.
+ * 
+*/
 void app_init(void)
 {
     //Initialize NVS
@@ -103,6 +108,11 @@ void app_init(void)
     printf("%s: free_heap_size = %d\n", DEVICE_NAME_SNAP_AIR_UNIT, esp_get_free_heap_size());
 }
 
+
+/**
+ * This is the entry function of ESP32.
+ * 
+*/
 void app_main(void)
 {
     /* 
@@ -134,10 +144,10 @@ void app_main(void)
     printf("Minimum free heap size: %d bytes\n", esp_get_minimum_free_heap_size());
 
     /* Snap Air Unit: Modules & Components */
-    app_init();
+    (void)app_init();
 
     /* Snap Air Unit: Sandbox */
-    sand_box();
+    (void)sand_box();
 }
 
 

@@ -2,11 +2,11 @@
 #ifndef __BLINK_SOURCE_H__
 #define __BLINK_SOURCE_H__
 
+#include "config.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define BLINK_GPIO CONFIG_BLINK_GPIO
 
 typedef enum {
     LED_BLINK_NONE            = 0,
@@ -19,7 +19,6 @@ typedef enum {
 } led_mode_t;
 
 typedef void * blink_led_handle_t;
-
 
 struct blink_led {
     uint8_t    num;

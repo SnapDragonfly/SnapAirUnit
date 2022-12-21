@@ -141,10 +141,10 @@ esp_event_loop_handle_t module_evt_start(void)
 #endif /* DEBUG_EVT_PROC */
 
     esp_event_loop_args_t loop_with_task_args = {
-        .queue_size = 5,
+        .queue_size = EVT_QUEUE_SIZE,
         .task_name = MODULE_EVT_PROC, // task will be created
         .task_priority = uxTaskPriorityGet(NULL),
-        .task_stack_size = 3072,
+        .task_stack_size = EVT_STACK_SIZE,
         .task_core_id = tskNO_AFFINITY
     };
 
@@ -156,7 +156,7 @@ esp_event_loop_handle_t module_evt_start(void)
     ESP_ERROR_CHECK(esp_event_handler_instance_register_with(g_loop_with_task, EVT_PROCESS, ESP_EVENT_ANY_ID, evt_process_handler, g_loop_with_task, NULL));
 
     // Create the application task
-    xTaskCreate(task_evt_process, MODULE_EVT_PROC, 3072, NULL, uxTaskPriorityGet(NULL) + 1, &g_application_task_hdl);
+    xTaskCreate(task_evt_process, MODULE_EVT_PROC, TASK_BUFFER_3K0, NULL, uxTaskPriorityGet(NULL) + 1, &g_application_task_hdl);
 
     // Start the application task to run the event handlers
     xTaskNotifyGive(g_application_task_hdl);

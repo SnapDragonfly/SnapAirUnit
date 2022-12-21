@@ -192,7 +192,7 @@ blink_led_handle_t module_led_start(uint8_t num)
     led_init(pled, num);
     led_configure(pled);
 
-    xTaskCreate(task_led_blink, MODULE_LED_BLINK, TASK_SIMPLE_BUFFER, pled, uxTaskPriorityGet(NULL), NULL);
+    xTaskCreate(task_led_blink, MODULE_LED_BLINK, TASK_BUFFER_1K0, pled, uxTaskPriorityGet(NULL), NULL);
     ESP_LOGI(MODULE_LED_BLINK, "OK %d", pled->mode);
 
     return pled;

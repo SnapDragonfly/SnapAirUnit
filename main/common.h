@@ -11,12 +11,29 @@ extern "C" {
     
 #define SAND_BOX_ALIVE_CHARACTER               ('.')
 #define SAND_BOX_REBOOT_PROMOTES               (10)
-    
-#define TASK_SIMPLE_BUFFER                     (1024)
-#define TASK_MIDDLE_BUFFER                     (2048)
-#define TASK_LARGE_BUFFER                      (3072)
-#define TASK_EXLARGE_BUFFER                    (4096)
-#define TASK_XXLARGE_BUFFER                    (5120)
+
+#define STACK_BUFFER_1K0                       (1024)
+#define STACK_BUFFER_1K5                       (1536)
+#define STACK_BUFFER_2K0                       (2048)
+#define STACK_BUFFER_2K5                       (2560)
+#define STACK_BUFFER_3K0                       (3072)
+#define STACK_BUFFER_3K5                       (3584)
+#define STACK_BUFFER_4K0                       (4096)
+#define STACK_BUFFER_4K5                       (4608)
+#define STACK_BUFFER_5K0                       (5120)
+#define STACK_BUFFER_5K5                       (5632)
+
+
+#define TASK_BUFFER_1K0                        (1024)
+#define TASK_BUFFER_1K5                        (1536)
+#define TASK_BUFFER_2K0                        (2048)
+#define TASK_BUFFER_2K5                        (2560)
+#define TASK_BUFFER_3K0                        (3072)
+#define TASK_BUFFER_3K5                        (3584)
+#define TASK_BUFFER_4K0                        (4096)
+#define TASK_BUFFER_4K5                        (4608)
+#define TASK_BUFFER_5K0                        (5120)
+#define TASK_BUFFER_5K5                        (5632)
 
 #define TIME_5_MS                              (5)
 #define TIME_10_MS                             (10)

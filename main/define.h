@@ -26,6 +26,9 @@ extern "C" {
 #define TELLO_RESPONSE_OK                  "ok"
 #define TELLO_RESPONSE_ERR                 "error"
 
+#define EVT_STACK_SIZE                      STACK_BUFFER_3K0
+#define EVT_QUEUE_SIZE                      5
+
 #ifdef __cplusplus
 }
 #endif

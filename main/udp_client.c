@@ -153,7 +153,7 @@ esp_err_t start_udp_client(void)
     //ESP_ERROR_CHECK(esp_netif_init());
     //ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-    xTaskCreate(udp_client_task, MODULE_UDP_CLT, TASK_LARGE_BUFFER, NULL, 5, NULL);
+    xTaskCreate(udp_client_task, MODULE_UDP_CLT, TASK_BUFFER_3K0, NULL, 5, NULL);
 
     return ESP_OK;
 }

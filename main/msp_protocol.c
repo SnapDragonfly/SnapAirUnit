@@ -757,7 +757,7 @@ static void message_center_task(void *pvParameters)
 
 esp_err_t start_message_center(void)
 {
-    xTaskCreate(message_center_task, MODULE_MSP_PROTO, TASK_MIDDLE_BUFFER, NULL, 5, NULL);
+    xTaskCreate(message_center_task, MODULE_MSP_PROTO, TASK_BUFFER_2K0, NULL, 5, NULL);
 
     return ESP_OK;
 }

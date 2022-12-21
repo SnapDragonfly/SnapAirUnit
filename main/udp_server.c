@@ -254,10 +254,10 @@ esp_err_t start_udp_server(void)
     //ESP_ERROR_CHECK(esp_event_loop_create_default());
 
 #ifdef CONFIG_EXAMPLE_IPV4
-    xTaskCreate(udp_server_task, MODULE_UDP_SRV, TASK_EXLARGE_BUFFER, (void*)AF_INET, 5, NULL);
+    xTaskCreate(udp_server_task, MODULE_UDP_SRV, TASK_BUFFER_4K0, (void*)AF_INET, 5, NULL);
 #endif
 #ifdef CONFIG_EXAMPLE_IPV6
-    xTaskCreate(udp_server_task, MODULE_UDP_SRV, TASK_EXLARGE_BUFFER, (void*)AF_INET6, 5, NULL);
+    xTaskCreate(udp_server_task, MODULE_UDP_SRV, TASK_BUFFER_4K0, (void*)AF_INET6, 5, NULL);
 #endif
 
     return ESP_OK;
