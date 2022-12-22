@@ -28,8 +28,8 @@
               </v-layout>
             </v-container>
           </v-card-text>
-          <v-btn fab dark large color="red accent-4" @click="set_color">
-            <v-icon dark>check_box</v-icon>
+          <v-btn class="ma-2" color="primary" dark @click="set_color">
+            Apply
           </v-btn>
         </v-card>
       </v-flex>

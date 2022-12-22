@@ -163,10 +163,45 @@ static esp_err_t light_brightness_post_handler(httpd_req_t *req)
     ESP_LOGI(MODULE_HTTP, "Light control: %s", buf);
 
     cJSON *root = cJSON_Parse(buf);
-    char *red = cJSON_GetObjectItem(root, "red")->valuestring;
-    char *green = cJSON_GetObjectItem(root, "green")->valuestring;
-    char *blue = cJSON_GetObjectItem(root, "blue")->valuestring;
-    ESP_LOGI(MODULE_HTTP, "Light control: red = %s, green = %s, blue = %s", red, green, blue);
+
+    int red   = 160;
+    int green = 160;
+    int blue  = 160;
+    struct cJSON *item = cJSON_GetObjectItem(root, "red");
+    if(NULL != item){
+        if(cJSON_Number == item->type){
+            red = item->valueint;
+        }else if(cJSON_String == item->type){
+            red = atoi(item->valuestring);
+        }else{
+            ESP_LOGW(MODULE_HTTP, "Can't be HERE json type 0x%01x", item->type);
+        }
+    }
+
+
+    item = cJSON_GetObjectItem(root, "green");
+    if(NULL != item){
+        if(cJSON_Number == item->type){
+            green = item->valueint;
+        }else if(cJSON_String == item->type){
+            green = atoi(item->valuestring);
+        }else{
+            ESP_LOGW(MODULE_HTTP, "Can't be HERE json type 0x%01x", item->type);
+        }
+    }
+
+    item = cJSON_GetObjectItem(root, "blue");
+    if(NULL != item){
+        if(cJSON_Number == item->type){
+            blue = item->valueint;
+        }else if(cJSON_String == item->type){
+            blue = atoi(item->valuestring);
+        }else{
+            ESP_LOGW(MODULE_HTTP, "Can't be HERE json type 0x%01x", item->type);
+        }
+    }
+
+    ESP_LOGI(MODULE_HTTP, "Light control: red = %d, green = %d, blue = %d", red, green, blue);
     cJSON_Delete(root);
     httpd_resp_sendstr(req, "Post control value successfully");
     return ESP_OK;
