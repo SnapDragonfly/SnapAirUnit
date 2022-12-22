@@ -132,7 +132,11 @@ static esp_err_t rest_common_get_handler(httpd_req_t *req)
     } while (read_bytes > 0);
     /* Close file after sending complete */
     close(fd);
+
+#if (DEBUG_HTTP)
     ESP_LOGI(MODULE_HTTP, "File sending complete");
+#endif /* DEBUG_HTTP */
+
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_send_chunk(req, NULL, 0);
     return ESP_OK;
@@ -278,14 +282,14 @@ static esp_err_t rc_data_post_handler(httpd_req_t *req)
     buf[total_len] = '\0';
 
 #if (DEBUG_HTTP)
-    ESP_LOGI(MODULE_HTTP, "RC data: %s", buf);
+    ESP_LOGI(MODULE_HTTP, "RC data post: %s", buf);
 #endif /* DEBUG_HTTP */
 
     cJSON *root = cJSON_Parse(buf);
     for(int i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++){
-        char nth_rc_channel[6];
-        snprintf(nth_rc_channel, 5, "%s%d", "ch_", i);
-        nth_rc_channel[5] = 0;
+        char nth_rc_channel[CHANNEL_TAG_LENGTH];
+        snprintf(nth_rc_channel, CHANNEL_TAG_LENGTH, "ch_%d", i);
+        nth_rc_channel[CHANNEL_TAG_LENGTH-1] = 0;
 
         struct cJSON *item = cJSON_GetObjectItem(root, nth_rc_channel);
         if(NULL == item){
@@ -336,9 +340,9 @@ static esp_err_t rc_data_get_handler(httpd_req_t *req)
 
     for(int i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++){
     
-        char nth_rc_channel[6];
-        snprintf(nth_rc_channel, 5, "%s%d", "ch_", i);
-        nth_rc_channel[5] = 0;
+        char nth_rc_channel[CHANNEL_TAG_LENGTH];
+        snprintf(nth_rc_channel, CHANNEL_TAG_LENGTH, "ch_%d", i);
+        nth_rc_channel[CHANNEL_TAG_LENGTH-1] = 0;
         
         cJSON_AddNumberToObject(root, nth_rc_channel, g_esp_rc_channel[i]);
 #if (DEBUG_HTTP)
@@ -346,6 +350,11 @@ static esp_err_t rc_data_get_handler(httpd_req_t *req)
 #endif /* DEBUG_HTTP */
     }
     const char *rc_data_raw = cJSON_Print(root);
+
+#if (DEBUG_HTTP)
+    ESP_LOGI(MODULE_HTTP, "RC data get: %s", rc_data_raw);
+#endif /* DEBUG_HTTP */
+
     httpd_resp_sendstr(req, rc_data_raw);
     free((void *)rc_data_raw);
     cJSON_Delete(root);

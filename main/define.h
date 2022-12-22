@@ -29,6 +29,9 @@ extern "C" {
 #define EVT_STACK_SIZE                      STACK_BUFFER_3K0
 #define EVT_QUEUE_SIZE                      5
 
+#define CHANNEL_TAG_LENGTH                  8
+
+
 #ifdef __cplusplus
 }
 #endif
