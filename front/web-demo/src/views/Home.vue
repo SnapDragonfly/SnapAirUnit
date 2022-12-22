@@ -6,7 +6,9 @@
           <v-img :src="require('../assets/logo.png')" contain height="200"></v-img>
           <v-card-title primary-title>
             <div class="ma-auto">
-              <span class="grey--text">IDF version: {{version}}</span>
+              <span class="grey--text">APP version: {{app_version}}</span>
+              <br>
+              <span class="grey--text">IDF version: {{sdk_version}}</span>
               <br>
               <span class="grey--text">ESP cores: {{cores}}</span>
             </div>
@@ -21,7 +23,8 @@
 export default {
   data() {
     return {
-      version: null,
+      app_version: null,
+      sdk_version: null,
       cores: null
     };
   },
@@ -29,7 +32,8 @@ export default {
     this.$ajax
       .get("/api/v1/system/info")
       .then(data => {
-        this.version = data.data.version;
+        this.app_version = data.data.app_version;
+        this.sdk_version = data.data.sdk_version;
         this.cores = data.data.cores;
       })
       .catch(error => {

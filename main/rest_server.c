@@ -166,7 +166,7 @@ static esp_err_t light_brightness_post_handler(httpd_req_t *req)
     char *red = cJSON_GetObjectItem(root, "red")->valuestring;
     char *green = cJSON_GetObjectItem(root, "green")->valuestring;
     char *blue = cJSON_GetObjectItem(root, "blue")->valuestring;
-    ESP_LOGI(MODULE_HTTP, "Light control: red = %s, green = %s, blue = %d", red, green, blue);
+    ESP_LOGI(MODULE_HTTP, "Light control: red = %s, green = %s, blue = %s", red, green, blue);
     cJSON_Delete(root);
     httpd_resp_sendstr(req, "Post control value successfully");
     return ESP_OK;
@@ -249,7 +249,7 @@ static esp_err_t rc_data_post_handler(httpd_req_t *req)
     cJSON *root = cJSON_Parse(buf);
     for(int i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++){
         char nth_rc_channel[6];
-        snprintf(nth_rc_channel, 5, "%d", i);
+        snprintf(nth_rc_channel, 5, "%s%d", "ch_", i);
         nth_rc_channel[5] = 0;
 
         struct cJSON *item = cJSON_GetObjectItem(root, nth_rc_channel);
@@ -302,12 +302,13 @@ static esp_err_t rc_data_get_handler(httpd_req_t *req)
     for(int i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++){
     
         char nth_rc_channel[6];
-        snprintf(nth_rc_channel, 5, "%d", i);
+        snprintf(nth_rc_channel, 5, "%s%d", "ch_", i);
         nth_rc_channel[5] = 0;
         
         cJSON_AddNumberToObject(root, nth_rc_channel, g_esp_rc_channel[i]);
-
+#if (DEBUG_HTTP)
         ESP_LOGI(MODULE_HTTP, "RC get channel %d value %d", i, g_esp_rc_channel[i]);
+#endif /* DEBUG_HTTP */
     }
     const char *rc_data_raw = cJSON_Print(root);
     httpd_resp_sendstr(req, rc_data_raw);
