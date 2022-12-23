@@ -89,7 +89,7 @@ static esp_err_t set_content_type_from_file(httpd_req_t *req, const char *filepa
 }
 
 /* Send HTTP response with the contents of the requested file */
-static esp_err_t rest_common_get_handler(httpd_req_t *req)
+static esp_err_t common_get_handler(httpd_req_t *req)
 {
     char filepath[FILE_PATH_MAX];
 
@@ -211,6 +211,102 @@ static esp_err_t light_brightness_post_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+static esp_err_t ap_get_handler(httpd_req_t *req)
+{
+    httpd_resp_set_type(req, "application/json");
+    cJSON *root = cJSON_CreateObject();
+
+    cJSON_AddStringToObject(root, "ssid", get_ap_ssid());
+    cJSON_AddStringToObject(root, "pass", get_ap_pass());
+    const char *ap_data_raw = cJSON_Print(root);
+
+#if (DEBUG_HTTP)
+    ESP_LOGI(MODULE_HTTP, "ap data get: %s", ap_data_raw);
+#endif /* DEBUG_HTTP */
+
+    httpd_resp_sendstr(req, ap_data_raw);
+    free((void *)ap_data_raw);
+    cJSON_Delete(root);
+    return ESP_OK;
+}
+
+static esp_err_t ap_post_handler(httpd_req_t *req)
+{
+    int total_len = req->content_len;
+    int cur_len = 0;
+    char *buf = ((rest_server_context_t *)(req->user_ctx))->scratch;
+    int received = 0;
+    if (total_len >= SCRATCH_BUFSIZE) {
+        /* Respond with 500 Internal Server Error */
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "content too long");
+        return ESP_FAIL;
+    }
+    while (cur_len < total_len) {
+        received = httpd_req_recv(req, buf + cur_len, total_len);
+        if (received <= 0) {
+            /* Respond with 500 Internal Server Error */
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to post control value");
+            return ESP_FAIL;
+        }
+        cur_len += received;
+    }
+    buf[total_len] = '\0';
+
+    char *ssid = NULL;
+    cJSON *root = cJSON_Parse(buf);
+    struct cJSON *item_ssid = cJSON_GetObjectItem(root, "ssid");
+    if(NULL != item_ssid){
+        if (cJSON_String == item_ssid->type){
+            ssid = item_ssid->valuestring;
+        } else{
+            ESP_LOGW(MODULE_HTTP, "Can't be HERE json type 0x%01x", item_ssid->type);
+        }
+    }
+
+    char *pass = NULL;
+    struct cJSON *item_pass = cJSON_GetObjectItem(root, "pass");
+    if(NULL != item_pass){
+        if (cJSON_String == item_pass->type){
+            pass = item_pass->valuestring;
+        } else{
+            ESP_LOGW(MODULE_HTTP, "Can't be HERE json type 0x%01x", item_pass->type);
+        }
+    }
+
+    esp_err_t err = set_ap_settings(ssid, pass);
+
+#if (DEBUG_HTTP)
+    ESP_LOGI(MODULE_HTTP, "ap: %s, set to %s %s err %d", buf, ssid, pass, err);
+#else
+    UNUSED(err);
+#endif /* DEBUG_HTTP */
+
+    cJSON_Delete(root);
+    httpd_resp_sendstr(req, "Post control value successfully");
+    return ESP_OK;
+}
+
+
+static esp_err_t command_get_handler(httpd_req_t *req)
+{
+    int mode = snap_sw_command_get();
+
+    httpd_resp_set_type(req, "application/json");
+    cJSON *root = cJSON_CreateObject();
+
+    cJSON_AddNumberToObject(root, "mode", mode);
+    const char *command_data_raw = cJSON_Print(root);
+
+#if (DEBUG_HTTP)
+    ESP_LOGI(MODULE_HTTP, "command data get: %s", command_data_raw);
+#endif /* DEBUG_HTTP */
+
+    httpd_resp_sendstr(req, command_data_raw);
+    free((void *)command_data_raw);
+    cJSON_Delete(root);
+    return ESP_OK;
+}
+
 static esp_err_t command_post_handler(httpd_req_t *req)
 {
     int total_len = req->content_len;
@@ -259,6 +355,35 @@ static esp_err_t command_post_handler(httpd_req_t *req)
 
 
 extern uint16_t g_esp_rc_channel[];
+
+static esp_err_t rc_data_get_handler(httpd_req_t *req)
+{
+    httpd_resp_set_type(req, "application/json");
+    cJSON *root = cJSON_CreateObject();
+
+    for(int i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++){
+    
+        char nth_rc_channel[CHANNEL_TAG_LENGTH];
+        snprintf(nth_rc_channel, CHANNEL_TAG_LENGTH, "ch_%d", i);
+        nth_rc_channel[CHANNEL_TAG_LENGTH-1] = 0;
+        
+        cJSON_AddNumberToObject(root, nth_rc_channel, g_esp_rc_channel[i]);
+#if (DEBUG_HTTP)
+        ESP_LOGI(MODULE_HTTP, "RC get channel %d value %d", i, g_esp_rc_channel[i]);
+#endif /* DEBUG_HTTP */
+    }
+    const char *rc_data_raw = cJSON_Print(root);
+
+#if (DEBUG_HTTP)
+    ESP_LOGI(MODULE_HTTP, "RC data get: %s", rc_data_raw);
+#endif /* DEBUG_HTTP */
+
+    httpd_resp_sendstr(req, rc_data_raw);
+    free((void *)rc_data_raw);
+    cJSON_Delete(root);
+    return ESP_OK;
+}
+
 static esp_err_t rc_data_post_handler(httpd_req_t *req)
 {
     int total_len = req->content_len;
@@ -333,33 +458,6 @@ static esp_err_t system_info_get_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
-static esp_err_t rc_data_get_handler(httpd_req_t *req)
-{
-    httpd_resp_set_type(req, "application/json");
-    cJSON *root = cJSON_CreateObject();
-
-    for(int i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++){
-    
-        char nth_rc_channel[CHANNEL_TAG_LENGTH];
-        snprintf(nth_rc_channel, CHANNEL_TAG_LENGTH, "ch_%d", i);
-        nth_rc_channel[CHANNEL_TAG_LENGTH-1] = 0;
-        
-        cJSON_AddNumberToObject(root, nth_rc_channel, g_esp_rc_channel[i]);
-#if (DEBUG_HTTP)
-        ESP_LOGI(MODULE_HTTP, "RC get channel %d value %d", i, g_esp_rc_channel[i]);
-#endif /* DEBUG_HTTP */
-    }
-    const char *rc_data_raw = cJSON_Print(root);
-
-#if (DEBUG_HTTP)
-    ESP_LOGI(MODULE_HTTP, "RC data get: %s", rc_data_raw);
-#endif /* DEBUG_HTTP */
-
-    httpd_resp_sendstr(req, rc_data_raw);
-    free((void *)rc_data_raw);
-    cJSON_Delete(root);
-    return ESP_OK;
-}
 
 static httpd_handle_t g_rest_server = NULL;
 
@@ -370,7 +468,7 @@ rest_server_context_t g_rest_context;
 httpd_uri_t common_get_uri = {
 	.uri = "/*",
 	.method = HTTP_GET,
-	.handler = rest_common_get_handler,
+	.handler = common_get_handler,
 	.user_ctx = &g_rest_context
 };
 
@@ -382,11 +480,35 @@ httpd_uri_t light_brightness_post_uri = {
 	.user_ctx = &g_rest_context
 };
 
+/* URI handler for posting  command */
+httpd_uri_t ap_post_uri = {
+	.uri = "/api/v1/ap/post",
+	.method = HTTP_POST,
+	.handler = ap_post_handler,
+	.user_ctx = &g_rest_context
+};
+
+/* URI handler for fetching command */
+httpd_uri_t ap_get_uri = {
+	.uri = "/api/v1/ap/raw",
+	.method = HTTP_GET,
+	.handler = ap_get_handler,
+	.user_ctx = &g_rest_context
+};
+
 /* URI handler for posting command */
 httpd_uri_t command_post_uri = {
 	.uri = "/api/v1/command/post",
 	.method = HTTP_POST,
 	.handler = command_post_handler,
+	.user_ctx = &g_rest_context
+};
+
+/* URI handler for fetching command */
+httpd_uri_t command_get_uri = {
+	.uri = "/api/v1/command/raw",
+	.method = HTTP_GET,
+	.handler = command_get_handler,
 	.user_ctx = &g_rest_context
 };
 
@@ -420,8 +542,9 @@ esp_err_t start_rest_server(const char *base_path)
     //REST_CHECK(rest_context, "No memory for rest context", err);
     strlcpy(g_rest_context.base_path, base_path, sizeof(g_rest_context.base_path));
 
-    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    config.uri_match_fn = httpd_uri_match_wildcard;
+    httpd_config_t config    = HTTPD_DEFAULT_CONFIG();
+    config.max_uri_handlers  = RESTFUL_API_MAX_URI_HANDLERS;
+    config.uri_match_fn      = httpd_uri_match_wildcard;
 
     ESP_LOGI(MODULE_HTTP, "Starting HTTP Server");
 
@@ -433,7 +556,13 @@ esp_err_t start_rest_server(const char *base_path)
 
     httpd_register_uri_handler(g_rest_server, &rc_data_post_uri);
 
+    httpd_register_uri_handler(g_rest_server, &command_get_uri);
+
     httpd_register_uri_handler(g_rest_server, &command_post_uri);
+
+    httpd_register_uri_handler(g_rest_server, &ap_get_uri);
+
+    httpd_register_uri_handler(g_rest_server, &ap_post_uri);
 
     httpd_register_uri_handler(g_rest_server, &light_brightness_post_uri);
 
@@ -448,17 +577,23 @@ esp_err_t stop_rest_server(void)
 {
     ESP_LOGI(MODULE_HTTP, "Stoping HTTP Server");
 
-    httpd_unregister_uri_handler(g_rest_server, common_get_uri.uri, common_get_uri.method);
-
-    httpd_unregister_uri_handler(g_rest_server, light_brightness_post_uri.uri, light_brightness_post_uri.method);
+    httpd_unregister_uri_handler(g_rest_server, system_info_get_uri.uri, system_info_get_uri.method);
 
     httpd_unregister_uri_handler(g_rest_server, rc_data_get_uri.uri, rc_data_get_uri.method);
 
     httpd_unregister_uri_handler(g_rest_server, rc_data_post_uri.uri, rc_data_post_uri.method);
 
-    httpd_unregister_uri_handler(g_rest_server, system_info_get_uri.uri, system_info_get_uri.method);
+    httpd_unregister_uri_handler(g_rest_server, command_get_uri.uri, command_get_uri.method);
 
     httpd_unregister_uri_handler(g_rest_server, command_post_uri.uri, command_post_uri.method);
+
+    httpd_unregister_uri_handler(g_rest_server, command_get_uri.uri, ap_get_uri.method);
+
+    httpd_unregister_uri_handler(g_rest_server, command_post_uri.uri, ap_post_uri.method);
+
+    httpd_unregister_uri_handler(g_rest_server, light_brightness_post_uri.uri, light_brightness_post_uri.method);
+
+    httpd_unregister_uri_handler(g_rest_server, common_get_uri.uri, common_get_uri.method);
 
     ESP_ERROR_CHECK(httpd_stop(g_rest_server));
 

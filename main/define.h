@@ -31,6 +31,8 @@ extern "C" {
 
 #define CHANNEL_TAG_LENGTH                  8
 
+#define RESTFUL_API_MAX_URI_HANDLERS        15
+
 
 #ifdef __cplusplus
 }
