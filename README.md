@@ -2,65 +2,66 @@
 
 It's an education version of Snap Air Unit.
 
-注：md文件使用Markdown语法，详细请参考以下文档：
-1. [Github工程中的Markdown语言应用](https://blog.csdn.net/lida2003/article/details/127828153)
-2. [MarkDown教程](https://www.runoob.com/markdown/md-tutorial.html)
+*Note：md file is using Markdown language，details about how to, please check following documents：*
+1. [Markdown language used in github project](https://blog.csdn.net/lida2003/article/details/127828153)
+2. [MarkDown tutorial](https://www.runoob.com/markdown/md-tutorial.html)
 
 # 
 
-工作方式：GitHub issue + tag的方式
+How to seedup work progress：issues + tags
 
-## 任务标签
+## Issue Tags
 
-**鉴于项目涉及工种(硬件，软件，测试等)广泛，为更好的协调工作，形成阶段性成果，采用GitHub issue + tag的方式形成各种工作内容，详见下面分类：**
+**The project involves a wide range of types of work (hardware, software, testing, etc.). In order to better coordinate work and form phased achievements, GitHub issue+tag is used to form various work contents. See the following classification for details：**
 
-* Task：涉及SnapAirUnit工程代码的任务(比如：基线版本，编译构建和烧录指南等等)
-* Feature：新增功能特性(比如：新增UDP forward x指令等等)
-* Enhancement：功能优化(比如：算法从原来的O(n)变成O(1)等等)
-* Bug：测试 & 使用过程发现的问题(比如：手机控制往前运动，结果飞机为按照期望运动等等)
+* Task：Tasks involving SnapAirUnit project code (such as: baseline version, compilation, construction and burning guide, etc.)
+* Feature：New features (such as new UDP forward x instructions)
+* Enhancement：Function optimization (for example, the algorithm changes from O (n) to O (1), etc.)
+* Bug：Problems found in the process of testing and using (for example, the mobile phone controls the forward movement, and the aircraft moves as expected, etc.)
 
-## 任务描述
+## Task Description
 
-**为了快速理解任务，以下标签用于简单描述：**
+**To quickly understand the task, the following tags are used for simple description：**
 
-* documentation：文档工作，建议大家采用md语法。
-* duplicate：重复任务，请研发直接将重复的任务号批注后，assign给需求派发人员
+* documentation：It is recommended that you use md syntax for document work.
+* duplicate：For repeated tasks, please R&D directly annotate the repeated task number and assign it to the demand dispatching personnel
 * good first issue：--- bla..bla.. ---
-* help wanted：需要帮助，请研发将需要帮助的内容批注后，assign给需求派发人员
-* invalid：无效任务，请研发将无效原因批注后，assign给需求派发人员
-* question：存在问题(需求不清，存在疑点或者设计冲突)，请研发分析问题后，批注意见，assign给需求派发人员
-* wontfix：通常是经过需求派发人员协调讨论决策后，批注rootcause后标记
+* help wanted：If you need help, please annotate the content you need and assign it to the person who needs it.
+* invalid：Invalid task, please R&D annotate the invalid reason and assign it to the demand dispatcher
+* question：If there are problems (unclear requirements, doubtful points or design conflicts), please make comments after the R&D analyzes the problems and assign them to the personnel assigned by the requirements.
+* wontfix：It is usually marked after the requirement dispatcher coordinates, discusses and makes decisions, and comments rootcause.
 
-## Git代码提交
+## Git Code Commit
 
-**为了更好的理解代码，比对分析代码，请每次commit提交代码注意以下工作：**
+**In order to better understand the code and compare and analyze the code, please pay attention to the following work each time you submit the code：**
 
-1. 使用的注释请用英文，不要使用中文字符。
-2. 注释请言简意赅，并将在注释最前方将issue编号标注上"[#2]"。
-3. 注释内容复杂，且不存在对应issue，请研发根据技术内容自建issue。
+1. Please use English instead of Chinese characters for notes.
+2. Please be brief and comprehensive, and mark the issue number with "[# 2]" at the front of the note.
+3. The content of notes is complex, and there is no corresponding issue. Please develop your own issue according to the technical content.
 
-*注：工作细节决定后续调试分析的有条不紊，确保可分析、可追溯、可以找到rootcause，研发讲究的脚踏实地，循序渐进。*
+*Note: The details of the work determine the orderliness of the subsequent debugging analysis, to ensure that the root cause can be analyzed, traced and found, and that the research and development should be down-to-earth and step by step.*
 
 # Project
 
 ## Coding rule
-* 基线版本以后，新增代码所有注释请采用英文。 //预防某些编译器及IDE工具无法很好处理汉字
-* 编码规范使用公司统一规范，如公司没有强制，请开发团队自建规范，并补充更新到文档中。  //建议考虑维持SDK基线版本编码风格
+* After the baseline version, please use English for all comments of the new code // Prevent some compilers and IDE tools from handling Chinese characters well
+* The coding specification shall be the unified specification of the company. If the company does not enforce it, the development team shall build its own specification and update it to the document // It is recommended to consider maintaining the SDK baseline version coding style
 
 ## VersionControl
-[软件版本管理原则](https://blog.csdn.net/lida2003/article/details/36617839)
-版本控制规范：x.y.commitid-clean/dirty/release
-* x: 主版本号,由项目负责人维护
-* y: 次版本号,由版本管理人维护
-* commitid: 前7位，比如下面最初的版本，commit id = 39034f8
-* clean/dirty/release: clean(与git版本一致), dirty(本地版本), release(发布版本)
+[Software version management principles](https://blog.csdn.net/lida2003/article/details/36617839)
+Version control specification：x.y.commitid-clean/dirty/release
+* x: Major version number, maintained by the project leader
+* y: The minor version number is maintained by the version manager
+* commitid: The first 7 digits, such as the following initial version，commit id = 39034f8
+* clean/dirty/release: Clean (consistent with git version), dirty (local version), release (release version)
 
 
-> commit 39034f800063292df29c18e4002147890ce5a131 (HEAD -> main, origin/main, origin/HEAD)
-> Author: aocodarc <105714332+aocodarc@users.noreply.github.com>
-> Date:   Sat Nov 12 16:44:52 2022 +0800
+> commit b42cee176eb4a7592c29d2c04fcee09b11e6be18 (HEAD -> main, origin/main, origin/HEAD)
+> Author: Daniel Li <lida_mail@163.com>
+> Date:   Fri Dec 23 14:17:57 2022 +0800
 > 
->     Initial commit
+>    [#51] Add wireless get/post RESTful API
+
 
 # Document
 
@@ -72,15 +73,15 @@ It's an education version of Snap Air Unit.
     │   └──> How_to_Connect.md
     └──> README.md
 
-## 1. 编译构建固件方法
+## 1. Compile and build firmware method
 
-详见：[Build_and_Flash.md](./docs/Build_and_Flash.md)
+Details：[Build_and_Flash.md](./docs/Build_and_Flash.md)
 
-## 2. 硬件如何连接飞控
+## 2. How to connect hardware to flight control
 
-详见：[How_to_Connect.md](./docs/How_to_Connect.md)
+Details：[How_to_Connect.md](./docs/How_to_Connect.md)
 
-## 3. 如何使用SnapAirUnit
+## 3. How to use SnapAirUnit
 
-详见：[How_to_Use.md](./docs/How_to_Use.md)
+Details：[How_to_Use.md](./docs/How_to_Use.md)
 
