@@ -29,6 +29,7 @@
  * basic header files
  */
 #include "define.h"
+#include "handle.h"
 
 /*
  * module header files
@@ -38,6 +39,7 @@
 #include "msp_protocol.h"
 #include "mode.h"
 #include "factory_setting.h"
+#include "process.h"
 
 /*
  * service header files
@@ -207,9 +209,84 @@ static esp_err_t light_brightness_post_handler(httpd_req_t *req)
 
     ESP_LOGI(MODULE_HTTP, "Light control: red = %d, green = %d, blue = %d", red, green, blue);
     cJSON_Delete(root);
-    httpd_resp_sendstr(req, "Post control value successfully");
+    httpd_resp_sendstr(req, RESTFUL_API_RESPONSE_OK);
     return ESP_OK;
 }
+
+static esp_err_t wireless_get_handler(httpd_req_t *req)
+{
+    int mode = snap_sw_mode_get();
+
+    httpd_resp_set_type(req, "application/json");
+    cJSON *root = cJSON_CreateObject();
+
+    cJSON_AddNumberToObject(root, "wireless", mode);
+    const char *wireless_data_raw = cJSON_Print(root);
+
+#if (DEBUG_HTTP)
+    ESP_LOGI(MODULE_HTTP, "wireless data get: %s", wireless_data_raw);
+#endif /* DEBUG_HTTP */
+
+    httpd_resp_sendstr(req, wireless_data_raw);
+    free((void *)wireless_data_raw);
+    cJSON_Delete(root);
+    return ESP_OK;
+}
+
+static esp_err_t wireless_post_handler(httpd_req_t *req)
+{
+    int total_len = req->content_len;
+    int cur_len = 0;
+    char *buf = ((rest_server_context_t *)(req->user_ctx))->scratch;
+    int received = 0;
+    if (total_len >= SCRATCH_BUFSIZE) {
+        /* Respond with 500 Internal Server Error */
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "content too long");
+        return ESP_FAIL;
+    }
+    while (cur_len < total_len) {
+        received = httpd_req_recv(req, buf + cur_len, total_len);
+        if (received <= 0) {
+            /* Respond with 500 Internal Server Error */
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to post control value");
+            return ESP_FAIL;
+        }
+        cur_len += received;
+    }
+    buf[total_len] = '\0';
+
+    int mode = SW_MODE_NULL;
+    cJSON *root = cJSON_Parse(buf);
+    struct cJSON *item = cJSON_GetObjectItem(root, "wireless");
+    if(NULL != item){
+        if(cJSON_Number == item->type){
+            mode = item->valueint;
+        } else if (cJSON_String == item->type){
+            mode = atoi(item->valuestring);
+        } else{
+            ESP_LOGW(MODULE_HTTP, "Can't be HERE json type 0x%01x", item->type);
+        }
+    }
+
+    int curr = snap_sw_mode_get();
+
+#if (DEBUG_HTTP)
+    ESP_LOGI(MODULE_HTTP, "wireless: %s, set to %d, curr %d", buf, mode, curr);
+#endif /* DEBUG_HTTP */
+
+    if(mode >= SW_MODE_NULL){
+        httpd_resp_sendstr(req, RESTFUL_API_RESPONSE_INVALID);
+    } else if( curr == mode){
+        httpd_resp_sendstr(req, RESTFUL_API_RESPONSE_ERR);
+    } else{
+        httpd_resp_sendstr(req, RESTFUL_API_RESPONSE_OK);
+        ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, MODE_KEY_SHORT_PRESSED, &mode, sizeof(mode), portMAX_DELAY));
+    }
+
+    cJSON_Delete(root);
+    return ESP_OK;
+}
+
 
 static esp_err_t sta_get_handler(httpd_req_t *req)
 {
@@ -273,7 +350,13 @@ static esp_err_t sta_post_handler(httpd_req_t *req)
         }
     }
 
-    esp_err_t err = set_sta_settings(ssid, pass);
+    esp_err_t err;
+    if(strlen(pass) >= 8){
+        err = set_sta_settings(ssid, pass);
+        httpd_resp_sendstr(req, RESTFUL_API_RESPONSE_OK);
+    } else {
+        httpd_resp_sendstr(req, RESTFUL_API_RESPONSE_INVALID);
+    }
 
 #if (DEBUG_HTTP)
     ESP_LOGI(MODULE_HTTP, "sta: %s, set to %s %s err %d", buf, ssid, pass, err);
@@ -282,7 +365,7 @@ static esp_err_t sta_post_handler(httpd_req_t *req)
 #endif /* DEBUG_HTTP */
 
     cJSON_Delete(root);
-    httpd_resp_sendstr(req, "Post control value successfully");
+    
     return ESP_OK;
 }
 
@@ -349,7 +432,13 @@ static esp_err_t ap_post_handler(httpd_req_t *req)
         }
     }
 
-    esp_err_t err = set_ap_settings(ssid, pass);
+    esp_err_t err;
+    if(strlen(pass) >= 8){
+        err = set_ap_settings(ssid, pass);
+        httpd_resp_sendstr(req, RESTFUL_API_RESPONSE_OK);
+    } else {
+        httpd_resp_sendstr(req, RESTFUL_API_RESPONSE_INVALID);
+    }
 
 #if (DEBUG_HTTP)
     ESP_LOGI(MODULE_HTTP, "ap: %s, set to %s %s err %d", buf, ssid, pass, err);
@@ -358,7 +447,7 @@ static esp_err_t ap_post_handler(httpd_req_t *req)
 #endif /* DEBUG_HTTP */
 
     cJSON_Delete(root);
-    httpd_resp_sendstr(req, "Post control value successfully");
+    httpd_resp_sendstr(req, RESTFUL_API_RESPONSE_OK);
     return ESP_OK;
 }
 
@@ -425,7 +514,7 @@ static esp_err_t command_post_handler(httpd_req_t *req)
 #endif /* DEBUG_HTTP */
 
     cJSON_Delete(root);
-    httpd_resp_sendstr(req, "Post control value successfully");
+    httpd_resp_sendstr(req, RESTFUL_API_RESPONSE_OK);
     return ESP_OK;
 }
 
@@ -510,7 +599,7 @@ static esp_err_t rc_data_post_handler(httpd_req_t *req)
     }
 
     cJSON_Delete(root);
-    httpd_resp_sendstr(req, "Post control value successfully");
+    httpd_resp_sendstr(req, RESTFUL_API_RESPONSE_OK);
     return ESP_OK;
 }
 
@@ -555,6 +644,23 @@ httpd_uri_t light_brightness_post_uri = {
 	.handler = light_brightness_post_handler,
 	.user_ctx = &g_rest_context
 };
+
+/* URI handler for posting command */
+httpd_uri_t wireless_post_uri = {
+	.uri = "/api/v1/wireless/post",
+	.method = HTTP_POST,
+	.handler = wireless_post_handler,
+	.user_ctx = &g_rest_context
+};
+
+/* URI handler for fetching command */
+httpd_uri_t wireless_get_uri = {
+	.uri = "/api/v1/wireless/raw",
+	.method = HTTP_GET,
+	.handler = wireless_get_handler,
+	.user_ctx = &g_rest_context
+};
+
 
 /* URI handler for posting  command */
 httpd_uri_t sta_post_uri = {
@@ -661,6 +767,10 @@ esp_err_t start_rest_server(const char *base_path)
 
     httpd_register_uri_handler(g_rest_server, &sta_post_uri);
 
+    httpd_register_uri_handler(g_rest_server, &wireless_get_uri);
+
+    httpd_register_uri_handler(g_rest_server, &wireless_post_uri);
+
     httpd_register_uri_handler(g_rest_server, &light_brightness_post_uri);
 
     httpd_register_uri_handler(g_rest_server, &common_get_uri);
@@ -691,6 +801,10 @@ esp_err_t stop_rest_server(void)
     httpd_unregister_uri_handler(g_rest_server, sta_get_uri.uri, sta_get_uri.method);
 
     httpd_unregister_uri_handler(g_rest_server, sta_post_uri.uri, sta_post_uri.method);
+
+    httpd_unregister_uri_handler(g_rest_server, wireless_get_uri.uri, wireless_get_uri.method);
+
+    httpd_unregister_uri_handler(g_rest_server, wireless_post_uri.uri, wireless_post_uri.method);
 
     httpd_unregister_uri_handler(g_rest_server, light_brightness_post_uri.uri, light_brightness_post_uri.method);
 

@@ -32,6 +32,10 @@ extern "C" {
 #define CHANNEL_TAG_LENGTH                  8
 
 #define RESTFUL_API_MAX_URI_HANDLERS        15
+#define RESTFUL_API_RESPONSE_OK             TELLO_RESPONSE_OK
+#define RESTFUL_API_RESPONSE_INVALID        "invalid"
+#define RESTFUL_API_RESPONSE_ERR            TELLO_RESPONSE_ERR
+
 
 
 #ifdef __cplusplus

@@ -85,7 +85,7 @@ void mode_key_pressed(void* arg)
     }
 
     ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, MODE_KEY_SHORT_PRESSED, NULL, 0, portMAX_DELAY));
-    ESP_ERROR_CHECK(esp_event_post(EVT_PROCESS, MODE_KEY_SHORT_PRESSED, NULL, 0, portMAX_DELAY));
+    //ESP_ERROR_CHECK(esp_event_post(EVT_PROCESS, MODE_KEY_SHORT_PRESSED, NULL, 0, portMAX_DELAY));
 }
 
 void mode_key_released(void* arg)

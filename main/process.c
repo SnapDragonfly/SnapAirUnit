@@ -86,27 +86,41 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
 
     switch(id){
         case MODE_KEY_SHORT_PRESSED:
-            if(TIME_DIFF_IN_MS(press_rel_time, curr_time) > CONFIG_KEY_RESERVE_TIME_IN_MS){
-                next_mode = snap_sw_mode_next();
-            }
-            if (TIME_DIFF_IN_MS(press_act_time, curr_time) < CONFIG_KEY_RESERVE_TIME_IN_MS){
-                next_mode++;
-                ESP_LOGI(MODULE_EVT_PROC, "act mode=%d,  %lld < %d in ms", 
-                        next_mode, TIME_DIFF_IN_MS(press_act_time, curr_time), CONFIG_KEY_RESERVE_TIME_IN_MS);
-                return;
-            }
-            press_act_time = curr_time;
+            if(NULL == event_data ){
+                if(TIME_DIFF_IN_MS(press_rel_time, curr_time) > CONFIG_KEY_RESERVE_TIME_IN_MS){
+                    next_mode = snap_sw_mode_next();
+                }
+                if (TIME_DIFF_IN_MS(press_act_time, curr_time) < CONFIG_KEY_RESERVE_TIME_IN_MS){
+                    next_mode++;
+                    ESP_LOGI(MODULE_EVT_PROC, "act mode=%d,  %lld < %d in ms", 
+                            next_mode, TIME_DIFF_IN_MS(press_act_time, curr_time), CONFIG_KEY_RESERVE_TIME_IN_MS);
+                    return;
+                }
+                press_act_time = curr_time;
 
-            enum_mode_t prev_mode = snap_sw_mode_get();
-            ret = snap_sw_mode_switch(next_mode);
+                enum_mode_t prev_mode = snap_sw_mode_get();
+                ret = snap_sw_mode_switch(next_mode);
+
+                led_mode_next((struct blink_led *)g_led_handle);
 
 #if (DEBUG_EVT_PROC)
-            ESP_LOGI(MODULE_EVT_PROC, "Switch from %d to %d, ret = %d", prev_mode, snap_sw_mode_get(), ret);
+                ESP_LOGI(MODULE_EVT_PROC, "Switch from %d to %d, ret = %d", prev_mode, snap_sw_mode_get(), ret);
 #else
-            UNUSED(ret);
+                UNUSED(ret);
 #endif /*DEBUG_EVT_PROC*/
 
-            led_mode_next((struct blink_led *)g_led_handle);
+            }else{
+                int mode = *((int *)event_data);
+                ret = snap_sw_mode_switch(mode);
+                led_mode_set((struct blink_led *)g_led_handle, mode);
+#if (DEBUG_EVT_PROC)
+                ESP_LOGI(MODULE_EVT_PROC, "Switch to %d, ret = %d", snap_sw_mode_get(), ret);
+#else
+                UNUSED(ret);
+#endif /*DEBUG_EVT_PROC*/
+
+            }
+
 
             break;
 
