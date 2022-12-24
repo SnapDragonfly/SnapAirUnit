@@ -30,6 +30,7 @@
 #include "module.h"
 #include "mode.h"
 #include "key.h"
+#include "cmd_nvs.h"
 
 /*
  * service header files
@@ -174,6 +175,7 @@ esp_err_t snap_sw_mode_switch(enum_mode_t mode)
         }
 
     g_sw_mode = mode;
+    (void)nvs_set_wireless_mode(g_sw_mode);
 
     return ESP_OK;
 }
@@ -187,15 +189,47 @@ void snap_sw_mode_init(void)
      */
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
+    ESP_ERROR_CHECK(esp_netif_init());
+    //esp_netif_create_default_wifi_ap();
+}
+
+void snap_wireless_mode_init(void)
+{
     /*
      * Application & service mode
      * ToDO:
      * Please set to AP by Spec, currently used for test(STA)
      */
-    g_sw_mode = SW_MODE_WIFI_STA;
-    ESP_ERROR_CHECK(esp_netif_init());
-    //esp_netif_create_default_wifi_ap();
+    uint16_t mode;
+    esp_err_t err = nvs_get_wireless_mode(&mode);
+    if(ESP_OK != err){
+        g_sw_mode = SW_MODE_WIFI_AP;
+        (void)nvs_set_wireless_mode(g_sw_mode);
+    } else {
+        g_sw_mode = mode;
+    }
 
-    ESP_LOGI(MODULE_MODE, "mode_init");
+    switch(g_sw_mode){
+        case SW_MODE_WIFI_AP:
+            wifi_init_softap();
+            break;
+
+        case SW_MODE_WIFI_STA:
+            wifi_init_sta();
+            break;
+
+        case SW_MODE_BT_SPP:
+            bt_init_spp();
+            break;
+
+        default:
+            g_sw_mode = SW_MODE_WIFI_AP;
+            (void)nvs_set_wireless_mode(g_sw_mode);
+            wifi_init_softap();
+            break;
+    }
+
+    ESP_LOGI(MODULE_MODE, "mode_init err = %d, mode = %d, g_sw_mode = %d", err, mode, g_sw_mode);
 }
+
 

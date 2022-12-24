@@ -102,7 +102,7 @@ void app_init(void)
     sanp_sw_rest_init();
     ESP_ERROR_CHECK(start_udp_server());
     ESP_ERROR_CHECK(start_udp_client());
-    wifi_init_sta();
+    snap_wireless_mode_init();
     ESP_ERROR_CHECK(start_message_center());
 
     printf("%s: free_heap_size = %d\n", DEVICE_NAME_SNAP_AIR_UNIT, esp_get_free_heap_size());

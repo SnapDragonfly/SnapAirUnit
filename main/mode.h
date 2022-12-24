@@ -40,6 +40,7 @@ enum_mode_t snap_sw_mode_next(void);
 enum_mode_t snap_sw_mode_get(void);
 
 void snap_sw_mode_init(void);
+void snap_wireless_mode_init(void);
 
 
 #ifdef __cplusplus

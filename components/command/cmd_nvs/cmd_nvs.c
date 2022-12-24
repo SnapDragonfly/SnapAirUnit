@@ -622,6 +622,7 @@ void register_nvs(void)
 #define KEY_AP_PASS    "appass"
 #define KEY_STA_SSID   "stssid"
 #define KEY_STA_PASS   "stpass"
+#define WIRELESS_MODE  "wireless"
 
 esp_err_t nvs_get_wifi_ap(char * ssid, size_t ssid_len, char * pass, size_t pass_len)
 {
@@ -683,6 +684,31 @@ esp_err_t nvs_get_wifi_sta(char * ssid, size_t ssid_len, char * pass, size_t pas
     return err;
 }
 
+esp_err_t nvs_get_wireless_mode(uint16_t* mode)
+{
+    nvs_handle_t nvs;
+    esp_err_t err;
+
+    if (NULL == mode){
+        return ESP_FAIL;
+    }
+
+    err = nvs_open(current_namespace, NVS_READONLY, &nvs);
+    if (err != ESP_OK) {
+        return err;
+    }
+
+    err = nvs_get_u16(nvs, WIRELESS_MODE, mode);
+    if (err != ESP_OK) {
+        nvs_close(nvs);
+        return err;
+    }
+
+    nvs_close(nvs);
+    return err;
+}
+
+
 esp_err_t nvs_set_wifi_ap(char * ssid, char * pass)
 {
     nvs_handle_t nvs;
@@ -741,7 +767,27 @@ esp_err_t nvs_set_wifi_sta(char * ssid, char * pass)
 
     nvs_close(nvs);
     return err;
-
 }
+
+esp_err_t nvs_set_wireless_mode(uint16_t mode)
+{
+    nvs_handle_t nvs;
+    esp_err_t err;
+
+    err = nvs_open(current_namespace, NVS_READWRITE, &nvs);
+    if (err != ESP_OK) {
+        return err;
+    }
+
+    err = nvs_set_u16(nvs, WIRELESS_MODE, mode);
+    if (err != ESP_OK) {
+        nvs_close(nvs);
+        return err;
+    }
+
+    nvs_close(nvs);
+    return err;
+}
+
 
 

@@ -18,8 +18,10 @@ void register_nvs(void);
 // for nvs storage
 esp_err_t nvs_get_wifi_ap(char * ssid, size_t ssid_len, char * pass, size_t pass_len);
 esp_err_t nvs_get_wifi_sta(char * ssid, size_t ssid_len, char * pass, size_t pass_len);
+esp_err_t nvs_get_wireless_mode(uint16_t* mode);
 esp_err_t nvs_set_wifi_ap(char * ssid, char * pass);
 esp_err_t nvs_set_wifi_sta(char * ssid, char * pass);
+esp_err_t nvs_set_wireless_mode(uint16_t mode);
 
 
 #ifdef __cplusplus
