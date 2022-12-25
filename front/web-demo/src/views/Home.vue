@@ -10,7 +10,11 @@
               <br>
               <span class="grey--text">IDF version: {{sdk_version}}</span>
               <br>
+              <span class="grey--text">ESP model: {{model}}</span>
+              <br>
               <span class="grey--text">ESP cores: {{cores}}</span>
+              <br>
+              <span class="grey--text">ESP revision: {{revision}}</span>
             </div>
           </v-card-title>
         </v-card>
@@ -25,7 +29,9 @@ export default {
     return {
       app_version: null,
       sdk_version: null,
-      cores: null
+      model: null,
+      cores: null,
+      revision: null
     };
   },
   mounted() {
@@ -34,7 +40,9 @@ export default {
       .then(data => {
         this.app_version = data.data.app_version;
         this.sdk_version = data.data.sdk_version;
+        this.model = data.data.model;
         this.cores = data.data.cores;
+        this.revision = data.data.revision;
       })
       .catch(error => {
         console.log(error);

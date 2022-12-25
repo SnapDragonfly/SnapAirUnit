@@ -1,8 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-import Chart from './views/Chart.vue'
-import Light from './views/Light.vue'
+import Wireless from './views/Wireless.vue'
 import RcChannel from './views/RcChannel.vue'
 
 Vue.use(Router)
@@ -17,14 +16,9 @@ export default new Router({
       component: Home
     },
     {
-      path: '/chart',
-      name: 'chart',
-      component: Chart
-    },
-    {
-      path: '/light',
-      name: 'light',
-      component: Light
+      path: '/wireless',
+      name: 'wireless',
+      component: Wireless
     },
     {
       path: '/rc',

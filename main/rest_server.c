@@ -144,75 +144,6 @@ static esp_err_t common_get_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
-/* Simple handler for light brightness control */
-static esp_err_t light_brightness_post_handler(httpd_req_t *req)
-{
-    int total_len = req->content_len;
-    int cur_len = 0;
-    char *buf = ((rest_server_context_t *)(req->user_ctx))->scratch;
-    int received = 0;
-    if (total_len >= SCRATCH_BUFSIZE) {
-        /* Respond with 500 Internal Server Error */
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "content too long");
-        return ESP_FAIL;
-    }
-    while (cur_len < total_len) {
-        received = httpd_req_recv(req, buf + cur_len, total_len);
-        if (received <= 0) {
-            /* Respond with 500 Internal Server Error */
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to post control value");
-            return ESP_FAIL;
-        }
-        cur_len += received;
-    }
-    buf[total_len] = '\0';
-    ESP_LOGI(MODULE_HTTP, "Light control: %s", buf);
-
-    cJSON *root = cJSON_Parse(buf);
-
-    int red   = 160;
-    int green = 160;
-    int blue  = 160;
-    struct cJSON *item = cJSON_GetObjectItem(root, "red");
-    if(NULL != item){
-        if(cJSON_Number == item->type){
-            red = item->valueint;
-        }else if(cJSON_String == item->type){
-            red = atoi(item->valuestring);
-        }else{
-            ESP_LOGW(MODULE_HTTP, "Can't be HERE json type 0x%01x", item->type);
-        }
-    }
-
-
-    item = cJSON_GetObjectItem(root, "green");
-    if(NULL != item){
-        if(cJSON_Number == item->type){
-            green = item->valueint;
-        }else if(cJSON_String == item->type){
-            green = atoi(item->valuestring);
-        }else{
-            ESP_LOGW(MODULE_HTTP, "Can't be HERE json type 0x%01x", item->type);
-        }
-    }
-
-    item = cJSON_GetObjectItem(root, "blue");
-    if(NULL != item){
-        if(cJSON_Number == item->type){
-            blue = item->valueint;
-        }else if(cJSON_String == item->type){
-            blue = atoi(item->valuestring);
-        }else{
-            ESP_LOGW(MODULE_HTTP, "Can't be HERE json type 0x%01x", item->type);
-        }
-    }
-
-    ESP_LOGI(MODULE_HTTP, "Light control: red = %d, green = %d, blue = %d", red, green, blue);
-    cJSON_Delete(root);
-    httpd_resp_sendstr(req, RESTFUL_API_RESPONSE_OK);
-    return ESP_OK;
-}
-
 static esp_err_t wireless_get_handler(httpd_req_t *req)
 {
     int mode = snap_sw_mode_get();
@@ -637,14 +568,6 @@ httpd_uri_t common_get_uri = {
 	.user_ctx = &g_rest_context
 };
 
-/* URI handler for light brightness control */
-httpd_uri_t light_brightness_post_uri = {
-	.uri = "/api/v1/light/brightness",
-	.method = HTTP_POST,
-	.handler = light_brightness_post_handler,
-	.user_ctx = &g_rest_context
-};
-
 /* URI handler for posting command */
 httpd_uri_t wireless_post_uri = {
 	.uri = "/api/v1/wireless/post",
@@ -771,8 +694,6 @@ esp_err_t start_rest_server(const char *base_path)
 
     httpd_register_uri_handler(g_rest_server, &wireless_post_uri);
 
-    httpd_register_uri_handler(g_rest_server, &light_brightness_post_uri);
-
     httpd_register_uri_handler(g_rest_server, &common_get_uri);
 
     return ESP_OK;
@@ -805,8 +726,6 @@ esp_err_t stop_rest_server(void)
     httpd_unregister_uri_handler(g_rest_server, wireless_get_uri.uri, wireless_get_uri.method);
 
     httpd_unregister_uri_handler(g_rest_server, wireless_post_uri.uri, wireless_post_uri.method);
-
-    httpd_unregister_uri_handler(g_rest_server, light_brightness_post_uri.uri, light_brightness_post_uri.method);
 
     httpd_unregister_uri_handler(g_rest_server, common_get_uri.uri, common_get_uri.method);
 
