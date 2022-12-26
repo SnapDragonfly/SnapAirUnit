@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(APP_VER_MAJOR "0")
-set(APP_VER_MINOR "1")
+set(APP_VER_MINOR "2")
 
 set(EXTRA_COMPONENT_DIRS "components/button" 
                          "components/command")

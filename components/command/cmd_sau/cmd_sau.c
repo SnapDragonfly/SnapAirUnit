@@ -298,7 +298,7 @@ void register_sau(void)
 
     const esp_console_cmd_t switch_cmd = {
         .command = "switch",
-        .help = "Switch <mode>, mode:ap(0)/sta(1)/bt(2).\n"
+        .help = "switch <mode>, mode:ap(0)/sta(1)/bt(2).\n"
         "Examples:\n"
         " switch 0 \n"
         " switch 1 \n"
@@ -310,7 +310,7 @@ void register_sau(void)
 
     const esp_console_cmd_t status_cmd = {
         .command = "status",
-        .help = "Get status of the application.\n"
+        .help = "status, get status of the application.\n"
         "Examples:\n"
         " status \n",
         .hint = NULL,
@@ -320,7 +320,7 @@ void register_sau(void)
 
     const esp_console_cmd_t bluetooth_cmd = {
         .command = "bluetooth",
-        .help = "Switch to BT SPP Uart.\n"
+        .help = "bluetooth, switch to BT SPP UART.\n"
         "Examples:\n"
         " bluetooth \n",
         .hint = NULL,
@@ -330,19 +330,19 @@ void register_sau(void)
 
     const esp_console_cmd_t ap_cmd = {
         .command = "ap",
-        .help = "Switch to WiFi Station.\n"
+        .help = "ap <ssid> <pass>, switch to AP.\n"
         "Examples:\n"
-        " ap ssid pass \n",
+        " ap SnapAirUnit 12345678 \n",
         .hint = NULL,
         .func = &sau_ap,
         .argtable = &wifi_ap_args
     };
 
-    const esp_console_cmd_t wifi_cmd = {
-        .command = "wifi",
-        .help = "wifi <ssid> <pass>, Switch to WiFi AP.\n"
+    const esp_console_cmd_t sta_cmd = {
+        .command = "sta",
+        .help = "sta <ssid> <pass>, connect to AP.\n"
         "Examples:\n"
-        " wifi SnapAirUnit 12345678 \n",
+        " sta SnapAirUnit 12345678 \n",
         .hint = NULL,
         .func = &sau_wifi,
         .argtable = &wifi_sta_args
@@ -350,7 +350,7 @@ void register_sau(void)
 
     const esp_console_cmd_t sdk_cmd = {
         .command = "sdk?",
-        .help = "Get application version.\n"
+        .help = "sdk?, get application version.\n"
         "Examples:\n"
         " sdk? \n",
         .hint = NULL,
@@ -403,7 +403,7 @@ void register_sau(void)
     ESP_ERROR_CHECK(esp_console_cmd_register(&status_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&bluetooth_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&ap_cmd));
-    ESP_ERROR_CHECK(esp_console_cmd_register(&wifi_cmd));
+    ESP_ERROR_CHECK(esp_console_cmd_register(&sta_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&sdk_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&emergency_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&channel_cmd));
