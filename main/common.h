@@ -48,7 +48,6 @@ extern "C" {
 #define TTL_BUF_BASIC_SIZE                     (512)
 #define STR_BUFFER_LEN                         (256)
 #define STR_IP_LEN                             (16)
-#define STR_VERSION_LEN                        (32)
     
     
 #define TIME_DIFF_IN_MS(prev, curr)            ((curr - prev)/1000)

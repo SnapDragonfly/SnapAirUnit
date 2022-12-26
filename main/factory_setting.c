@@ -40,8 +40,6 @@ static char g_str_ap_pass[WIFI_PASS_LENGTH];
 static char g_str_sta_ssid[WIFI_SSID_LENGTH];
 static char g_str_sta_pass[WIFI_PASS_LENGTH];
 
-static char g_str_version[STR_VERSION_LEN];
-
 esp_err_t restore_ap_settings(void)
 {
     esp_err_t err;
@@ -227,9 +225,7 @@ char * get_idf_versions(void)
 
 char * get_app_versions(void)
 {
-    memset(g_str_version, 0, STR_VERSION_LEN);
-    snprintf(g_str_version, STR_VERSION_LEN, "%s-%s", APP_VERSION, APP_DIRTYFLAG);
-    return g_str_version;
+    return APP_VERSION;
 }
 
 
