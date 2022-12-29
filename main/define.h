@@ -16,6 +16,9 @@ extern "C" {
 #define SPP_SERVER_NAME                     DEVICE_NAME_SNAP_AIR_UNIT
 #define SPP_DEVICE_NAME                     DEVICE_NAME_SNAP_AIR_UNIT
 
+#define USB_UART_BAUDRATE                   CONFIG_ESP_CONSOLE_UART_BAUDRATE
+#define USB_UART_NUM                        CONFIG_ESP_CONSOLE_UART_NUM
+
 #define MSP_UART_PORT                       UART_NUM_1
 #define MSP_RX_BUF_SIZE                    (TTL_BUF_BASIC_SIZE * 2)
 #define MSP_TX_BUF_SIZE                    (TTL_BUF_BASIC_SIZE * 4)
