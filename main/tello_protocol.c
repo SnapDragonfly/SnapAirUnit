@@ -43,6 +43,7 @@ struct udp_command g_udp_commands[] = {
     {"reboot",    udp_reboot   },
     {"command",   udp_command  },
     {"exit",      udp_exit     },
+    {"identity",  udp_identity },
 };
 
 static esp_err_t tello_protocol_parse(uint8_t * buf, int len)

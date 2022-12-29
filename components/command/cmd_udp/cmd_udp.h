@@ -24,6 +24,7 @@ esp_err_t udp_emergency(struct udp_data * data);
 esp_err_t udp_command(struct udp_data * data);
 esp_err_t udp_reboot(struct udp_data * data);
 esp_err_t udp_exit(struct udp_data * data);
+esp_err_t udp_identity(struct udp_data * data);
 
 
 #ifdef __cplusplus

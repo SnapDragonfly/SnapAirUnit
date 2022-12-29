@@ -97,6 +97,8 @@ static void wifi_softap_task(void* args)
     ESP_LOGI(MODULE_WIFI_AP, "wifi_start_softap done. SSID:%s password:%s channel:%d",
              get_ap_ssid(), get_ap_pass(), FACTORY_ESP_WIFI_CHANNEL);
 
+    set_str_ip(192, 168, 4, 1);
+
     //vTaskDelete(NULL);
 }
 

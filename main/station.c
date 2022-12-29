@@ -89,6 +89,7 @@ static void event_handler(void* arg, esp_event_base_t event_base,
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
         ESP_LOGI(MODULE_WIFI_STA, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
+        set_str_ip(IP2STR(&event->ip_info.ip));
         g_retry_num = 0;
         xEventGroupSetBits(g_wifi_event_group, WIFI_CONNECTED_BIT);
         protocol_state_set(SW_STATE_IDLE);

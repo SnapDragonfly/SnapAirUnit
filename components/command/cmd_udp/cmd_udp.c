@@ -10,6 +10,7 @@
 #include <inttypes.h>
 #include "freertos/FreeRTOS.h"
 #include "esp_err.h"
+#include "esp_mac.h"
 #include "esp_log.h"
 
 /*
@@ -153,6 +154,24 @@ esp_err_t udp_exit(struct udp_data * data)
     snap_sw_command_set(false);
     return ESP_OK;
 }
+
+esp_err_t udp_identity(struct udp_data * data)
+{
+
+    char str_buf[STR_BUFFER_LEN];
+    uint8_t efuse_mac[6];
+
+    UNUSED(data);
+
+    esp_read_mac(efuse_mac, ESP_MAC_ETH);
+    sprintf(str_buf,"%s,%d,%d,%02X%02X%02X%02X%02X%02X", get_str_ip(), CONTROL_PORT, STATUS_PORT,
+            efuse_mac[0],efuse_mac[1],efuse_mac[2],efuse_mac[3],efuse_mac[4],efuse_mac[5]);
+
+    udp_msg_send((uint8_t *)str_buf, strlen(str_buf));
+
+    return ESP_ERR_INVALID_RESPONSE;
+}
+
 
 
 

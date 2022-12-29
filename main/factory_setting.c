@@ -13,6 +13,7 @@
 #include "argtable3/argtable3.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
+#include "esp_netif_ip_addr.h"
 #include "esp_err.h"
 #include "nvs.h"
 
@@ -39,6 +40,8 @@ static char g_str_ap_pass[WIFI_PASS_LENGTH];
 
 static char g_str_sta_ssid[WIFI_SSID_LENGTH];
 static char g_str_sta_pass[WIFI_PASS_LENGTH];
+
+static char g_str_ip[STR_IP_LEN];
 
 esp_err_t restore_ap_settings(void)
 {
@@ -196,6 +199,14 @@ esp_err_t set_sta_settings(const char * ssid, const char * pass)
     return err;
 }
 
+esp_err_t set_str_ip(uint16_t a, uint16_t b, uint16_t c, uint16_t d)
+{
+    memset(g_str_ip, 0 , STR_IP_LEN);
+    snprintf(g_str_ip, STR_IP_LEN, IPSTR, a, b, c, d);
+
+    return ESP_OK;
+}
+
 
 char * get_ap_ssid(void)
 {
@@ -226,4 +237,8 @@ char * get_app_versions(void)
     return APP_VERSION;
 }
 
+char * get_str_ip(void)
+{
+    return &g_str_ip[0];
+}
 
