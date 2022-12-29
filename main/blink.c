@@ -34,7 +34,7 @@ static void led_init(struct blink_led *led, uint8_t io_num)
     led->state    = 1;
 }
 
-void led_mode_set(struct blink_led *led, led_mode_t mode)
+void led_mode_set(struct blink_led *led, led_blink_t mode)
 {
     led->mode     = mode%LED_BLINK_NULL;
     led->state    = 1;
@@ -96,7 +96,7 @@ static void led_configure(struct blink_led *led)
 
 #endif /* CONFIG_BLINK_LED_RMT CONFIG_BLINK_LED_GPIO */
 
-static void task_led_blink(void* args)
+static void led_blink_task(void* args)
 {
     struct blink_led *led = (struct blink_led *)args;
 
@@ -192,7 +192,7 @@ blink_led_handle_t module_led_start(uint8_t num)
     led_init(pled, num);
     led_configure(pled);
 
-    xTaskCreate(task_led_blink, MODULE_LED_BLINK, TASK_BUFFER_1K0, pled, uxTaskPriorityGet(NULL), NULL);
+    xTaskCreate(led_blink_task, MODULE_LED_BLINK, TASK_BUFFER_1K0, pled, uxTaskPriorityGet(NULL), NULL);
     ESP_LOGI(MODULE_LED_BLINK, "OK %d", pled->mode);
 
     return pled;
