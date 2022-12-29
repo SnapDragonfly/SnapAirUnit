@@ -6,9 +6,9 @@
 extern "C" {
 #endif
 
-void snap_reboot(int times);
-void snap_alive(char c);
-void snap_idle(void);
+void UTIL_reboot(int in_seconds);
+void UTIL_alive(char c);
+void UTIL_idle(void);
 
 #ifdef __cplusplus
 }

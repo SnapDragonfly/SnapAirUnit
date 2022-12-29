@@ -121,7 +121,7 @@ static esp_err_t tello_protocol_parse(uint8_t * buf, int len)
     return ESP_ERR_NOT_FOUND;
 }
 
-esp_err_t udp_handle_cli_protocol(uint8_t * buf, int len)
+esp_err_t nomsp_handle_cli(uint8_t * buf, int len)
 {
     if(NULL == buf){
         return ESP_FAIL;
@@ -132,14 +132,14 @@ esp_err_t udp_handle_cli_protocol(uint8_t * buf, int len)
     }
 
 #if (DEBUG_TELLO_PROTO)
-    ESP_LOGI(MODULE_TELLO_PROTO, "udp_handle_cli %d bytes", len);
+    ESP_LOGI(MODULE_TELLO_PROTO, "nomsp_handle_cli %d bytes", len);
     esp_log_buffer_hex(MODULE_TELLO_PROTO, buf, len);
 #endif /* DEBUG_TELLO_PROTO */
 
-    ESP_ERROR_CHECK(ttl_send(buf, len));
+    ESP_ERROR_CHECK(ttl_msg_send(buf, len));
     return ESP_OK;
 }
-esp_err_t udp_handle_tello_protocol(uint8_t * buf, int len)
+esp_err_t nomsp_handle_tello(uint8_t * buf, int len)
 {
     if(NULL == buf){
         return ESP_FAIL;
@@ -165,7 +165,7 @@ esp_err_t udp_handle_tello_protocol(uint8_t * buf, int len)
             esp_log_buffer_hex(MODULE_TELLO_PROTO, buf, len);
 #endif /* DEBUG_TELLO_PROTO */
 
-            ESP_ERROR_CHECK(ttl_send(buf, len));
+            ESP_ERROR_CHECK(ttl_msg_send(buf, len));
             break;
 
         case ESP_ERR_INVALID_RESPONSE:
@@ -173,7 +173,7 @@ esp_err_t udp_handle_tello_protocol(uint8_t * buf, int len)
             break;
 
         case ESP_OK:
-            udp_send_msg((uint8_t *)TELLO_RESPONSE_OK, strlen(TELLO_RESPONSE_OK));
+            udp_msg_send((uint8_t *)TELLO_RESPONSE_OK, strlen(TELLO_RESPONSE_OK));
             break;
 
         case ESP_FAIL:
@@ -181,7 +181,7 @@ esp_err_t udp_handle_tello_protocol(uint8_t * buf, int len)
         case ESP_ERR_NO_MEM:
             /* FALL THROUGH */
         default:
-            udp_send_msg((uint8_t *)TELLO_RESPONSE_ERR, strlen(TELLO_RESPONSE_ERR));
+            udp_msg_send((uint8_t *)TELLO_RESPONSE_ERR, strlen(TELLO_RESPONSE_ERR));
             break;
         }
 

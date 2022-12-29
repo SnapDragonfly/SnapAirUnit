@@ -9,9 +9,8 @@
 extern "C" {
 #endif
 
-void bt_init_spp(void);
-void ttl_uart_init(void);
-void bt_deinit_spp(void);
+void bt_spp_start(void);
+void bt_spp_stop(void);
 
 #ifdef __cplusplus
 }

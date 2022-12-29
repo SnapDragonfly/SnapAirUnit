@@ -6,8 +6,7 @@
 extern "C" {
 #endif
 
-esp_err_t start_udp_client(void);
-
+esp_err_t udp_clt_start(void);
 
 #ifdef __cplusplus
 }

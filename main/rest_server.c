@@ -146,7 +146,7 @@ static esp_err_t common_get_handler(httpd_req_t *req)
 
 static esp_err_t wireless_get_handler(httpd_req_t *req)
 {
-    int mode = snap_sw_mode_get();
+    int mode = wireless_mode_get();
 
     httpd_resp_set_type(req, "application/json");
     cJSON *root = cJSON_CreateObject();
@@ -199,7 +199,7 @@ static esp_err_t wireless_post_handler(httpd_req_t *req)
         }
     }
 
-    int curr = snap_sw_mode_get();
+    int curr = wireless_mode_get();
 
 #if (DEBUG_HTTP)
     ESP_LOGI(MODULE_HTTP, "wireless: %s, set to %d, curr %d", buf, mode, curr);
@@ -658,7 +658,7 @@ httpd_uri_t system_info_get_uri = {
 	.user_ctx = &g_rest_context
 };
 
-esp_err_t start_rest_server(const char *base_path)
+esp_err_t rest_srv_start(const char *base_path)
 {
     REST_CHECK(base_path, "wrong base path", err);
     //REST_CHECK(rest_context, "No memory for rest context", err);
@@ -701,7 +701,7 @@ err:
     return ESP_FAIL;
 }
 
-esp_err_t stop_rest_server(void)
+esp_err_t rest_srv_stop(void)
 {
     ESP_LOGI(MODULE_HTTP, "Stoping HTTP Server");
 
@@ -828,23 +828,13 @@ esp_err_t init_fs(void)
 }
 #endif
 
-
-static void task_start_restful(void* args)
+void rest_srv_init(void* args)
 {
-    //ESP_ERROR_CHECK(nvs_flash_init());
-    //ESP_ERROR_CHECK(esp_netif_init());
-    //ESP_ERROR_CHECK(esp_event_loop_create_default());
     initialise_mdns();
     netbiosns_init();
     netbiosns_set_name(CONFIG_RESTFUL_MDNS_HOST_NAME);
 
-    //ESP_ERROR_CHECK(example_connect());
     ESP_ERROR_CHECK(init_fs());
-    //ESP_ERROR_CHECK(start_rest_server(CONFIG_RESTFUL_WEB_MOUNT_POINT));
 }
 
-void sanp_sw_rest_init(void)
-{
-    ESP_ERROR_CHECK(snap_sw_module_start(task_start_restful, false, 0, MODULE_HTTP));
-}
 

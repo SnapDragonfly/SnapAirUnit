@@ -369,9 +369,9 @@ esp_err_t mspSerialEncode(mspPacket_t *packet, mspVersion_e mspVersion)
     }
 
     // Send the frame
-    ttl_send(hdrBuf, hdrLen);
-    ttl_send(sbufPtr(&packet->buf), dataLen);
-    ttl_send(crcBuf, crcLen);
+    ttl_msg_send(hdrBuf, hdrLen);
+    ttl_msg_send(sbufPtr(&packet->buf), dataLen);
+    ttl_msg_send(crcBuf, crcLen);
 
     return ESP_OK;
 }
@@ -623,9 +623,9 @@ esp_err_t ttl_handle_wifi_msp_protocol(uint8_t * buf, int len)
         if(MSP_COMMAND_RECEIVED == g_esp_msp_port.c_state){
 #if (0)
             ESP_LOGI(MODULE_MSP_PROTO, "ttl_handle_msp-recv version %d wifi %d sta %d", 
-                    g_esp_msp_port.mspVersion, snap_sw_state_active(SW_MODE_WIFI_AP), snap_sw_state_active(SW_MODE_WIFI_STA));
+                    g_esp_msp_port.mspVersion, protocol_state_active(SW_MODE_WIFI_AP), protocol_state_active(SW_MODE_WIFI_STA));
 #endif /* DEBUG_MSP_PROTO */
-            if(snap_sw_state_active(SW_MODE_WIFI_AP) || snap_sw_state_active(SW_MODE_WIFI_STA)){
+            if(protocol_state_active(SW_MODE_WIFI_AP) || protocol_state_active(SW_MODE_WIFI_STA)){
                 uint8_t rx_buffer[STR_BUFFER_LEN];
                 switch(g_esp_msp_port.mspVersion){
                     case MSP_V2_NATIVE:
@@ -657,7 +657,7 @@ esp_err_t ttl_handle_wifi_msp_protocol(uint8_t * buf, int len)
                                             4+ sizeof(mspHeaderV2_t) + j, hdrv2.cmd, hdrv2.cmd, hdrv2.flags, hdrv2.size);
                         esp_log_buffer_hex(MODULE_MSP_PROTO, rx_buffer, 4+ sizeof(mspHeaderV2_t) + j);
 #endif /* DEBUG_MSP_PROTO */
-                        (void)udp_send_msg(rx_buffer, 4+ sizeof(mspHeaderV2_t) + j);
+                        (void)udp_msg_send(rx_buffer, 4+ sizeof(mspHeaderV2_t) + j);
 
                         return ESP_OK;
 
@@ -687,7 +687,7 @@ esp_err_t ttl_handle_wifi_nomsp_protocol(uint8_t * buf, int len)
     ESP_LOGI(MODULE_MSP_PROTO, "ttl_handle_wifi_nomsp-exit %d bytes", len);
     esp_log_buffer_hex(MODULE_MSP_PROTO, buf, len);
 #endif /* DEBUG_MSP_PROTO */
-    (void)udp_send_msg(buf, len);
+    (void)udp_msg_send(buf, len);
 
     return ESP_OK;
 }
@@ -721,7 +721,7 @@ esp_err_t handle_msp_protocol(uint8_t * buf, int len)
     esp_log_buffer_hex(MODULE_MSP_PROTO, buf, len);
 #endif /* DEBUG_MSP_PROTO */
 
-    ESP_ERROR_CHECK(ttl_send(buf, len));
+    ESP_ERROR_CHECK(ttl_msg_send(buf, len));
 
     return ESP_OK;
 }
@@ -740,7 +740,7 @@ static void message_center_task(void *pvParameters)
 {
 #define MESSAGE_CENTER_TEST    0
     while (1) {
-        if (SW_STATE_CLI != snap_sw_state_get() && !snap_sw_state_active(SW_MODE_BT_SPP) && snap_sw_command_get()){
+        if (SW_STATE_CLI != protocol_state_get() && !protocol_state_active(SW_MODE_BT_SPP) && snap_sw_command_get()){
             /* Used for Air Unit RC control in WiFi AP/STA MSP comunication */
             ESP_ERROR_CHECK(mspUpdateChannels());
 #if (MESSAGE_CENTER_TEST)

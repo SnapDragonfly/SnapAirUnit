@@ -31,9 +31,9 @@
  */
 //TBD
 
-void snap_reboot(int times)
+void UTIL_reboot(int in_seconds)
 {
-    for (int i = times; i >= 0; i--) {
+    for (int i = in_seconds; i >= 0; i--) {
         printf("Restarting in %d seconds...\n", i);
         vTaskDelay(TIME_ONE_SECOND_IN_MS / portTICK_PERIOD_MS);
     }
@@ -42,7 +42,7 @@ void snap_reboot(int times)
     esp_restart();
 }
 
-void snap_alive(char c)
+void UTIL_alive(char c)
 {
     while(1) {
         putchar(c);
@@ -51,7 +51,7 @@ void snap_alive(char c)
     }
 }
 
-void snap_idle(void)
+void UTIL_idle(void)
 {
     while(1) {
         vTaskDelay(TIME_ONE_SECOND_IN_MS / portTICK_PERIOD_MS);

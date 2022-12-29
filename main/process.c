@@ -57,8 +57,8 @@ static void task_evt_process(void* args)
          * Fall back to WiFi AP mode by default
          */
         extern bool g_wifi_sta_start;
-        if(!g_wifi_sta_start && SW_MODE_NULL == snap_sw_mode_get()){
-            extern void snap_sw_mode_set(enum_mode_t mode);
+        if(!g_wifi_sta_start && SW_MODE_NULL == wireless_mode_get()){
+            extern void snap_sw_mode_set(enum_wireless_mode_t mode);
             snap_sw_mode_set(SW_MODE_WIFI_STA);
 
             ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, MODE_KEY_DEFAULT, NULL, 0, portMAX_DELAY));
@@ -88,7 +88,7 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
         case MODE_KEY_SHORT_PRESSED:
             if(NULL == event_data ){
                 if(TIME_DIFF_IN_MS(press_rel_time, curr_time) > CONFIG_KEY_RESERVE_TIME_IN_MS){
-                    next_mode = snap_sw_mode_next();
+                    next_mode = wireless_mode_next();
                 }
                 if (TIME_DIFF_IN_MS(press_act_time, curr_time) < CONFIG_KEY_RESERVE_TIME_IN_MS){
                     next_mode++;
@@ -98,23 +98,23 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
                 }
                 press_act_time = curr_time;
 
-                enum_mode_t prev_mode = snap_sw_mode_get();
-                ret = snap_sw_mode_switch(next_mode);
+                enum_wireless_mode_t prev_mode = wireless_mode_get();
+                ret = wireless_mode_switch(next_mode);
 
                 led_mode_next((struct blink_led *)g_led_handle);
 
 #if (DEBUG_EVT_PROC)
-                ESP_LOGI(MODULE_EVT_PROC, "Switch from %d to %d, ret = %d", prev_mode, snap_sw_mode_get(), ret);
+                ESP_LOGI(MODULE_EVT_PROC, "Switch from %d to %d, ret = %d", prev_mode, wireless_mode_get(), ret);
 #else
                 UNUSED(ret);
 #endif /*DEBUG_EVT_PROC*/
 
             }else{
                 int mode = *((int *)event_data);
-                ret = snap_sw_mode_switch(mode);
+                ret = wireless_mode_switch(mode);
                 led_mode_set((struct blink_led *)g_led_handle, mode);
 #if (DEBUG_EVT_PROC)
-                ESP_LOGI(MODULE_EVT_PROC, "Switch to %d, ret = %d", snap_sw_mode_get(), ret);
+                ESP_LOGI(MODULE_EVT_PROC, "Switch to %d, ret = %d", wireless_mode_get(), ret);
 #else
                 UNUSED(ret);
 #endif /*DEBUG_EVT_PROC*/
@@ -131,13 +131,13 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
             break;
 
         case MODE_KEY_LONG_PRESSED:
-            snap_reboot(3);
+            (void)UTIL_reboot(3);
             break;
 
         case MODE_KEY_DEFAULT:
-            ret = snap_sw_mode_switch(SW_MODE_WIFI_AP);
+            ret = wireless_mode_switch(SW_MODE_WIFI_AP);
 #if (DEBUG_EVT_PROC)
-            ESP_LOGI(MODULE_EVT_PROC, "Switch to %d-------- ret = %d", snap_sw_mode_get(), ret);
+            ESP_LOGI(MODULE_EVT_PROC, "Switch to %d-------- ret = %d", wireless_mode_get(), ret);
 #endif /* DEBUG_EVT_PROC */
             break;
             

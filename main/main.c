@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_wifi.h"
 #include "esp_task_wdt.h"
 #include "esp_chip_info.h"
 #include "esp_flash.h"
@@ -57,7 +58,7 @@ void sand_box(void)
 
     // ...
     //spiffs_test();
-    //stop_spiffs();
+    //spiffs_stop();
 
 
     /*
@@ -67,8 +68,8 @@ void sand_box(void)
     ESP_ERROR_CHECK(module_console_start());
 
     /* Shouldn't BE HERE!!! */
-    (void)snap_alive(SAND_BOX_ALIVE_CHARACTER);
-    (void)snap_reboot(SAND_BOX_REBOOT_PROMOTES);
+    (void)UTIL_alive(SAND_BOX_ALIVE_CHARACTER);
+    (void)UTIL_reboot(SAND_BOX_REBOOT_PROMOTES);
 
 }
 
@@ -84,25 +85,27 @@ void app_init(void)
       ESP_ERROR_CHECK(nvs_flash_erase());
       ret = nvs_flash_init();
     }
-    ESP_ERROR_CHECK(ret);
+
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    ESP_ERROR_CHECK(esp_netif_init());
+
 
     //Basic Software Components
     g_evt_handle = module_evt_start();
-    ESP_ERROR_CHECK(start_spiffs());
+    ESP_ERROR_CHECK(spiffs_start());
     (void)start_factory_settings();
 
     //Basic Hardware Components
     g_led_handle = module_led_start(BLINK_GPIO);
     g_key_handle = module_key_start(KEY_MODE);
-    ESP_ERROR_CHECK(module_ttl_start());
+    ESP_ERROR_CHECK(ttl_srv_start());
 
 
     //Service Module for Applications
-    snap_sw_mode_init();
-    sanp_sw_rest_init();
-    ESP_ERROR_CHECK(start_udp_server());
-    ESP_ERROR_CHECK(start_udp_client());
-    snap_wireless_mode_init();
+    ESP_ERROR_CHECK(snap_sw_module_start(rest_srv_init, false, 0, MODULE_HTTP));
+    ESP_ERROR_CHECK(udp_srv_start());
+    ESP_ERROR_CHECK(udp_clt_start());
+    ESP_ERROR_CHECK(wireless_mode_init());
     ESP_ERROR_CHECK(start_message_center());
 
     printf("%s: free_heap_size = %d\n", DEVICE_NAME_SNAP_AIR_UNIT, esp_get_free_heap_size());

@@ -39,7 +39,7 @@
 
 extern char g_addr_str[STR_IP_LEN];
 
-static void udp_client_task(void *pvParameters)
+static void udp_clt_task(void *pvParameters)
 {
     char rx_buffer[STR_BUFFER_LEN];
     int addr_family = 0;
@@ -48,11 +48,11 @@ static void udp_client_task(void *pvParameters)
 
     while (1) {
         len = strlen(g_addr_str);
-        if(SW_STATE_INVALID == snap_sw_state_get() 
-            || SW_MODE_BT_SPP == snap_sw_mode_get()
+        if(SW_STATE_INVALID == protocol_state_get() 
+            || SW_MODE_BT_SPP == wireless_mode_get()
             || 0 == len){
 #if (DEBUG_UDP_CLT)
-            ESP_LOGI(MODULE_UDP_CLT, "invalid switching time: %d-%d-%d", snap_sw_state_get(),snap_sw_mode_get(),len);
+            ESP_LOGI(MODULE_UDP_CLT, "invalid switching time: %d-%d-%d", protocol_state_get(),wireless_mode_get(),len);
 #endif /* DEBUG_UDP_CLT */
             vTaskDelay(TIME_ONE_SECOND_IN_MS / portTICK_PERIOD_MS);
             continue;
@@ -91,14 +91,14 @@ static void udp_client_task(void *pvParameters)
         ESP_LOGI(MODULE_UDP_CLT, "Socket created, sending to %s:%d", g_addr_str, STATUS_PORT);
 #endif /* DEBUG_UDP_CLT */
         while (1) {
-            sprintf(rx_buffer, "udp sate =%d mode =%d", snap_sw_state_get(), snap_sw_mode_get());
+            sprintf(rx_buffer, "udp sate =%d mode =%d", protocol_state_get(), wireless_mode_get());
 
             int err = sendto(sock, rx_buffer, strlen(rx_buffer), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
             if (err < 0) {
 #if (DEBUG_UDP_CLT)
                 ESP_LOGE(MODULE_UDP_CLT, "Error occurred during sending: errno %d", errno);
 #endif /* DEBUG_UDP_CLT */
-                snap_sw_state_degrade(SW_STATE_HALF_DUPLEX);
+                protocol_state_degrade(SW_STATE_HALF_DUPLEX);
                 break;
             }
 #if (DEBUG_UDP_CLT)
@@ -147,13 +147,9 @@ static void udp_client_task(void *pvParameters)
     vTaskDelete(NULL);
 }
 
-esp_err_t start_udp_client(void)
+esp_err_t udp_clt_start(void)
 {
-    //ESP_ERROR_CHECK(nvs_flash_init());
-    //ESP_ERROR_CHECK(esp_netif_init());
-    //ESP_ERROR_CHECK(esp_event_loop_create_default());
-
-    xTaskCreate(udp_client_task, MODULE_UDP_CLT, TASK_BUFFER_3K0, NULL, 5, NULL);
+    xTaskCreate(udp_clt_task, MODULE_UDP_CLT, TASK_BUFFER_3K0, NULL, 5, NULL);
 
     return ESP_OK;
 }

@@ -8,8 +8,8 @@ extern "C" {
 
 #include "driver/uart.h"
 
-esp_err_t module_ttl_start(void);
-esp_err_t ttl_send(uint8_t * buf, int len);
+esp_err_t ttl_srv_start(void);
+esp_err_t ttl_msg_send(uint8_t * buf, int len);
 
 
 #ifdef __cplusplus

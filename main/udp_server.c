@@ -42,7 +42,7 @@ static int                   g_server_sock;
 static struct sockaddr_storage g_source_addr;
 char                          g_addr_str[STR_IP_LEN];
 
-esp_err_t udp_send_msg(uint8_t * buf, int len)
+esp_err_t udp_msg_send(uint8_t * buf, int len)
 {
 #if (DEBUG_UDP_SRV)
     ESP_LOGI(MODULE_UDP_SRV, "sending %d bytes", len);
@@ -51,14 +51,14 @@ esp_err_t udp_send_msg(uint8_t * buf, int len)
 
     int err = sendto(g_server_sock, buf, len, 0, (struct sockaddr *)&g_source_addr, sizeof(g_source_addr));
     if (err < 0) {
-        snap_sw_state_degrade(SW_STATE_HALF_DUPLEX);
+        protocol_state_degrade(SW_STATE_HALF_DUPLEX);
         ESP_LOGE(MODULE_UDP_SRV, "Error occurred during sending: errno %d", errno);
     }
 
     return err;
 }
 
-static void udp_server_task(void *pvParameters)
+static void udp_srv_task(void *pvParameters)
 {
     char rx_buffer[STR_BUFFER_LEN];
     int addr_family = (int)pvParameters;
@@ -68,7 +68,7 @@ static void udp_server_task(void *pvParameters)
     memset(g_addr_str, 0, STR_IP_LEN);
     while (1) {
 
-        if(SW_STATE_INVALID == snap_sw_state_get() || SW_MODE_BT_SPP == snap_sw_mode_get()){
+        if(SW_STATE_INVALID == protocol_state_get() || SW_MODE_BT_SPP == wireless_mode_get()){
 #if (DEBUG_UDP_SRV)
             ESP_LOGI(MODULE_UDP_SRV, "invalid switching time");
 #endif /* DEBUG_UDP_SRV */
@@ -157,7 +157,7 @@ static void udp_server_task(void *pvParameters)
 #endif
             // Error occurred during receiving
             if (len < 0) {
-                //snap_sw_state_set(SW_STATE_IDLE);
+                //protocol_state_set(SW_STATE_IDLE);
 #if (DEBUG_UDP_SRV)
                 ESP_LOGE(MODULE_UDP_SRV, "recvfrom failed: errno %d", errno);
 #endif /* DEBUG_UDP_SRV */
@@ -165,7 +165,7 @@ static void udp_server_task(void *pvParameters)
             }
             // Data received
             else {
-                snap_sw_state_upgrade(SW_STATE_FULL_DUPLEX);
+                protocol_state_upgrade(SW_STATE_FULL_DUPLEX);
                 // Get the sender's ip address as string
                 if (g_source_addr.ss_family == PF_INET) {
                     inet_ntoa_r(((struct sockaddr_in *)&g_source_addr)->sin_addr, g_addr_str, sizeof(g_addr_str) - 1);
@@ -186,7 +186,7 @@ static void udp_server_task(void *pvParameters)
 
                 rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string...
                 esp_err_t ret;
-                switch(snap_sw_state_get()){
+                switch(protocol_state_get()){
                     case SW_STATE_FULL_DUPLEX:
 #if (DEBUG_UDP_SRV)
                         ESP_LOGI(MODULE_UDP_SRV, "msp received %d bytes from %s:", len, g_addr_str);
@@ -201,27 +201,27 @@ static void udp_server_task(void *pvParameters)
                         /* FALL THROUGH */
 
                     case SW_STATE_TELLO:
-                        snap_sw_state_upgrade(SW_STATE_TELLO);
+                        protocol_state_upgrade(SW_STATE_TELLO);
 #if (DEBUG_UDP_SRV)
                         ESP_LOGI(MODULE_UDP_SRV, "tello received %d bytes from %s:", len, g_addr_str);
                         ESP_LOGI(MODULE_UDP_SRV, "%s", rx_buffer);
 #endif /* DEBUG_UDP_SRV */
 
-                        ret = udp_handle_tello_protocol((uint8_t *)rx_buffer, len);
+                        ret = nomsp_handle_tello((uint8_t *)rx_buffer, len);
                         if(ESP_ERR_NOT_SUPPORTED == ret){
-                            snap_sw_state_upgrade(SW_STATE_CLI);
+                            protocol_state_upgrade(SW_STATE_CLI);
                             //vTaskDelay(TIME_50_MS / portTICK_PERIOD_MS);
-                            ESP_ERROR_CHECK(ttl_send((uint8_t *)rx_buffer, len));
+                            ESP_ERROR_CHECK(ttl_msg_send((uint8_t *)rx_buffer, len));
                         } else if(ESP_OK != ret){
-                            snap_sw_state_degrade(SW_STATE_FULL_DUPLEX);
+                            protocol_state_degrade(SW_STATE_FULL_DUPLEX);
                         }
 
                         break;
 
                     case SW_STATE_CLI:
-                        ret = udp_handle_cli_protocol((uint8_t *)rx_buffer, len);
+                        ret = nomsp_handle_cli((uint8_t *)rx_buffer, len);
                         if(ESP_OK != ret){
-                            snap_sw_state_set(SW_STATE_FULL_DUPLEX);
+                            protocol_state_set(SW_STATE_FULL_DUPLEX);
                         }
 
                         break;
@@ -241,23 +241,19 @@ static void udp_server_task(void *pvParameters)
 #endif /* DEBUG_UDP_SRV */
             shutdown(g_server_sock, 0);
             close(g_server_sock);
-            //snap_sw_state_set(SW_STATE_IDLE);
+            //protocol_state_set(SW_STATE_IDLE);
         }
     }
     vTaskDelete(NULL);
 }
 
-esp_err_t start_udp_server(void)
+esp_err_t udp_srv_start(void)
 {
-    //ESP_ERROR_CHECK(nvs_flash_init());
-    //ESP_ERROR_CHECK(esp_netif_init());
-    //ESP_ERROR_CHECK(esp_event_loop_create_default());
-
 #ifdef CONFIG_EXAMPLE_IPV4
-    xTaskCreate(udp_server_task, MODULE_UDP_SRV, TASK_BUFFER_4K0, (void*)AF_INET, 5, NULL);
+    xTaskCreate(udp_srv_task, MODULE_UDP_SRV, TASK_BUFFER_4K0, (void*)AF_INET, 5, NULL);
 #endif
 #ifdef CONFIG_EXAMPLE_IPV6
-    xTaskCreate(udp_server_task, MODULE_UDP_SRV, TASK_BUFFER_4K0, (void*)AF_INET6, 5, NULL);
+    xTaskCreate(udp_srv_task, MODULE_UDP_SRV, TASK_BUFFER_4K0, (void*)AF_INET6, 5, NULL);
 #endif
 
     return ESP_OK;

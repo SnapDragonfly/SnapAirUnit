@@ -6,8 +6,8 @@
 extern "C" {
 #endif
 
-void wifi_init_sta(void);
-void wifi_stop_sta(void);
+void wifi_sta_start(void);
+void wifi_sta_stop(void);
 
 #ifdef __cplusplus
 }

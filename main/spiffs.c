@@ -36,7 +36,7 @@ static esp_vfs_spiffs_conf_t g_spiffs_conf = {
   .format_if_mount_failed = true
 };
 
-esp_err_t stop_spiffs(void)
+esp_err_t spiffs_stop(void)
 {
     // All done, unmount partition and disable SPIFFS
     esp_vfs_spiffs_unregister(g_spiffs_conf.partition_label);
@@ -111,7 +111,7 @@ esp_err_t spiffs_test(void)
 
 #endif
 
-esp_err_t start_spiffs(void)
+esp_err_t spiffs_start(void)
 
 {
     ESP_LOGI(MODULE_SPIFFS, "Initializing SPIFFS");

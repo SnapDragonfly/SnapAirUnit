@@ -40,7 +40,7 @@
 
 static QueueHandle_t g_msp_uart_queue = NULL;
 
-esp_err_t ttl_send(uint8_t * buf, int len)
+esp_err_t ttl_msg_send(uint8_t * buf, int len)
 {
     if(NULL == buf){
         return ESP_FAIL;
@@ -50,7 +50,7 @@ esp_err_t ttl_send(uint8_t * buf, int len)
 }
 
 
-static void task_start_ttl(void *pvParameters)
+static void ttl_srv_task(void *pvParameters)
 {
     uart_event_t event;
 
@@ -79,7 +79,7 @@ static void task_start_ttl(void *pvParameters)
 #endif /* DEBUG_UART */
 
                     // To do send to BT SPP
-                    if (g_esp_ssp_handle && snap_sw_state_active(SW_MODE_BT_SPP)){
+                    if (g_esp_ssp_handle && protocol_state_active(SW_MODE_BT_SPP)){
                         if(MESSAGE_CENTER == mspGetMessage()){
                             center_handle_msp_protocol(temp, event.size);
                         } else {
@@ -88,8 +88,8 @@ static void task_start_ttl(void *pvParameters)
                         mspSetMessage(MESSAGE_UNKNOW);
                     } else {
                         esp_err_t ret;
-                        if (SW_STATE_CLI == snap_sw_state_get()){
-                            udp_send_msg(temp, event.size);
+                        if (SW_STATE_CLI == protocol_state_get()){
+                            udp_msg_send(temp, event.size);
                         }else{
                             if(MESSAGE_CENTER == mspGetMessage()){
                                 center_handle_msp_protocol(temp, event.size);
@@ -115,7 +115,7 @@ static void task_start_ttl(void *pvParameters)
     vTaskDelete(NULL);
 }
 
-esp_err_t module_ttl_start(void)
+esp_err_t ttl_srv_start(void)
 {
     uart_config_t uart_config = {
         .baud_rate = 115200,
@@ -134,7 +134,7 @@ esp_err_t module_ttl_start(void)
     //Set UART pins
     uart_set_pin(MSP_UART_PORT, MSP_UART_TXD, MSP_UART_RXD, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
-    ESP_ERROR_CHECK(snap_sw_module_start(task_start_ttl, true, TASK_BUFFER_3K0, MODULE_UART));
+    ESP_ERROR_CHECK(snap_sw_module_start(ttl_srv_task, true, TASK_BUFFER_3K0, MODULE_UART));
 
     return ESP_OK;
 }

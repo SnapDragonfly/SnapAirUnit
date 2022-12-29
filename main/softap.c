@@ -38,7 +38,7 @@
 static esp_event_handler_instance_t g_softap_instance_any_id;
 static esp_netif_t*               g_softap_instance_netif = NULL;
 
-static void wifi_event_handler(void* arg, esp_event_base_t event_base,
+static void wifi_sofap_event_handler(void* arg, esp_event_base_t event_base,
                                     int32_t event_id, void* event_data)
 {
     if (event_id == WIFI_EVENT_AP_STACONNECTED) {
@@ -52,7 +52,7 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
-static void task_wifi_start_softap(void* args)
+static void wifi_softap_task(void* args)
 {
     //ESP_ERROR_CHECK(esp_netif_init());
     //ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -63,7 +63,7 @@ static void task_wifi_start_softap(void* args)
 
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
                                                         ESP_EVENT_ANY_ID,
-                                                        &wifi_event_handler,
+                                                        &wifi_sofap_event_handler,
                                                         NULL,
                                                         &g_softap_instance_any_id));
 
@@ -101,18 +101,18 @@ static void task_wifi_start_softap(void* args)
 }
 
 
-void wifi_init_softap(void)
+void wifi_ap_start(void)
 {
-    ESP_ERROR_CHECK(snap_sw_module_start(task_wifi_start_softap, false, 0, MODULE_WIFI_AP));
-    ESP_ERROR_CHECK(start_rest_server(CONFIG_RESTFUL_WEB_MOUNT_POINT));
-    snap_sw_state_set(SW_STATE_IDLE);
+    ESP_ERROR_CHECK(snap_sw_module_start(wifi_softap_task, false, 0, MODULE_WIFI_AP));
+    ESP_ERROR_CHECK(rest_srv_start(CONFIG_RESTFUL_WEB_MOUNT_POINT));
+    protocol_state_set(SW_STATE_IDLE);
 }
 
-void wifi_stop_softap(void)
+void wifi_ap_stop(void)
 {
     //esp_err_t ret;
     //wifi_mode_t wifi_mode;
-    ESP_ERROR_CHECK(stop_rest_server());
+    ESP_ERROR_CHECK(rest_srv_stop());
 
     ESP_ERROR_CHECK(esp_wifi_stop());
     ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &g_softap_instance_any_id));

@@ -109,11 +109,11 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 #if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_OPEN_EVT");
 #endif /* DEBUG_BT_SPP */
-        snap_sw_state_upgrade(SW_STATE_FULL_DUPLEX);
+        protocol_state_upgrade(SW_STATE_FULL_DUPLEX);
         break;
     
     case ESP_SPP_CLOSE_EVT:
-        snap_sw_state_set(SW_STATE_INVALID);
+        protocol_state_set(SW_STATE_INVALID);
 #if (DEBUG_BT_SPP)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_CLOSE_EVT status:%d handle:%d close_by_remote:%d", param->close.status,
                  param->close.handle, param->close.async);
@@ -159,18 +159,18 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         UNUSED(print_speed);
 #endif /* DEBUG_BT_SPP */
 
-        if(snap_sw_state_active(SW_MODE_BT_SPP)){
+        if(protocol_state_active(SW_MODE_BT_SPP)){
 
 #if 1
 #if (DEBUG_BT_SPP)
-            ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_DATA_IND_EVT ttl_send");
+            ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_DATA_IND_EVT ttl_msg_send");
 #endif /* DEBUG_BT_SPP */
-            ESP_ERROR_CHECK(ttl_send(param->data_ind.data, param->data_ind.len));
+            ESP_ERROR_CHECK(ttl_msg_send(param->data_ind.data, param->data_ind.len));
 #else
-            snap_sw_state_upgrade(SW_STATE_FULL_DUPLEX);
+            protocol_state_upgrade(SW_STATE_FULL_DUPLEX);
             //handle_msp_protocol(param->data_ind.data, param->data_ind.len);
             esp_err_t ret;
-            switch(snap_sw_state_get()){
+            switch(protocol_state_get()){
                 case SW_STATE_FULL_DUPLEX:
 #if (DEBUG_BT_SPP)
                     ESP_LOGI(MODULE_BT_SPP, "spp received %d bytes", param->data_ind.len);
@@ -185,27 +185,27 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
                     /* FALL THROUGH */
 
                 case SW_STATE_TELLO:
-                    snap_sw_state_upgrade(SW_STATE_TELLO);
+                    protocol_state_upgrade(SW_STATE_TELLO);
 #if (DEBUG_BT_SPP)
                     ESP_LOGI(MODULE_BT_SPP, "tello received %d bytes", param->data_ind.len);
                     ESP_LOGI(MODULE_BT_SPP, "%s", param->data_ind.data);
 #endif /* DEBUG_BT_SPP */
 
-                    ret = udp_handle_tello_protocol(param->data_ind.data, param->data_ind.len);
+                    ret = nomsp_handle_tello(param->data_ind.data, param->data_ind.len);
                     if(ESP_ERR_NOT_SUPPORTED == ret){
-                        snap_sw_state_upgrade(SW_STATE_CLI);
+                        protocol_state_upgrade(SW_STATE_CLI);
                         //vTaskDelay(TIME_50_MS / portTICK_PERIOD_MS);
-                        ESP_ERROR_CHECK(ttl_send(param->data_ind.data, param->data_ind.len));
+                        ESP_ERROR_CHECK(ttl_msg_send(param->data_ind.data, param->data_ind.len));
                     } else if(ESP_OK != ret){
-                        snap_sw_state_degrade(SW_STATE_FULL_DUPLEX);
+                        protocol_state_degrade(SW_STATE_FULL_DUPLEX);
                     }
 
                     break;
 
                 case SW_STATE_CLI:
-                    ret = udp_handle_cli_protocol(param->data_ind.data, param->data_ind.len);
+                    ret = nomsp_handle_cli(param->data_ind.data, param->data_ind.len);
                     if(ESP_OK != ret){
-                        snap_sw_state_set(SW_STATE_FULL_DUPLEX);
+                        protocol_state_set(SW_STATE_FULL_DUPLEX);
                     }
 
                     break;
@@ -238,7 +238,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 #else
         UNUSED(bda_str);
 #endif /* DEBUG_BT_SPP */
-        snap_sw_state_set(SW_STATE_FULL_DUPLEX);
+        protocol_state_set(SW_STATE_FULL_DUPLEX);
         g_esp_ssp_handle = param->srv_open.handle;
         gettimeofday(&g_time_old, NULL);
         break;
@@ -340,11 +340,11 @@ void esp_bt_gap_cb(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param)
 }
 
 
-void bt_deinit_spp(void)
+void bt_spp_stop(void)
 {
     esp_bt_controller_status_t bt_status;
 
-    snap_sw_state_set(SW_STATE_INVALID);
+    protocol_state_set(SW_STATE_INVALID);
 
     ESP_ERROR_CHECK(esp_spp_deinit());
     ESP_ERROR_CHECK(esp_bluedroid_disable());
@@ -432,9 +432,9 @@ static void task_bt_start_spp(void* args)
     //vTaskDelete(NULL);
 }
 
-void bt_init_spp(void)
+void bt_spp_start(void)
 {
     ESP_ERROR_CHECK(snap_sw_module_start(task_bt_start_spp, false, 0, MODULE_BT_SPP));
-    snap_sw_state_set(SW_STATE_IDLE);
+    protocol_state_set(SW_STATE_IDLE);
 }
 

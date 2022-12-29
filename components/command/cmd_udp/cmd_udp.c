@@ -38,7 +38,7 @@
 esp_err_t udp_bluetooth(struct udp_data * data)
 {
     UNUSED(data);
-    return snap_sw_mode_switch(SW_MODE_BT_SPP);
+    return wireless_mode_switch(SW_MODE_BT_SPP);
 }
 
 esp_err_t udp_ap(struct udp_data * data)
@@ -59,7 +59,7 @@ esp_err_t udp_ap(struct udp_data * data)
         return err;
     }
 
-    err = snap_sw_mode_switch(SW_MODE_WIFI_STA);
+    err = wireless_mode_switch(SW_MODE_WIFI_STA);
     if (err != ESP_OK) {
         ESP_LOGE(MODULE_CMD_UDP, "%s", esp_err_to_name(err));
         return err;
@@ -86,7 +86,7 @@ esp_err_t udp_wifi(struct udp_data * data)
         return err;
     }
 
-    err = snap_sw_mode_switch(SW_MODE_WIFI_AP);
+    err = wireless_mode_switch(SW_MODE_WIFI_AP);
     if (err != ESP_OK) {
         ESP_LOGE(MODULE_CMD_UDP, "%s", esp_err_to_name(err));
         return err;
@@ -99,7 +99,7 @@ esp_err_t udp_sdk(struct udp_data * data)
 {
     UNUSED(data);
 
-    udp_send_msg((uint8_t *)get_app_versions(), strlen(get_idf_versions()));
+    udp_msg_send((uint8_t *)get_app_versions(), strlen(get_idf_versions()));
     return ESP_ERR_INVALID_RESPONSE;
 }
 
@@ -138,7 +138,7 @@ esp_err_t udp_debug(struct udp_data * data)
 
 esp_err_t udp_reboot(struct udp_data * data)
 {
-    snap_reboot(3);
+    (void)UTIL_reboot(3);
     return ESP_OK;
 }
 

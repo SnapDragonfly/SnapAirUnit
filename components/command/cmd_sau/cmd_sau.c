@@ -93,9 +93,9 @@ static int sau_switch(int argc, char **argv)
         return 1;
     }
 
-    enum_mode_t mode = (enum_mode_t)strtol(mode_args.mode->sval[0], NULL, 0);
+    enum_wireless_mode_t mode = (enum_wireless_mode_t)strtol(mode_args.mode->sval[0], NULL, 0);
 
-    esp_err_t err = snap_sw_mode_switch(mode);
+    esp_err_t err = wireless_mode_switch(mode);
 
     if (err != ESP_OK) {
         ESP_LOGE(MODULE_CMD_SAU, "%s", esp_err_to_name(err));
@@ -113,8 +113,8 @@ static int sau_status(int argc, char **argv)
         return 1;
     }
 
-    enum_state_t state = snap_sw_state_get();
-    enum_mode_t mode   = snap_sw_mode_get();
+    enum_protocol_state_t state  = protocol_state_get();
+    enum_wireless_mode_t mode   = wireless_mode_get();
 
     ESP_LOGI(MODULE_CMD_SAU, "Application mode(%d) state(%d)", mode, state);
     ESP_LOGI(MODULE_CMD_SAU, "Minimum free heap size: %d bytes\n", esp_get_minimum_free_heap_size());
@@ -249,7 +249,7 @@ static int sau_reboot(int argc, char **argv)
         return 1;
     }
 
-    snap_reboot(3);
+    (void)UTIL_reboot(3);
     return 0;
 }
 

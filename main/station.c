@@ -85,19 +85,19 @@ static void event_handler(void* arg, esp_event_base_t event_base,
             xEventGroupSetBits(g_wifi_event_group, WIFI_FAIL_BIT);
         }
         ESP_LOGI(MODULE_WIFI_STA,"connect to the AP fail");
-        snap_sw_state_set(SW_STATE_INVALID);
+        protocol_state_set(SW_STATE_INVALID);
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
         ESP_LOGI(MODULE_WIFI_STA, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
         g_retry_num = 0;
         xEventGroupSetBits(g_wifi_event_group, WIFI_CONNECTED_BIT);
-        snap_sw_state_set(SW_STATE_IDLE);
+        protocol_state_set(SW_STATE_IDLE);
     }
 }
 
 static void task_wifi_start_sta(void* args)
 {
-    snap_sw_state_set(SW_STATE_INVALID);
+    protocol_state_set(SW_STATE_INVALID);
 
     g_wifi_event_group = xEventGroupCreate();
 
@@ -142,7 +142,7 @@ static void task_wifi_start_sta(void* args)
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
     ESP_ERROR_CHECK(esp_wifi_start() );
 
-    ESP_LOGI(MODULE_WIFI_STA, "wifi_init_sta done.");
+    ESP_LOGI(MODULE_WIFI_STA, "wifi_sta_start done.");
 
     int i = 10;
     do{
@@ -162,19 +162,19 @@ static void task_wifi_start_sta(void* args)
         if (bits & WIFI_CONNECTED_BIT) {
             ESP_LOGI(MODULE_WIFI_STA, "connected to ap SSID:%s password:%s",
                      get_sta_ssid(), get_sta_pass());
-            snap_sw_state_set(SW_STATE_IDLE);
+            protocol_state_set(SW_STATE_IDLE);
             g_wifi_sta_start = true;
             break;
         } else if (bits & WIFI_FAIL_BIT) {
             ESP_LOGI(MODULE_WIFI_STA, "Failed to connect to SSID:%s, password:%s",
                      get_sta_ssid(), get_sta_pass());
             g_wifi_sta_start = false;
-            //snap_sw_mode_switch(SW_MODE_WIFI_AP);
+            //wireless_mode_switch(SW_MODE_WIFI_AP);
         } else {
             ESP_LOGW(MODULE_WIFI_STA, "UNEXPECTED EVENT %08X", bits);
             if(i <= 0){
                 g_wifi_sta_start = false;
-                //snap_sw_mode_switch(SW_MODE_WIFI_AP);
+                //wireless_mode_switch(SW_MODE_WIFI_AP);
             }
         }
 
@@ -183,37 +183,35 @@ static void task_wifi_start_sta(void* args)
     }while(i > 0);
 
     if (g_wifi_sta_start){
-        ESP_ERROR_CHECK(start_rest_server(CONFIG_RESTFUL_WEB_MOUNT_POINT));
+        ESP_ERROR_CHECK(rest_srv_start(CONFIG_RESTFUL_WEB_MOUNT_POINT));
     } else {
-        extern void snap_sw_mode_set(enum_mode_t mode);
+        extern void snap_sw_mode_set(enum_wireless_mode_t mode);
         snap_sw_mode_set(SW_MODE_NULL);
     }
     vTaskDelete(NULL);
 }
 
-void wifi_init_sta(void)
+void wifi_sta_start(void)
 {
     g_retry_num = 0;
     ESP_ERROR_CHECK(snap_sw_module_start(task_wifi_start_sta, true, TASK_BUFFER_4K0, MODULE_WIFI_STA));
 }
 
-void wifi_stop_sta(void)
+void wifi_sta_stop(void)
 {
     //esp_err_t ret;
-    //wifi_mode_t wifi_mode;
     if(g_wifi_sta_start){
-        ESP_ERROR_CHECK(stop_rest_server());
+        ESP_ERROR_CHECK(rest_srv_stop());
     }
     g_wifi_sta_start = true;
 
-    snap_sw_state_set(SW_STATE_INVALID);
+    protocol_state_set(SW_STATE_INVALID);
     ESP_ERROR_CHECK(esp_wifi_disconnect());
     ESP_ERROR_CHECK(esp_wifi_stop());
     ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, &sta_instance_got_ip));
     ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &sta_instance_any_id));
     ESP_ERROR_CHECK(esp_wifi_deinit());
     esp_netif_destroy_default_wifi(g_sta_instance_netif);
-    //ESP_ERROR_CHECK(esp_netif_deinit());
     vEventGroupDelete(g_wifi_event_group);
     g_sta_instance_netif = NULL;
 }

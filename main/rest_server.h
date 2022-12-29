@@ -6,9 +6,9 @@
 extern "C" {
 #endif
 
-void sanp_sw_rest_init(void);
-esp_err_t stop_rest_server(void);
-esp_err_t start_rest_server(const char *base_path);
+void rest_srv_init(void* args);
+esp_err_t rest_srv_stop(void);
+esp_err_t rest_srv_start(const char *base_path);
 
 
 #ifdef __cplusplus

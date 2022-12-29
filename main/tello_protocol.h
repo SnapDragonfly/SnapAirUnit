@@ -7,10 +7,8 @@
 extern "C" {
 #endif
 
-esp_err_t udp_handle_tello_protocol(uint8_t * buf, int len);
-esp_err_t udp_handle_cli_protocol(uint8_t * buf, int len);
-
-
+esp_err_t nomsp_handle_tello(uint8_t * buf, int len);
+esp_err_t nomsp_handle_cli(uint8_t * buf, int len);
 
 #ifdef __cplusplus
 }

@@ -6,11 +6,8 @@
 extern "C" {
 #endif
 
-//void sanp_sw_udp_init(void);
-//esp_err_t stop_udp_server(void);
-esp_err_t start_udp_server(void);
-esp_err_t udp_send_msg(uint8_t * buf, int len);
-
+esp_err_t udp_srv_start(void);
+esp_err_t udp_msg_send(uint8_t * buf, int len);
 
 #ifdef __cplusplus
 }
