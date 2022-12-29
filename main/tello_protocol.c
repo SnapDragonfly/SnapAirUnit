@@ -95,6 +95,18 @@ static esp_err_t tello_protocol_parse(uint8_t * buf, int len)
 #if (DEBUG_TELLO_PROTO)
     ESP_LOGI(MODULE_TELLO_PROTO, "argc(%d) commands(%d)", argc, total_commands);
 #endif /* DEBUG_TELLO_PROTO */
+
+    if (argc < 1){
+        /* 
+         * Very rare case, which mightbe comes from  debug tool
+         * I (24611) tel: tello_protocol_parse 3 bytes
+         * I (24621) tel: 00 00 00
+         * I (24621) tel: argc(0) commands(10)
+         */
+        free(szcmdline);
+        return ESP_ERR_NOT_FOUND;
+    }
+
     for (int i = 0; i < total_commands; i++){
         if(!strcmp(g_udp_commands[i].command, argv[0])){
             struct udp_data data;
