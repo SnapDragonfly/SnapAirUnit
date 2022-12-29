@@ -40,6 +40,7 @@ esp_err_t wireless_mode_init(void);
 esp_err_t wireless_mode_switch(enum_wireless_mode_t mode);
 enum_wireless_mode_t wireless_mode_next(void);
 enum_wireless_mode_t wireless_mode_get(void);
+void wireless_mode_set(enum_wireless_mode_t mode);
 
 
 #ifdef __cplusplus

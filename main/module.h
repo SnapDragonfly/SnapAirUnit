@@ -13,12 +13,12 @@ extern "C" {
 
 
 // Software components
-#define DEBUG_EVT_PROC            1
-#define DEBUG_SPIFFS              1
-#define DEBUG_CMD_NVS             1
-#define DEBUG_CMD_SAU             1
-#define DEBUG_FACTORY_SETTING     1
-#define DEBUG_CMD_UDP             1
+#define DEBUG_EVT_PROC            0
+#define DEBUG_SPIFFS              0
+#define DEBUG_CMD_NVS             0
+#define DEBUG_CMD_SAU             0
+#define DEBUG_FACTORY_SETTING     0
+#define DEBUG_CMD_UDP             0
 
 
 #define MODULE_EVT_PROC            "evt"

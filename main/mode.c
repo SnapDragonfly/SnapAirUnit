@@ -106,7 +106,7 @@ enum_protocol_state_t protocol_state_get(void)
     return g_sw_state;
 }
 
-void snap_sw_mode_set(enum_wireless_mode_t mode)
+void wireless_mode_set(enum_wireless_mode_t mode)
 {
     g_sw_mode = mode;
 }

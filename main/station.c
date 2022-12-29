@@ -185,8 +185,7 @@ static void task_wifi_start_sta(void* args)
     if (g_wifi_sta_start){
         ESP_ERROR_CHECK(rest_srv_start(CONFIG_RESTFUL_WEB_MOUNT_POINT));
     } else {
-        extern void snap_sw_mode_set(enum_wireless_mode_t mode);
-        snap_sw_mode_set(SW_MODE_NULL);
+        wireless_mode_set(SW_MODE_NULL);
     }
     vTaskDelete(NULL);
 }

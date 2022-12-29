@@ -43,7 +43,7 @@ static TaskHandle_t          g_application_task_hdl;
 static int64_t press_act_time                   = 0;
 static int64_t press_rel_time                   = 0;
 
-static void task_evt_process(void* args)
+static void evt_process_task(void* args)
 {
     UNUSED(args);
 
@@ -58,11 +58,10 @@ static void task_evt_process(void* args)
          */
         extern bool g_wifi_sta_start;
         if(!g_wifi_sta_start && SW_MODE_NULL == wireless_mode_get()){
-            extern void snap_sw_mode_set(enum_wireless_mode_t mode);
-            snap_sw_mode_set(SW_MODE_WIFI_STA);
+            wireless_mode_set(SW_MODE_WIFI_STA);
 
             ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, MODE_KEY_DEFAULT, NULL, 0, portMAX_DELAY));
-            ESP_ERROR_CHECK(esp_event_post(EVT_PROCESS, MODE_KEY_DEFAULT, NULL, 0, portMAX_DELAY));
+            //ESP_ERROR_CHECK(esp_event_post(EVT_PROCESS, MODE_KEY_DEFAULT, NULL, 0, portMAX_DELAY));
             ESP_LOGI(MODULE_CONSOLE, "Trigger MODE_KEY_DEFAULT\n");
             //g_wifi_sta_start = true;
         }
@@ -81,7 +80,7 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
     int64_t curr_time        = esp_timer_get_time();
 
 #if (DEBUG_EVT_PROC)
-    ESP_LOGI(MODULE_EVT_PROC, "evt_process_handler id = %d", id);
+    ESP_LOGI(MODULE_EVT_PROC, "evt_process_handler id %d, data 0x%x", id, event_data);
 #endif /* DEBUG_EVT_PROC */
 
     switch(id){
@@ -106,6 +105,7 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
 #if (DEBUG_EVT_PROC)
                 ESP_LOGI(MODULE_EVT_PROC, "Switch from %d to %d, ret = %d", prev_mode, wireless_mode_get(), ret);
 #else
+                UNUSED(prev_mode);
                 UNUSED(ret);
 #endif /*DEBUG_EVT_PROC*/
 
@@ -121,13 +121,12 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
 
             }
 
-
             break;
 
         case MODE_KEY_RELEASED:
             press_rel_time = curr_time;
-            ESP_LOGW(MODULE_EVT_PROC, "To be implemented");
-            
+            ESP_LOGW(MODULE_EVT_PROC, "MODE_KEY_RELEASED, To be implemented");
+
             break;
 
         case MODE_KEY_LONG_PRESSED:
@@ -139,11 +138,13 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
 #if (DEBUG_EVT_PROC)
             ESP_LOGI(MODULE_EVT_PROC, "Switch to %d-------- ret = %d", wireless_mode_get(), ret);
 #endif /* DEBUG_EVT_PROC */
+
             break;
             
         default:
             /* Can't be HERE */
             ESP_LOGE(MODULE_EVT_PROC, "Error");
+
             break;
         }
 }
@@ -170,7 +171,7 @@ esp_event_loop_handle_t module_evt_start(void)
     ESP_ERROR_CHECK(esp_event_handler_instance_register_with(g_loop_with_task, EVT_PROCESS, ESP_EVENT_ANY_ID, evt_process_handler, g_loop_with_task, NULL));
 
     // Create the application task
-    xTaskCreate(task_evt_process, MODULE_EVT_PROC, TASK_BUFFER_3K0, NULL, uxTaskPriorityGet(NULL) + 1, &g_application_task_hdl);
+    xTaskCreate(evt_process_task, MODULE_EVT_PROC, TASK_BUFFER_3K0, NULL, uxTaskPriorityGet(NULL) + 1, &g_application_task_hdl);
 
     // Start the application task to run the event handlers
     xTaskNotifyGive(g_application_task_hdl);
