@@ -18,21 +18,18 @@ typedef enum {
 #define MAX_SUPPORTED_RC_CHANNEL_COUNT         18
 
 
-esp_err_t handle_msp_protocol(uint8_t * buf, int len);
-esp_err_t ttl_handle_wifi_msp_protocol(uint8_t * buf, int len);
-esp_err_t ttl_handle_wifi_nomsp_protocol(uint8_t * buf, int len);
-esp_err_t ttl_handle_bt_msp_protocol(uint8_t * buf, int len);
-esp_err_t center_handle_msp_protocol(uint8_t * buf, int len);
+esp_err_t wireless_handle_msp(uint8_t * buf, int len);
+esp_err_t ttl_handle_wifi_msp(uint8_t * buf, int len);
+esp_err_t ttl_handle_wifi_nomsp(uint8_t * buf, int len);
+esp_err_t ttl_handle_bt_package(uint8_t * buf, int len);
+esp_err_t auc_handle_msp(uint8_t * buf, int len);
 
-esp_err_t start_message_center(void);
-
-
-esp_err_t mspSetChannel(uint8_t index, uint16_t value);
-esp_err_t mspSetChannels(uint8_t count, uint16_t *value);
-esp_err_t mspUpdateChannels(void);
-
-esp_err_t mspSetMessage(messageVersion_e type);
-messageVersion_e mspGetMessage(void);
+esp_err_t auc_srv_start(void);
+esp_err_t auc_set_channel(uint8_t index, uint16_t value);
+esp_err_t auc_set_channels(uint8_t count, uint16_t *value);
+esp_err_t auc_update_channels(void);
+esp_err_t auc_set_type(messageVersion_e type);
+messageVersion_e auc_get_type(void);
 
 #ifdef __cplusplus
 }

@@ -107,8 +107,8 @@ esp_err_t udp_arm(struct udp_data * data)
 {
     UNUSED(data);
 
-    mspSetChannel(4, 1900);
-    mspUpdateChannels();
+    auc_set_channel(4, 1900);
+    auc_update_channels();
 
     return ESP_OK;
 }
@@ -117,8 +117,8 @@ esp_err_t udp_emergency(struct udp_data * data)
 {
     UNUSED(data);
 
-    mspSetChannel(4, 1200);
-    mspUpdateChannels();
+    auc_set_channel(4, 1200);
+    auc_update_channels();
 
     return ESP_OK;
 }

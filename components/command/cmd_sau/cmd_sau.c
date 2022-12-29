@@ -210,8 +210,8 @@ static int sau_emergency(int argc, char **argv)
         return 1;
     }
 
-    mspSetChannel(4, 1200);
-    mspUpdateChannels();
+    auc_set_channel(4, 1200);
+    auc_update_channels();
 
     ESP_LOGI(MODULE_CMD_SAU, "emergency");
     return 0;
@@ -234,8 +234,8 @@ static int sau_channel(int argc, char **argv)
        return 1;
     }
 
-    mspSetChannel(channel, value);
-    mspUpdateChannels();
+    auc_set_channel(channel, value);
+    auc_update_channels();
 
     ESP_LOGI(MODULE_CMD_SAU, "channel %d %d", channel, value);
     return 0;

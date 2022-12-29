@@ -7,7 +7,9 @@
 extern "C" {
 #endif
 
-esp_err_t start_factory_settings(void);
+void factory_settings_init(void* args);
+
+
 esp_err_t restore_factory_settings(void);
 esp_err_t restore_ap_settings(void);
 esp_err_t restore_sta_settings(void);

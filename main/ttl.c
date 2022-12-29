@@ -80,26 +80,26 @@ static void ttl_srv_task(void *pvParameters)
 
                     // To do send to BT SPP
                     if (g_esp_ssp_handle && protocol_state_active(SW_MODE_BT_SPP)){
-                        if(MESSAGE_CENTER == mspGetMessage()){
-                            center_handle_msp_protocol(temp, event.size);
+                        if(MESSAGE_CENTER == auc_get_type()){
+                            auc_handle_msp(temp, event.size);
                         } else {
-                            ttl_handle_bt_msp_protocol(temp, event.size);
+                            ttl_handle_bt_package(temp, event.size);
                         }
-                        mspSetMessage(MESSAGE_UNKNOW);
+                        auc_set_type(MESSAGE_UNKNOW);
                     } else {
                         esp_err_t ret;
                         if (SW_STATE_CLI == protocol_state_get()){
                             udp_msg_send(temp, event.size);
                         }else{
-                            if(MESSAGE_CENTER == mspGetMessage()){
-                                center_handle_msp_protocol(temp, event.size);
+                            if(MESSAGE_CENTER == auc_get_type()){
+                                auc_handle_msp(temp, event.size);
                             } else {
-                                ret = ttl_handle_wifi_msp_protocol(temp, event.size);
+                                ret = ttl_handle_wifi_msp(temp, event.size);
                                 if(ESP_OK != ret){
-                                    (void) ttl_handle_wifi_nomsp_protocol(temp, event.size);
+                                    (void) ttl_handle_wifi_nomsp(temp, event.size);
                                 }
                             }
-                            mspSetMessage(MESSAGE_UNKNOW);
+                            auc_set_type(MESSAGE_UNKNOW);
                         }
                     }
                     //esp_ble_gatts_send_indicate(spp_gatts_if, spp_conn_id, spp_handle_table[SPP_IDX_SPP_DATA_NTY_VAL],event.size, temp, false);

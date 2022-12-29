@@ -229,7 +229,7 @@ uint32_t sbufReadU32(sbuf_t *src)
 }
 
 
-esp_err_t mspSetMessage(messageVersion_e type)
+esp_err_t auc_set_type(messageVersion_e type)
 {
     if(MESSAGE_UNKNOW == type || g_esp_msg_center == type){
         g_esp_msg_center = type;
@@ -241,7 +241,7 @@ esp_err_t mspSetMessage(messageVersion_e type)
     }else{
         do{
 #if (0)
-            ESP_LOGI(MODULE_MSP_PROTO, "mspSetMessage wait %d", g_esp_msg_center);
+            ESP_LOGI(MODULE_MSP_PROTO, "auc_set_type wait %d", g_esp_msg_center);
             vTaskDelay(TIME_500_MS / portTICK_PERIOD_MS);
 #else
             vTaskDelay(TIME_5_MS / portTICK_PERIOD_MS);
@@ -252,13 +252,13 @@ esp_err_t mspSetMessage(messageVersion_e type)
     return ESP_OK;
 }
 
-messageVersion_e mspGetMessage(void)
+messageVersion_e auc_get_type(void)
 {
     return g_esp_msg_center;
 }
 
 
-esp_err_t mspSetChannel(uint8_t index, uint16_t value)
+esp_err_t auc_set_channel(uint8_t index, uint16_t value)
 {
     if (index >= MAX_SUPPORTED_RC_CHANNEL_COUNT){
         return ESP_FAIL;
@@ -267,7 +267,7 @@ esp_err_t mspSetChannel(uint8_t index, uint16_t value)
     g_esp_rc_channel[index] = value;
     return ESP_OK;
 }
-esp_err_t mspSetChannels(uint8_t count, uint16_t *value)
+esp_err_t auc_set_channels(uint8_t count, uint16_t *value)
 {
     if (count >= MAX_SUPPORTED_RC_CHANNEL_COUNT 
         && NULL != value){
@@ -280,7 +280,7 @@ esp_err_t mspSetChannels(uint8_t count, uint16_t *value)
     return ESP_OK;
 }
 
-esp_err_t mspSerialEncode(mspPacket_t *packet, mspVersion_e mspVersion)
+esp_err_t msp_serial_encode(mspPacket_t *packet, mspVersion_e mspVersion)
 {
     static const uint8_t mspMagic[MSP_VERSION_COUNT] = MSP_VERSION_MAGIC_INITIALIZER;
     const int dataLen = sbufBytesRemaining(&packet->buf);
@@ -376,7 +376,7 @@ esp_err_t mspSerialEncode(mspPacket_t *packet, mspVersion_e mspVersion)
     return ESP_OK;
 }
 
-esp_err_t mspUpdateChannels(void)
+esp_err_t auc_update_channels(void)
 {
     uint8_t msg_buffer[STR_BUFFER_LEN];
     sbuf_t msg;
@@ -394,13 +394,13 @@ esp_err_t mspUpdateChannels(void)
         .result = 0,
     };
 
-    return mspSerialEncode(&command, MSP_V2_NATIVE);
+    return msp_serial_encode(&command, MSP_V2_NATIVE);
 }
 
 
 
 
-static bool mspSerialProcessReceivedData(mspPort_t *mspPort, uint8_t c)
+static bool msp_serial_process_received_data(mspPort_t *mspPort, uint8_t c)
 {
     switch (mspPort->c_state) {
         default:
@@ -581,7 +581,7 @@ static bool mspSerialProcessReceivedData(mspPort_t *mspPort, uint8_t c)
     return true;
 }
 
-esp_err_t ttl_handle_bt_msp_protocol(uint8_t * buf, int len)
+esp_err_t ttl_handle_bt_package(uint8_t * buf, int len)
 {
     if (NULL == buf){
         return ESP_FAIL;
@@ -596,7 +596,7 @@ esp_err_t ttl_handle_bt_msp_protocol(uint8_t * buf, int len)
     return ESP_OK;
 }
 
-esp_err_t ttl_handle_wifi_msp_protocol(uint8_t * buf, int len)
+esp_err_t ttl_handle_wifi_msp(uint8_t * buf, int len)
 {
     if (NULL == buf){
         return ESP_FAIL;
@@ -619,7 +619,7 @@ esp_err_t ttl_handle_wifi_msp_protocol(uint8_t * buf, int len)
     g_esp_msp_port.c_state = MSP_IDLE;
 
     for(int i = 0; i < len; i++){
-        mspSerialProcessReceivedData(&g_esp_msp_port, *(buf +i));
+        msp_serial_process_received_data(&g_esp_msp_port, *(buf +i));
         if(MSP_COMMAND_RECEIVED == g_esp_msp_port.c_state){
 #if (0)
             ESP_LOGI(MODULE_MSP_PROTO, "ttl_handle_msp-recv version %d wifi %d sta %d", 
@@ -677,7 +677,7 @@ esp_err_t ttl_handle_wifi_msp_protocol(uint8_t * buf, int len)
     return ESP_FAIL;
 }
 
-esp_err_t ttl_handle_wifi_nomsp_protocol(uint8_t * buf, int len)
+esp_err_t ttl_handle_wifi_nomsp(uint8_t * buf, int len)
 {
     if(NULL == buf){
         return ESP_FAIL;
@@ -692,7 +692,7 @@ esp_err_t ttl_handle_wifi_nomsp_protocol(uint8_t * buf, int len)
     return ESP_OK;
 }
 
-esp_err_t handle_msp_protocol(uint8_t * buf, int len)
+esp_err_t wireless_handle_msp(uint8_t * buf, int len)
 {
     if (NULL == buf){
         return ESP_FAIL;
@@ -712,11 +712,11 @@ esp_err_t handle_msp_protocol(uint8_t * buf, int len)
     hdrv2.size = sbufReadU16(&sbuf_hdrv2);
 
     if (0 == hdrv2.flags){
-        mspSetMessage(MESSAGE_MSP);
+        auc_set_type(MESSAGE_MSP);
     }
 
 #if (DEBUG_MSP_PROTO)
-    ESP_LOGI(MODULE_MSP_PROTO, "handle_msp_protocol %d bytes cmd 0x%04x-%d flag %d size %d", 
+    ESP_LOGI(MODULE_MSP_PROTO, "wireless_handle_msp %d bytes cmd 0x%04x-%d flag %d size %d", 
                                                 len, hdrv2.cmd, hdrv2.cmd, hdrv2.flags, hdrv2.size);
     esp_log_buffer_hex(MODULE_MSP_PROTO, buf, len);
 #endif /* DEBUG_MSP_PROTO */
@@ -726,23 +726,23 @@ esp_err_t handle_msp_protocol(uint8_t * buf, int len)
     return ESP_OK;
 }
 
-esp_err_t center_handle_msp_protocol(uint8_t * buf, int len)
+esp_err_t auc_handle_msp(uint8_t * buf, int len)
 {
 #if (DEBUG_MSP_PROTO)
-        ESP_LOGI(MODULE_MSP_PROTO, "center_handle %d bytes", len);
+        ESP_LOGI(MODULE_MSP_PROTO, "auc_handle_msp %d bytes", len);
         esp_log_buffer_hex(MODULE_MSP_PROTO, buf, len);
 #endif /* DEBUG_MSP_PROTO */
 
     return ESP_OK;
 }
 
-static void message_center_task(void *pvParameters)
+static void auc_srv_task(void *pvParameters)
 {
 #define MESSAGE_CENTER_TEST    0
     while (1) {
         if (SW_STATE_CLI != protocol_state_get() && !protocol_state_active(SW_MODE_BT_SPP) && snap_sw_command_get()){
             /* Used for Air Unit RC control in WiFi AP/STA MSP comunication */
-            ESP_ERROR_CHECK(mspUpdateChannels());
+            ESP_ERROR_CHECK(auc_update_channels());
 #if (MESSAGE_CENTER_TEST)
             ESP_LOGI(MODULE_MSP_PROTO, "message center rc sent.");
 #endif /* MESSAGE_CENTER_TEST */
@@ -763,9 +763,9 @@ static void message_center_task(void *pvParameters)
 }
 
 
-esp_err_t start_message_center(void)
+esp_err_t auc_srv_start(void)
 {
-    xTaskCreate(message_center_task, MODULE_MSP_PROTO, TASK_BUFFER_2K0, NULL, 5, NULL);
+    xTaskCreate(auc_srv_task, MODULE_MSP_PROTO, TASK_BUFFER_2K0, NULL, 5, NULL);
 
     return ESP_OK;
 }

@@ -80,7 +80,7 @@ esp_err_t restore_sta_settings(void)
     return err;
 }
 
-esp_err_t start_factory_settings(void)
+void factory_settings_init(void* args)
 {
     esp_err_t err;
 
@@ -104,8 +104,6 @@ esp_err_t start_factory_settings(void)
         ESP_LOGI(MODULE_FACTORY_SETTING, "STA parameters read: %s, %s", g_str_sta_ssid, g_str_sta_pass);
 #endif /* DEBUG_FACTORY_SETTING */
     }
-
-    return err;
 }
 
 

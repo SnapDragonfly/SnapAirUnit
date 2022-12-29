@@ -86,27 +86,28 @@ void app_init(void)
       ret = nvs_flash_init();
     }
 
+    //Initialize default event loop
     ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    //Initialize netif stack
     ESP_ERROR_CHECK(esp_netif_init());
 
-
-    //Basic Software Components
-    g_evt_handle = module_evt_start();
+    //Initialize consistent storage
     ESP_ERROR_CHECK(spiffs_start());
-    (void)start_factory_settings();
+    ESP_ERROR_CHECK(snap_sw_module_start(factory_settings_init, false, 0, MODULE_FACTORY_SETTING));
 
-    //Basic Hardware Components
+    //Basic Hardware & Software Components
+    g_evt_handle = module_evt_start();
     g_led_handle = module_led_start(BLINK_GPIO);
     g_key_handle = module_key_start(KEY_MODE);
-    ESP_ERROR_CHECK(ttl_srv_start());
-
 
     //Service Module for Applications
     ESP_ERROR_CHECK(snap_sw_module_start(rest_srv_init, false, 0, MODULE_HTTP));
+    ESP_ERROR_CHECK(ttl_srv_start());
     ESP_ERROR_CHECK(udp_srv_start());
     ESP_ERROR_CHECK(udp_clt_start());
     ESP_ERROR_CHECK(wireless_mode_init());
-    ESP_ERROR_CHECK(start_message_center());
+    ESP_ERROR_CHECK(auc_srv_start());
 
     printf("%s: free_heap_size = %d\n", DEVICE_NAME_SNAP_AIR_UNIT, esp_get_free_heap_size());
 }

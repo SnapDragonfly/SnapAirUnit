@@ -168,7 +168,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
             ESP_ERROR_CHECK(ttl_msg_send(param->data_ind.data, param->data_ind.len));
 #else
             protocol_state_upgrade(SW_STATE_FULL_DUPLEX);
-            //handle_msp_protocol(param->data_ind.data, param->data_ind.len);
+            //wireless_handle_msp(param->data_ind.data, param->data_ind.len);
             esp_err_t ret;
             switch(protocol_state_get()){
                 case SW_STATE_FULL_DUPLEX:
@@ -177,7 +177,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
                     esp_log_buffer_hex(MODULE_BT_SPP, param->data_ind.data, param->data_ind.len);
 #endif /* DEBUG_BT_SPP */
 
-                    ret = handle_msp_protocol(param->data_ind.data, param->data_ind.len);
+                    ret = wireless_handle_msp(param->data_ind.data, param->data_ind.len);
                     if(ESP_OK == ret){
                         break;
                     }

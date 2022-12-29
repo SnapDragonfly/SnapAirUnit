@@ -193,7 +193,7 @@ static void udp_srv_task(void *pvParameters)
                         esp_log_buffer_hex(MODULE_UDP_SRV, rx_buffer, len);
 #endif /* DEBUG_UDP_SRV */
 
-                        ret = handle_msp_protocol((uint8_t *)rx_buffer, len);
+                        ret = wireless_handle_msp((uint8_t *)rx_buffer, len);
                         if(ESP_OK == ret){
                             break;
                         }
