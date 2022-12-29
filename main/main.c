@@ -144,7 +144,7 @@ void app_main(void)
 
     printf("%uMB %s flash\n", flash_size / (1024 * 1024),
            (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
-
+    printf("Current free heap size: %d bytes\n", esp_get_free_heap_size());
     printf("Minimum free heap size: %d bytes\n", esp_get_minimum_free_heap_size());
 
     /* Snap Air Unit: Modules & Components */

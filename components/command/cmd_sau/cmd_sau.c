@@ -197,8 +197,10 @@ static int sau_sdk(int argc, char **argv)
         return 1;
     }
 
-    ESP_LOGI(MODULE_CMD_SAU, "Version: SDK(%s) APP(%s)", get_idf_versions(), get_app_versions());
-    ESP_LOGI(MODULE_CMD_SAU, "%s: free_heap_size = %d\n", DEVICE_NAME_SNAP_AIR_UNIT, esp_get_free_heap_size());
+    ESP_LOGI(MODULE_CMD_SAU, "SDK Version: %s", get_idf_versions());
+    ESP_LOGI(MODULE_CMD_SAU, "APP Version: %s", get_app_versions());
+    ESP_LOGI(MODULE_CMD_SAU, "%s: current free_heap_size = %d", DEVICE_NAME_SNAP_AIR_UNIT, esp_get_free_heap_size());
+    ESP_LOGI(MODULE_CMD_SAU, "%s: minimum free_heap_size = %d", DEVICE_NAME_SNAP_AIR_UNIT, esp_get_minimum_free_heap_size());
     return 0;
 }
 
