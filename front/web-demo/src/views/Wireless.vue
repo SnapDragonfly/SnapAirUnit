@@ -52,7 +52,7 @@
           Save AP Configuration
         </v-btn>
       </v-row>
-
+      <hr>
       <v-row>
         <v-col
           cols="12"
@@ -100,12 +100,18 @@
           Save Station Configuration
         </v-btn>
       </v-row>
-
+      <hr>
       <v-row>
         <v-radio-group v-model="wireless">
-          <v-radio :label="`WiFi Ap`" :value=0></v-radio>
-          <v-radio :label="`WiFi Station`" :value=1></v-radio>
-          <v-radio :label="`Bluetooth SPP UART`" :value=2></v-radio>
+          <v-radio :label="`WiFi Ap`" :value=0
+            off-icon="iconfont icon-radiobuttonunselect"
+            on-icon="iconfont icon-radiobuttonselect"></v-radio>
+          <v-radio :label="`WiFi Station`" :value=1
+            off-icon="iconfont icon-radiobuttonunselect"
+            on-icon="iconfont icon-radiobuttonselect"></v-radio>
+          <v-radio :label="`Bluetooth SPP UART`" :value=2
+            off-icon="iconfont icon-radiobuttonunselect"
+            on-icon="iconfont icon-radiobuttonselect"></v-radio>
         </v-radio-group>
 
         <v-btn class="ma-2" color="primary" dark @click="set_wireless_mode">
