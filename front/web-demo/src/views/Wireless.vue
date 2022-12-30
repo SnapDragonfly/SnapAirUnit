@@ -1,72 +1,106 @@
 <template>
+  <v-form>
     <v-container
-    class="px-0"
-    fluid
-  >
-    <v-row>
-      <v-col
-        cols="12"
-        sm="6"
-        md="3"
-      >
-        <v-text-field v-model="ap_ssid"
-          label="WiFi AP SSID"
-          placeholder="SnapAirUnitTest"
-          ></v-text-field>
-      </v-col>
+      class="px-0"
+      fluid
+    >
+      <v-row>
+        <v-col
+          cols="12"
+          sm="6"
+        >
+          <v-text-field v-model="ap_ssid"
+            label="WiFi AP SSID"
+            filled
+            shaped
+            placeholder="SnapAirUnitTest"
+            ></v-text-field>
+        </v-col>
 
-      <v-col
-        cols="12"
-        sm="6"
-        md="3"
-      >
-        <v-text-field v-model="ap_pass"
-          label="WiFi AP Password"
-          placeholder="12345678Test"
-          ></v-text-field>
-      </v-col>
-    </v-row>
+        <v-col
+          cols="12"
+          sm="6"
+        >
+          <v-text-field v-model.trim="ap_pass"
+            :append-icon="ap_show ? 'wifi_sharp' : 'wifi_off_sharp'"
+            :type="ap_show ? 'text' : 'password'"
+            :rules="[
+                () => !!ap_pass || 'This field is required',
+                () => !!ap_pass && ap_pass.length <= 15 || 'Password must be less than 15 characters',
+                () => !!ap_pass && ap_pass.length >= 8 || 'Password must be more than 8 characters',
+                ap_passCheck
+              ]"
+            :onkeyup="ap_pass = ap_pass.replace(/\s+/g,'')"
+            label="WiFi AP Password"
+            filled
+            shaped
+            placeholder="12345678Test"
+            counter="15"
+            hint="At least 8 characters"
+            @click:append="ap_show = !ap_show"
+            ></v-text-field>
+        </v-col>
 
-    <v-btn class="ma-2" color="primary" dark @click="set_ap">
-        Save AP Configuration
-    </v-btn>
+        <v-btn class="ma-2" color="primary" dark @click="set_ap">
+          Save AP Configuration
+        </v-btn>
+      </v-row>
 
-    <v-row>
-      <v-col
-        cols="12"
-        sm="6"
-        md="3"
-      >
-        <v-text-field v-model="sta_ssid"
-          label="WiFi Station SSID"
-          placeholder="AutoLabTest"
-          ></v-text-field>
-      </v-col>
+      <v-row>
+        <v-col
+          cols="12"
+          sm="6"
+        >
+          <v-text-field v-model="sta_ssid"
+            label="WiFi Station SSID"
+            filled
+            shaped
+            placeholder="AutoLabTest"
+            ></v-text-field>
+        </v-col>
 
-      <v-col
-        cols="12"
-        sm="6"
-        md="3"
-      >
-        <v-text-field v-model="sta_pass"
-          label="WiFi Station Password"
-          placeholder="68686868Test"
-          ></v-text-field>
-      </v-col>
-      <v-btn class="ma-2" color="primary" dark @click="set_sta">
-        Save Station Configuration
-      </v-btn>
-    </v-row>
-    <v-radio-group v-model="wireless">
-      <v-radio :label="`WiFi Ap`" :value=0></v-radio>
-      <v-radio :label="`WiFi Station`" :value=1></v-radio>
-      <v-radio :label="`Bluetooth SPP UART`" :value=2></v-radio>
-    </v-radio-group>
+        <v-col
+          cols="12"
+          sm="6"
+        >
+          <v-text-field v-model.trim="sta_pass"
+            :append-icon="sta_show ? 'wifi_sharp' : 'wifi_off_sharp'"
+            :type="sta_show ? 'text' : 'password'"
+            :rules="[
+                () => !!sta_pass || 'This field is required',
+                () => !!sta_pass && sta_pass.length <= 15 || 'Password must be less than 15 characters',
+                () => !!sta_pass && sta_pass.length >= 8 || 'Password must be more than 8 characters',
+                sta_passCheck
+              ]"
+            :onkeyup="sta_pass = sta_pass.replace(/\s+/g,'')"
+            label="WiFi Station Password"
+            filled
+            shaped
+            placeholder="68686868Test"
+            counter="15"
+            hint="At least 8 characters"
+            @click:append="sta_show = !sta_show"
+            ></v-text-field>
+        </v-col>
+        <v-btn class="ma-2" color="primary" dark @click="set_sta">
+          Save Station Configuration
+        </v-btn>
+      </v-row>
 
-    <v-btn class="ma-2" color="primary" dark @click="set_wireless_mode">
-      Apply
-    </v-btn>
-  </v-container>
+      <v-row>
+        <v-radio-group v-model="wireless">
+          <v-radio :label="`WiFi Ap`" :value=0></v-radio>
+          <v-radio :label="`WiFi Station`" :value=1></v-radio>
+          <v-radio :label="`Bluetooth SPP UART`" :value=2></v-radio>
+        </v-radio-group>
+
+        <v-btn class="ma-2" color="primary" dark @click="set_wireless_mode">
+          Apply
+        </v-btn>
+      </v-row>
+
+    </v-container>
+  </v-form>
 </template>
 
 <script>
@@ -78,6 +112,8 @@ export default {
       sta_ssid: null,
       sta_pass: null,
       wireless: null,
+      ap_show: false,
+      sta_show: false,
     };
   },
   methods: {
