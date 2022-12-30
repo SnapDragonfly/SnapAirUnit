@@ -29,7 +29,7 @@
           sm="6"
         >
           <v-text-field v-model.trim="ap_pass"
-            :append-icon="ap_show ? 'wifi_sharp' : 'wifi_off_sharp'"
+            :append-icon="ap_show ? 'iconfont icon-eye' : 'iconfont icon-eye-close'"
             :type="ap_show ? 'text' : 'password'"
             :rules="[
                 () => !!ap_pass || 'This field is required',
@@ -78,7 +78,7 @@
           sm="6"
         >
           <v-text-field v-model.trim="sta_pass"
-            :append-icon="sta_show ? 'wifi_sharp' : 'wifi_off_sharp'"
+            :append-icon="sta_show ? 'iconfont icon-eye' : 'iconfont icon-eye-close'"
             :type="sta_show ? 'text' : 'password'"
             :rules="[
                 () => !!sta_pass || 'This field is required',
@@ -109,7 +109,7 @@
         </v-radio-group>
 
         <v-btn class="ma-2" color="primary" dark @click="set_wireless_mode">
-          Apply
+          Apply Wireless Mode
         </v-btn>
       </v-row>
 

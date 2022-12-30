@@ -4,7 +4,7 @@
       <v-list dense>
         <v-list-tile to="/">
           <v-list-tile-action>
-            <v-icon>home</v-icon>
+            <span class="iconfont icon-home"></span>
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>Home</v-list-tile-title>
@@ -12,7 +12,7 @@
         </v-list-tile>
         <v-list-tile to="/wireless">
           <v-list-tile-action>
-            <v-icon>wifi</v-icon>
+            <span class="iconfont icon-radio"></span>
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>Wireless</v-list-tile-title>
@@ -20,7 +20,7 @@
         </v-list-tile>
         <v-list-tile to="/rc">
           <v-list-tile-action>
-            <v-icon>bar_chart</v-icon>
+            <span class="iconfont icon-chart-bar-alt"></span>
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>RcChannel</v-list-tile-title>

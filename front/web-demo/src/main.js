@@ -3,6 +3,7 @@ import './plugins/vuetify'
 import App from './App.vue'
 import router from './router'
 import axios from 'axios'
+import '@/assets/iconfont/iconfont.css'
 
 Vue.config.productionTip = false
 

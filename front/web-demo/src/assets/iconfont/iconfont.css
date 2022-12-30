@@ -1,0 +1,59 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 3845622 */
+  src: url('iconfont.woff2?t=1672386392290') format('woff2'),
+       url('iconfont.woff?t=1672386392290') format('woff'),
+       url('iconfont.ttf?t=1672386392290') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-bluetooth_link:before {
+  content: "\e697";
+}
+
+.icon-radio:before {
+  content: "\e630";
+}
+
+.icon-icon-test1:before {
+  content: "\e652";
+}
+
+.icon-icon-test:before {
+  content: "\e651";
+}
+
+.icon-home:before {
+  content: "\e7c6";
+}
+
+.icon-eye-close:before {
+  content: "\e8ff";
+}
+
+.icon-radiobuttonunselect:before {
+  content: "\e6ed";
+}
+
+.icon-radiobuttonselect:before {
+  content: "\e6ee";
+}
+
+.icon-eye:before {
+  content: "\e6ac";
+}
+
+.icon-chart-bar-alt:before {
+  content: "\e631";
+}
+
+.icon-wifi:before {
+  content: "\e743";
+}
+
