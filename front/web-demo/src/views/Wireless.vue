@@ -10,6 +10,13 @@
           sm="6"
         >
           <v-text-field v-model="ap_ssid"
+            :rules="[
+                () => !!ap_ssid || 'This field is required',
+                () => !!ap_ssid && ap_ssid.length <= 15 || 'SSID must be less than 15 characters',
+                () => !!ap_ssid && ap_ssid.length >= 4 || 'SSID must be more than 4 characters',
+                ap_ssidCheck
+              ]"
+            :onkeyup="ap_ssid = ap_ssid.replace(/\s+/g,'')"
             label="WiFi AP SSID"
             filled
             shaped
@@ -52,6 +59,13 @@
           sm="6"
         >
           <v-text-field v-model="sta_ssid"
+            :rules="[
+                () => !!sta_ssid || 'This field is required',
+                () => !!sta_ssid && sta_ssid.length <= 15 || 'SSID must be less than 15 characters',
+                () => !!sta_ssid && sta_ssid.length >= 4 || 'SSID must be more than 4 characters',
+                sta_ssidCheck
+              ]"
+            :onkeyup="sta_ssid = sta_ssid.replace(/\s+/g,'')"
             label="WiFi Station SSID"
             filled
             shaped
