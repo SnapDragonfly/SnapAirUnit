@@ -103,7 +103,6 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
 
                 enum_wireless_mode_t prev_mode = wireless_mode_get();
                 err = wireless_mode_switch(next_mode);
-                led_mode_set((struct blink_led *)g_led_handle, next_mode);
 
 #if (DEBUG_EVT_PROC)
                 ESP_LOGI(MODULE_EVT_PROC, "MODE_KEY_SHORT_PRESSED, switch from %d to %d err = %d", prev_mode, wireless_mode_get(), err);
@@ -116,7 +115,6 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
 
                 int mode = *((int *)event_data);
                 err = wireless_mode_switch(mode);
-                led_mode_set((struct blink_led *)g_led_handle, mode);
 
 #if (DEBUG_EVT_PROC)
                 ESP_LOGI(MODULE_EVT_PROC, "MODE_KEY_SHORT_PRESSED, switch to mode %d err = %d", wireless_mode_get(), err);

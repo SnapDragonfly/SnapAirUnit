@@ -24,6 +24,7 @@
  */
 #include "config.h"
 #include "define.h"
+#include "handle.h"
 
 /*
  * module header files
@@ -158,6 +159,7 @@ static void udp_srv_task(void *pvParameters)
             // Error occurred during receiving
             if (len < 0) {
                 //protocol_state_set(SW_STATE_IDLE);
+                (void)led_mode_set((struct blink_led *)g_status_handle, LED_STATUS_SLOW);
 #if (DEBUG_UDP_SRV)
                 ESP_LOGE(MODULE_UDP_SRV, "recvfrom failed: errno %d", errno);
 #endif /* DEBUG_UDP_SRV */
@@ -186,6 +188,7 @@ static void udp_srv_task(void *pvParameters)
 
                 rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string...
                 esp_err_t ret;
+                (void)led_mode_set((struct blink_led *)g_status_handle, LED_STATUS_NONE);
                 switch(protocol_state_get()){
                     case SW_STATE_FULL_DUPLEX:
 #if (DEBUG_UDP_SRV)

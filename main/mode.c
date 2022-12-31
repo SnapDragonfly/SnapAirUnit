@@ -22,6 +22,7 @@
  * basic header files
  */
 #include "define.h"
+#include "handle.h"
 
 /*
  * module header files
@@ -174,6 +175,8 @@ esp_err_t wireless_mode_switch(enum_wireless_mode_t mode)
         }
 
     g_sw_mode = mode;
+    (void)led_mode_set((struct blink_led *)g_mode_handle, g_sw_mode);
+    (void)led_mode_set((struct blink_led *)g_status_handle, LED_STATUS_SLOW);
     (void)nvs_set_wireless_mode(g_sw_mode);
 
     return ESP_OK;

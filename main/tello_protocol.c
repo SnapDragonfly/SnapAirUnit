@@ -14,6 +14,7 @@
  * basic header files
  */
 #include "define.h"
+#include "handle.h"
 
 /*
  * module header files
@@ -70,6 +71,7 @@ static esp_err_t tello_protocol_parse(uint8_t * buf, int len)
          * Very rare case, which mightbe comes from  debug tool
          */
         free(szcmdline);
+        (void)led_mode_set((struct blink_led *)g_status_handle, LED_STATUS_ERROR);
         return ESP_ERR_NOT_FOUND;
     }
 
@@ -104,6 +106,7 @@ static esp_err_t tello_protocol_parse(uint8_t * buf, int len)
          * I (24621) tel: argc(0) commands(10)
          */
         free(szcmdline);
+        (void)led_mode_set((struct blink_led *)g_status_handle, LED_STATUS_ERROR);
         return ESP_ERR_NOT_FOUND;
     }
 

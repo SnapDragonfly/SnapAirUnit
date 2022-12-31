@@ -97,9 +97,10 @@ void app_init(void)
     ESP_ERROR_CHECK(snap_sw_module_start(factory_settings_init, false, 0, MODULE_FACTORY_SETTING));
 
     //Basic Hardware & Software Components
-    g_evt_handle = module_evt_start();
-    g_led_handle = module_led_start(BLINK_GPIO);
-    g_key_handle = module_key_start(KEY_MODE);
+    g_evt_handle    = module_evt_start();
+    g_mode_handle   = module_led_start(MODE_GPIO);
+    g_status_handle = module_led_start(STATUS_GPIO);
+    g_key_handle    = module_key_start(KEY_MODE);
 
     //Service Module for Applications
     ESP_ERROR_CHECK(snap_sw_module_start(rest_srv_init, false, 0, MODULE_HTTP));

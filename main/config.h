@@ -35,7 +35,8 @@ extern "C" {
 #define CONTROL_PORT                        CONFIG_CONTROL_SERVER_PORT
 
 // for leds
-#define BLINK_GPIO                          CONFIG_BLINK_GPIO
+#define MODE_GPIO                           CONFIG_BLINK_MODE_GPIO
+#define STATUS_GPIO                         CONFIG_BLINK_STATUS_GPIO
 
 #ifdef __cplusplus
 }

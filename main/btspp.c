@@ -31,6 +31,7 @@
  */
 #include "config.h"
 #include "define.h"
+#include "handle.h"
 
 /*
  * module header files
@@ -110,6 +111,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_OPEN_EVT");
 #endif /* DEBUG_BT_SPP */
         protocol_state_upgrade(SW_STATE_FULL_DUPLEX);
+        (void)led_mode_set((struct blink_led *)g_status_handle, LED_STATUS_NONE);
         break;
     
     case ESP_SPP_CLOSE_EVT:
@@ -248,6 +250,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         ESP_LOGI(MODULE_BT_SPP, "ESP_SPP_SRV_STOP_EVT");
 #endif /* DEBUG_BT_SPP */
         g_esp_ssp_handle = 0;
+        (void)led_mode_set((struct blink_led *)g_status_handle, LED_STATUS_SLOW);
         break;
         
     case ESP_SPP_UNINIT_EVT:

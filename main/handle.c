@@ -22,9 +22,10 @@
 #include "blink.h"
 
 
-blink_led_handle_t             g_led_handle = NULL;
-button_handle_t                g_key_handle = NULL;
-esp_event_loop_handle_t        g_evt_handle = NULL;
+blink_led_handle_t             g_mode_handle   = NULL;
+blink_led_handle_t             g_status_handle = NULL;
+button_handle_t                g_key_handle    = NULL;
+esp_event_loop_handle_t        g_evt_handle    = NULL;
 
 
 
