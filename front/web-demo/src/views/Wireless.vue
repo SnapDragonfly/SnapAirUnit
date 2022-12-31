@@ -17,6 +17,7 @@
                 ap_ssidCheck
               ]"
             :onkeyup="ap_ssid = ap_ssid.replace(/\s+/g,'')"
+            :disabled=ap_disabled
             label="WiFi AP SSID"
             filled
             shaped
@@ -38,6 +39,7 @@
                 ap_passCheck
               ]"
             :onkeyup="ap_pass = ap_pass.replace(/\s+/g,'')"
+            :disabled=ap_disabled
             label="WiFi AP Password"
             filled
             shaped
@@ -48,7 +50,7 @@
             ></v-text-field>
         </v-col>
 
-        <v-btn class="ma-2" color="primary" dark @click="set_ap">
+        <v-btn class="ma-2" color="indigo" dark @click="set_ap" outlined elevation="10">
           Save AP Configuration
         </v-btn>
       </v-row>
@@ -66,6 +68,7 @@
                 sta_ssidCheck
               ]"
             :onkeyup="sta_ssid = sta_ssid.replace(/\s+/g,'')"
+            :disabled=sta_disabled
             label="WiFi Station SSID"
             filled
             shaped
@@ -87,6 +90,7 @@
                 sta_passCheck
               ]"
             :onkeyup="sta_pass = sta_pass.replace(/\s+/g,'')"
+            :disabled=sta_disabled
             label="WiFi Station Password"
             filled
             shaped
@@ -96,7 +100,7 @@
             @click:append="sta_show = !sta_show"
             ></v-text-field>
         </v-col>
-        <v-btn class="ma-2" color="primary" dark @click="set_sta">
+        <v-btn class="ma-2" color="indigo" dark @click="set_sta" outlined elevation="10">
           Save Station Configuration
         </v-btn>
       </v-row>
@@ -114,7 +118,7 @@
             on-icon="iconfont icon-radiobuttonselect"></v-radio>
         </v-radio-group>
 
-        <v-btn class="ma-2" color="primary" dark @click="set_wireless_mode">
+        <v-btn class="ma-2" color="indigo" dark @click="set_wireless_mode" outlined elevation="10">
           Apply Wireless Mode
         </v-btn>
       </v-row>
@@ -134,6 +138,8 @@ export default {
       wireless: null,
       ap_show: false,
       sta_show: false,
+      ap_disabled: true,
+      sta_disabled: true,
     };
   },
   methods: {
@@ -179,7 +185,17 @@ export default {
       this.$ajax
       .get("/api/v1/wireless/raw")
       .then(data => {
-        this.wireless = data.data.wireless
+        this.wireless = data.data.wireless;
+        if (this.wireless == 0){
+          this.ap_disabled = true;
+          this.sta_disabled = false;
+        } else if (this.wireless == 1){
+          this.ap_disabled = false;
+          this.sta_disabled = true;
+        } else {
+          this.ap_disabled = false;
+          this.sta_disabled = false;
+        }
       })
       .then(data => {
         console.log(data);

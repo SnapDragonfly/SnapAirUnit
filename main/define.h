@@ -9,6 +9,7 @@
 extern "C" {
 #endif
 
+#define WIRELESS_SIMPLIFIED                 0
 
 #define WIFI_SSID_LENGTH                    16
 #define WIFI_PASS_LENGTH                    16

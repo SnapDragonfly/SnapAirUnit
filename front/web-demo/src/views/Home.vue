@@ -9,12 +9,12 @@
               <span class="grey--text">APP version: {{app_version}}</span>
               <br>
               <span class="grey--text">IDF version: {{sdk_version}}</span>
+            </div>
+            <hr>
+            <div class="ma-auto">
+              <span class="grey--text">ESP model: {{model}}, cores: {{cores}}, revision: {{revision}}</span>
               <br>
-              <span class="grey--text">ESP model: {{model}}</span>
-              <br>
-              <span class="grey--text">ESP cores: {{cores}}</span>
-              <br>
-              <span class="grey--text">ESP revision: {{revision}}</span>
+              <span class="grey--text">stack: {{simplified_version}}</span>
             </div>
           </v-card-title>
         </v-card>
@@ -31,7 +31,9 @@ export default {
       sdk_version: null,
       model: null,
       cores: null,
-      revision: null
+      revision: null,
+      simplified: null,
+      simplified_version: null,
     };
   },
   mounted() {
@@ -43,6 +45,8 @@ export default {
         this.model = data.data.model;
         this.cores = data.data.cores;
         this.revision = data.data.revision;
+        this.simplified = data.data.simplified;
+        this.simplified_version = this.simplified == 1 ? "simplified" : "full";
       })
       .catch(error => {
         console.log(error);

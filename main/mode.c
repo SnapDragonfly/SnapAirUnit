@@ -114,7 +114,26 @@ void wireless_mode_set(enum_wireless_mode_t mode)
 
 enum_wireless_mode_t wireless_mode_next(void)
 {
+#if (WIRELESS_SIMPLIFIED)
+    uint16_t mode;
+    switch(g_sw_mode){
+        case SW_MODE_WIFI_AP:
+            mode = SW_MODE_BT_SPP;
+            break;
+            
+        case SW_MODE_BT_SPP:
+            mode = SW_MODE_WIFI_AP;
+            break;
+            
+        case SW_MODE_WIFI_STA:
+        default:
+            mode = SW_MODE_WIFI_AP;
+            break;
+    }
+    return mode;
+#else
     return (g_sw_mode + 1) % SW_MODE_NULL;
+#endif
 }
 
 enum_wireless_mode_t wireless_mode_get(void)

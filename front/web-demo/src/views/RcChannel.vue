@@ -30,6 +30,7 @@
                 <v-flex xs3>
                   <v-text-field v-model="yaw" class="mt-0" type="number"></v-text-field>
                 </v-flex>
+                <br>
                 <v-flex xs9>
                   <v-slider v-model="channel5" :min="1000" :max="2000" label="Channel5"></v-slider>
                 </v-flex>

@@ -547,6 +547,7 @@ static esp_err_t system_info_get_handler(httpd_req_t *req)
     cJSON_AddNumberToObject(root, "model", chip_info.model);
     cJSON_AddNumberToObject(root, "cores", chip_info.cores);
     cJSON_AddNumberToObject(root, "revision", chip_info.revision);
+    cJSON_AddNumberToObject(root, "simplified", WIRELESS_SIMPLIFIED);
     const char *sys_info = cJSON_Print(root);
     httpd_resp_sendstr(req, sys_info);
     free((void *)sys_info);

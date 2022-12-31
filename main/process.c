@@ -126,7 +126,10 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
 
         case MODE_KEY_RELEASED:
             press_rel_time = curr_time;
+
+#if (DEBUG_EVT_PROC)
             ESP_LOGW(MODULE_EVT_PROC, "MODE_KEY_RELEASED, To be implemented");
+#endif /*DEBUG_EVT_PROC*/
 
             break;
 
