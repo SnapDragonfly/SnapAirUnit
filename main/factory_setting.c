@@ -51,7 +51,10 @@ esp_err_t restore_ap_settings(void)
     strncpy(g_str_ap_ssid, FACTORY_ESP_WIFI_AP_SSID, WIFI_SSID_LENGTH);
     memset(g_str_ap_pass, 0 , WIFI_PASS_LENGTH);
     strncpy(g_str_ap_pass, FACTORY_ESP_WIFI_AP_PASS, WIFI_PASS_LENGTH);
+
+#if (DEBUG_FACTORY_SETTING)
     ESP_LOGI(MODULE_FACTORY_SETTING, "Factory ap setting used: %s, %s", g_str_ap_ssid, g_str_ap_pass);
+#endif /* DEBUG_FACTORY_SETTING */
 
     err = nvs_set_wifi_ap(g_str_ap_ssid, g_str_ap_pass);
     if (err != ESP_OK){
@@ -71,7 +74,10 @@ esp_err_t restore_sta_settings(void)
     strncpy(g_str_sta_ssid, FACTORY_ESP_WIFI_STA_SSID, WIFI_SSID_LENGTH);
     memset(g_str_sta_pass, 0 , WIFI_PASS_LENGTH);
     strncpy(g_str_sta_pass, FACTORY_ESP_WIFI_STA_PASS, WIFI_PASS_LENGTH);
+
+#if (DEBUG_FACTORY_SETTING)
     ESP_LOGI(MODULE_FACTORY_SETTING, "Factory sta setting used: %s, %s", g_str_sta_ssid, g_str_sta_pass);
+#endif /* DEBUG_FACTORY_SETTING */
 
     err = nvs_set_wifi_sta(g_str_sta_ssid, g_str_sta_pass);
     if (err != ESP_OK){
@@ -115,18 +121,24 @@ esp_err_t restore_factory_settings(void)
     esp_err_t err1, err2;
 
     err1 = restore_ap_settings();
+
+#if (DEBUG_FACTORY_SETTING)
     if (err1 != ESP_OK){
         ESP_LOGW(MODULE_FACTORY_SETTING, "Save AP ssid & pass failed!");
     } else {
         ESP_LOGI(MODULE_FACTORY_SETTING, "Restore AP ssid & pass OK!");
     }
+#endif /* DEBUG_FACTORY_SETTING */
 
     err2 = restore_sta_settings();
+
+#if (DEBUG_FACTORY_SETTING)
     if (err2 != ESP_OK){
         ESP_LOGW(MODULE_FACTORY_SETTING, "Save STA ssid & pass failed!");
     } else {
         ESP_LOGI(MODULE_FACTORY_SETTING, "Restore STA ssid & pass OK!");
     }
+#endif /* DEBUG_FACTORY_SETTING */
 
     return err1 != ESP_OK? err1 : err2;
 }

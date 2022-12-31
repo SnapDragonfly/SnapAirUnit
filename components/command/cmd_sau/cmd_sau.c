@@ -84,6 +84,11 @@ static struct {
     struct arg_end *end;
 } command_args;
 
+static struct {
+    struct arg_str *confirm;
+    struct arg_end *end;
+} restore_args;
+
 
 static int sau_switch(int argc, char **argv)
 {
@@ -268,6 +273,27 @@ static int sau_command(int argc, char **argv)
     return snap_sw_command_set(mode);
 }
 
+static int sau_restore(int argc, char **argv)
+{
+    esp_err_t err = ESP_FAIL;
+
+    int nerrors = arg_parse(argc, argv, (void **) &restore_args);
+    if (nerrors != 0) {
+        arg_print_errors(stderr, restore_args.end, argv[0]);
+        return 1;
+    }
+
+    const char *confirm = restore_args.confirm->sval[0];
+    if(!strcmp(CONSOLE_PROMPT_YES, confirm)){
+        err = restore_factory_settings();
+    } else {
+        ESP_LOGI(MODULE_CMD_SAU, "Skip restore settings.");
+    }
+
+    return err;
+}
+
+
 void register_sau(void)
 {
     mode_args.mode         = arg_str1(NULL, NULL, "<mode>", "application mode to be set");
@@ -297,6 +323,9 @@ void register_sau(void)
 
     command_args.mode      = arg_str1(NULL, NULL, "<mode>", "command mode");
     command_args.end       = arg_end(2);
+
+    restore_args.confirm   = arg_str1(NULL, NULL, "<confirm>", "confirmation");
+    restore_args.end       = arg_end(2);
 
     const esp_console_cmd_t switch_cmd = {
         .command = "switch",
@@ -401,6 +430,16 @@ void register_sau(void)
         .argtable = &command_args
     };
 
+    const esp_console_cmd_t restore_cmd = {
+        .command = "restore",
+        .help = "restore <confirm>, confirm: yes or no.\n"
+        "Examples:\n"
+        " restore yes\n",
+        .hint = NULL,
+        .func = &sau_restore,
+        .argtable = &restore_args
+    };
+
     ESP_ERROR_CHECK(esp_console_cmd_register(&switch_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&status_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&bluetooth_cmd));
@@ -411,5 +450,6 @@ void register_sau(void)
     ESP_ERROR_CHECK(esp_console_cmd_register(&channel_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&reboot_cmd));
     ESP_ERROR_CHECK(esp_console_cmd_register(&command_cmd));
+    ESP_ERROR_CHECK(esp_console_cmd_register(&restore_cmd));
 }
 

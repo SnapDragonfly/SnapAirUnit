@@ -25,6 +25,7 @@ extern "C" {
 #define MSP_RX_EVENT_SIZE                   10
 
 #define CONSOLE_PROMPT_STR                  DEVICE_NAME_SNAP_AIR_UNIT
+#define CONSOLE_PROMPT_YES                 "yes"
 
 #define TELLO_RESPONSE_OK                  "ok"
 #define TELLO_RESPONSE_ERR                 "error"
