@@ -65,7 +65,7 @@ void mode_key_long_press(void* arg)
         return;
     }
 
-    ESP_ERROR_CHECK(esp_event_post(EVT_PROCESS, MODE_KEY_LONG_PRESSED, NULL, 0, portMAX_DELAY));
+    ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, MODE_KEY_LONG_PRESSED, NULL, 0, portMAX_DELAY));
 }
 
 void mode_key_pressed(void* arg)
@@ -85,7 +85,6 @@ void mode_key_pressed(void* arg)
     }
 
     ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, MODE_KEY_SHORT_PRESSED, NULL, 0, portMAX_DELAY));
-    //ESP_ERROR_CHECK(esp_event_post(EVT_PROCESS, MODE_KEY_SHORT_PRESSED, NULL, 0, portMAX_DELAY));
 }
 
 void mode_key_released(void* arg)
@@ -106,7 +105,7 @@ void mode_key_released(void* arg)
         return;
     }
 
-    ESP_ERROR_CHECK(esp_event_post(EVT_PROCESS, MODE_KEY_RELEASED, NULL, 0, portMAX_DELAY));
+    ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, MODE_KEY_RELEASED, NULL, 0, portMAX_DELAY));
 }
 
 button_handle_t module_key_start(uint8_t num)

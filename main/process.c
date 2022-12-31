@@ -27,6 +27,7 @@
 #include "module.h"
 #include "process.h"
 #include "mode.h"
+#include "factory_setting.h"
 
 /*
  * service header files
@@ -130,6 +131,7 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
             break;
 
         case MODE_KEY_LONG_PRESSED:
+            (void)restore_factory_settings();
             (void)UTIL_reboot(3);
             break;
 

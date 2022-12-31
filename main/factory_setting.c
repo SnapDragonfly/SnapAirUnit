@@ -29,6 +29,7 @@
 #include "module.h"
 #include "factory_setting.h"
 #include "cmd_nvs.h"
+#include "mode.h"
 
 /*
  * service header files
@@ -139,6 +140,8 @@ esp_err_t restore_factory_settings(void)
         ESP_LOGI(MODULE_FACTORY_SETTING, "Restore STA ssid & pass OK!");
     }
 #endif /* DEBUG_FACTORY_SETTING */
+
+    (void)nvs_set_wireless_mode(SW_MODE_WIFI_AP);
 
     return err1 != ESP_OK? err1 : err2;
 }
