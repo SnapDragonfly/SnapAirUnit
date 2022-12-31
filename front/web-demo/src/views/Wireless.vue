@@ -50,7 +50,7 @@
             ></v-text-field>
         </v-col>
 
-        <v-btn class="ma-2" color="indigo" dark @click="set_ap" outlined elevation="10">
+        <v-btn :disabled=ap_disabled class="ma-2" color="indigo" @click="set_ap" outlined elevation="10">
           Save AP Configuration
         </v-btn>
       </v-row>
@@ -100,7 +100,7 @@
             @click:append="sta_show = !sta_show"
             ></v-text-field>
         </v-col>
-        <v-btn class="ma-2" color="indigo" dark @click="set_sta" outlined elevation="10">
+        <v-btn :disabled=sta_disabled class="ma-2" color="indigo" @click="set_sta" outlined elevation="10">
           Save Station Configuration
         </v-btn>
       </v-row>
@@ -118,7 +118,7 @@
             on-icon="iconfont icon-radiobuttonselect"></v-radio>
         </v-radio-group>
 
-        <v-btn class="ma-2" color="indigo" dark @click="set_wireless_mode" outlined elevation="10">
+        <v-btn class="ma-2" color="indigo" @click="set_wireless_mode" outlined elevation="10">
           Apply Wireless Mode
         </v-btn>
       </v-row>
