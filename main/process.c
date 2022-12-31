@@ -63,11 +63,8 @@ static void evt_process_task(void* args)
             ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, MODE_KEY_DEFAULT, NULL, 0, portMAX_DELAY));
             //ESP_ERROR_CHECK(esp_event_post(EVT_PROCESS, MODE_KEY_DEFAULT, NULL, 0, portMAX_DELAY));
             ESP_LOGI(MODULE_CONSOLE, "Trigger MODE_KEY_DEFAULT\n");
-            //g_wifi_sta_start = true;
         }
-        
-        //ESP_LOGI(MODULE_EVT_PROC, "application_task: running application task");
-        //esp_event_loop_run(g_loop_with_task, 100);
+
         vTaskDelay(10);
     }
 }

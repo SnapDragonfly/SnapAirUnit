@@ -145,7 +145,7 @@ static void task_wifi_start_sta(void* args)
 
     ESP_LOGI(MODULE_WIFI_STA, "wifi_sta_start done.");
 
-    int i = 10;
+    int i = FACTORY_ESP_MAXIMUM_RETRY_TIMES;
     do{
         i--;
         
@@ -170,12 +170,10 @@ static void task_wifi_start_sta(void* args)
             ESP_LOGI(MODULE_WIFI_STA, "Failed to connect to SSID:%s, password:%s",
                      get_sta_ssid(), get_sta_pass());
             g_wifi_sta_start = false;
-            //wireless_mode_switch(SW_MODE_WIFI_AP);
         } else {
             ESP_LOGW(MODULE_WIFI_STA, "UNEXPECTED EVENT %08X", bits);
             if(i <= 0){
                 g_wifi_sta_start = false;
-                //wireless_mode_switch(SW_MODE_WIFI_AP);
             }
         }
 
