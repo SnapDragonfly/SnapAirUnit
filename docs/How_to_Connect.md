@@ -8,10 +8,15 @@
 # Snap Air Unit Hardware Interface Definitions
 
 * [Mandatory] LED x 2, status & mode
+* [Nice2Have] LED x 1, Power
 * [Mandatory] Button x 1, software mode switch
-* [Mandatory] MMCX for RF antenna (2.4G WiFi & BT)
-* [Mandatory] USB-C for PC connection
+* [Nice2Have] Button x 1, reset
+* [Mandatory] external RF antenna (2.4/5.8G WiFi & BT)
+* [Nice2Have] MMCX for external RF antenna
+* [Nice2Have] Support PCB-antenna and extenal-antenna with selective 0 ohm resistance
+* [Mandatory] USB type C for PC connection (firmware upgrade/debug)
 * [Mandatory] 6pin connector for power and communication (7-24V, GND, OSD_Rx, OSD_Tx, MSP_Rx, MSP_Tx)
+* [Nice2Have] 4pin connector for ELRS receiver integration
 * [Option] micro-SD CF for extended storage
 * [Option] camera interface
 
