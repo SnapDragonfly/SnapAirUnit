@@ -66,21 +66,23 @@ Version control specification：x.y.commitid-clean/dirty/release
 >    [#51] Add wireless get/post RESTful API
 
 
-# Document
+# Documents
 
      .
     ├──> docs  //images used in *.md documents
     │   ├──> images
+    │   ├──> SnapAirUnit_Hardware_V1.0.md
+    │   ├──> ESP32_Dev_Board.md
     │   ├──> Build_and_Flash.md
     │   ├──> How_to_Use.md
     │   └──> How_to_Connect.md
     └──> README.md
 
-# Q & A
+# Questions & Answers
 
-1. [How to compile and build firmware ?](./docs/Build_and_Flash.md)
+1. [How to compile and build firmware for SnapAirUnit ?](./docs/Build_and_Flash.md)
 
-2. [How to connect hardware to flight control ?](./docs/How_to_Connect.md)
+2. [How to connect SnapAirUnit to flight control ?](./docs/How_to_Connect.md)
 
 3. [How to use SnapAirUnit ?](./docs/How_to_Use.md)
 
