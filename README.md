@@ -76,15 +76,11 @@ Version control specification：x.y.commitid-clean/dirty/release
     │   └──> How_to_Connect.md
     └──> README.md
 
-## 1. Compile and build firmware method
+# Q & A
 
-Details：[Build_and_Flash.md](./docs/Build_and_Flash.md)
+1. [How to compile and build firmware ?](./docs/Build_and_Flash.md)
 
-## 2. How to connect hardware to flight control
+2. [How to connect hardware to flight control ?](./docs/How_to_Connect.md)
 
-Details：[How_to_Connect.md](./docs/How_to_Connect.md)
-
-## 3. How to use SnapAirUnit
-
-Details：[How_to_Use.md](./docs/How_to_Use.md)
+3. [How to use SnapAirUnit ?](./docs/How_to_Use.md)
 
