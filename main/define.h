@@ -12,6 +12,7 @@ extern "C" {
 #define WIRELESS_SIMPLIFIED                 0
 
 #define WIFI_SSID_LENGTH                    16
+#define WIFI_SSID_EXT_LENGTH                32
 #define WIFI_PASS_LENGTH                    16
 
 #define SPP_SERVER_NAME                     DEVICE_NAME_SNAP_AIR_UNIT

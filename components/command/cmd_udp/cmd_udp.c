@@ -87,10 +87,14 @@ esp_err_t udp_wifi(struct udp_data * data)
         return err;
     }
 
-    err = wireless_mode_switch(SW_MODE_WIFI_AP);
-    if (err != ESP_OK) {
-        ESP_LOGE(MODULE_CMD_UDP, "%s", esp_err_to_name(err));
-        return err;
+    if (SW_MODE_WIFI_AP == wireless_mode_get()){
+        (void)UTIL_reboot(3);
+    } else {
+        err = wireless_mode_switch(SW_MODE_WIFI_AP);
+        if (err != ESP_OK) {
+            ESP_LOGE(MODULE_CMD_UDP, "%s", esp_err_to_name(err));
+            return err;
+        }
     }
 
     return err;

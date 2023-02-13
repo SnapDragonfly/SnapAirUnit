@@ -14,6 +14,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
 #include "esp_netif_ip_addr.h"
+#include "esp_mac.h"
 #include "esp_err.h"
 #include "nvs.h"
 
@@ -36,7 +37,7 @@
  */
 //TBD
 
-static char g_str_ap_ssid[WIFI_SSID_LENGTH];
+static char g_str_ap_ssid[WIFI_SSID_EXT_LENGTH];
 static char g_str_ap_pass[WIFI_PASS_LENGTH];
 
 static char g_str_sta_ssid[WIFI_SSID_LENGTH];
@@ -47,9 +48,19 @@ static char g_str_ip[STR_IP_LEN];
 esp_err_t restore_ap_settings(void)
 {
     esp_err_t err;
+    uint8_t  mac[6];
+    char     mac_ext[WIFI_SSID_LENGTH];
 
-    memset(g_str_ap_ssid, 0 , WIFI_SSID_LENGTH);
-    strncpy(g_str_ap_ssid, FACTORY_ESP_WIFI_AP_SSID, WIFI_SSID_LENGTH);
+    err = esp_read_mac(mac, ESP_MAC_WIFI_SOFTAP);
+    if (ESP_OK == err){
+        memset(g_str_ap_ssid, 0 , WIFI_SSID_EXT_LENGTH);
+        strncpy(g_str_ap_ssid, FACTORY_ESP_WIFI_AP_SSID, WIFI_SSID_EXT_LENGTH);
+        snprintf(mac_ext, WIFI_SSID_LENGTH, "_%X%X", mac[4], mac[5]);
+        strncpy(g_str_ap_ssid + strlen(FACTORY_ESP_WIFI_AP_SSID), mac_ext, WIFI_SSID_LENGTH);
+    } else {
+        memset(g_str_ap_ssid, 0 , WIFI_SSID_EXT_LENGTH);
+        strncpy(g_str_ap_ssid, FACTORY_ESP_WIFI_AP_SSID, WIFI_SSID_EXT_LENGTH);
+    }
     memset(g_str_ap_pass, 0 , WIFI_PASS_LENGTH);
     strncpy(g_str_ap_pass, FACTORY_ESP_WIFI_AP_PASS, WIFI_PASS_LENGTH);
 
@@ -94,7 +105,7 @@ void factory_settings_init(void* args)
 {
     esp_err_t err;
 
-    err = nvs_get_wifi_ap(g_str_ap_ssid, WIFI_SSID_LENGTH, g_str_ap_pass, WIFI_PASS_LENGTH);
+    err = nvs_get_wifi_ap(g_str_ap_ssid, WIFI_SSID_EXT_LENGTH, g_str_ap_pass, WIFI_PASS_LENGTH);
     if (err != ESP_OK){
         ESP_LOGW(MODULE_FACTORY_SETTING, "AP parameters read err, use default %s, %s", g_str_ap_ssid, g_str_ap_pass);
         (void)restore_ap_settings();
@@ -162,7 +173,7 @@ esp_err_t set_ap_settings(const char * ssid, const char * pass)
         return ESP_FAIL;
     }
 
-    memset(g_str_ap_ssid, 0 , WIFI_SSID_LENGTH);
+    memset(g_str_ap_ssid, 0 , WIFI_SSID_EXT_LENGTH);
     strncpy(g_str_ap_ssid, ssid, ssid_len);
     memset(g_str_ap_pass, 0 , WIFI_PASS_LENGTH);
     strncpy(g_str_ap_pass, pass, pass_len);

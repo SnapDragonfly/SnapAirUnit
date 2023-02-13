@@ -360,22 +360,22 @@ void register_sau(void)
     };
 
     const esp_console_cmd_t ap_cmd = {
-        .command = "ap",
-        .help = "ap <ssid> <pass>, switch to AP.\n"
+        .command = "wifi",
+        .help = "wifi <ssid> <pass>, switch to AP.\n"
         "Examples:\n"
         " ap SnapAirUnit 12345678 \n",
         .hint = NULL,
-        .func = &sau_ap,
+        .func = &sau_wifi,
         .argtable = &wifi_ap_args
     };
 
     const esp_console_cmd_t sta_cmd = {
-        .command = "sta",
+        .command = "ap",
         .help = "sta <ssid> <pass>, connect to AP.\n"
         "Examples:\n"
         " sta SnapAirUnit 12345678 \n",
         .hint = NULL,
-        .func = &sau_wifi,
+        .func = &sau_ap,
         .argtable = &wifi_sta_args
     };
 
