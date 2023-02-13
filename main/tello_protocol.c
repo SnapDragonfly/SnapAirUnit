@@ -35,6 +35,7 @@ struct udp_command {
 };
 
 struct udp_command g_udp_commands[] = {
+    {"lbb",       udp_loopback },
     {"bluetooth", udp_bluetooth},
     {"ap",        udp_ap       },
     {"wifi",      udp_wifi     },
@@ -45,6 +46,7 @@ struct udp_command g_udp_commands[] = {
     {"command",   udp_command  },
     {"exit",      udp_exit     },
     {"identity",  udp_identity },
+    {"lbw",       udp_loopback },
 };
 
 static esp_err_t tello_protocol_parse(uint8_t * buf, int len)

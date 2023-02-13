@@ -179,6 +179,19 @@ esp_err_t udp_identity(struct udp_data * data)
     return ESP_ERR_INVALID_RESPONSE;
 }
 
+esp_err_t udp_loopback(struct udp_data * data)
+{
+    if(NULL == data){
+        return ESP_FAIL;
+    }
+
+    if(data->counts != 1){
+        return ESP_FAIL;
+    }
+
+    udp_msg_send((uint8_t *)data->param[0], strlen(data->param[0]));
+    return ESP_OK;
+}
 
 
 
