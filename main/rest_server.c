@@ -211,7 +211,7 @@ static esp_err_t wireless_post_handler(httpd_req_t *req)
         httpd_resp_sendstr(req, RESTFUL_API_RESPONSE_ERR);
     } else{
         httpd_resp_sendstr(req, RESTFUL_API_RESPONSE_OK);
-        ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, MODE_KEY_SHORT_PRESSED, &mode, sizeof(mode), portMAX_DELAY));
+        ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, EVT_KEY_SHORT_PRESSED, &mode, sizeof(mode), portMAX_DELAY));
     }
 
     cJSON_Delete(root);

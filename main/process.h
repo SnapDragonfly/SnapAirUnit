@@ -13,12 +13,11 @@ extern "C" {
 ESP_EVENT_DECLARE_BASE(EVT_PROCESS);        // declaration of the mode key events family
 
 enum {
-    MODE_KEY_RELEASED       = 0,
-    MODE_KEY_SHORT_PRESSED  = 1,
-    MODE_KEY_LONG_PRESSED   = 2,
-    MODE_KEY_PRESS_ACT      = 3,
-    MODE_KEY_DEFAULT        = 4,
-    MODE_REBOOT             = 5
+    EVT_KEY_RELEASED       = 0,
+    EVT_KEY_SHORT_PRESSED  = 1,
+    EVT_KEY_LONG_PRESSED   = 2,
+    EVT_MODE_SWITCH        = 3,
+    EVT_REBOOT             = 4
 };
 
 esp_event_loop_handle_t module_evt_start(void);

@@ -61,9 +61,9 @@ static void evt_process_task(void* args)
         if(!g_wifi_sta_start && SW_MODE_NULL == wireless_mode_get()){
             wireless_mode_set(SW_MODE_WIFI_STA);
 
-            ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, MODE_KEY_DEFAULT, NULL, 0, portMAX_DELAY));
-            //ESP_ERROR_CHECK(esp_event_post(EVT_PROCESS, MODE_KEY_DEFAULT, NULL, 0, portMAX_DELAY));
-            ESP_LOGI(MODULE_CONSOLE, "Trigger MODE_KEY_DEFAULT\n");
+            ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, EVT_MODE_SWITCH, NULL, 0, portMAX_DELAY));
+            //ESP_ERROR_CHECK(esp_event_post(EVT_PROCESS, EVT_MODE_SWITCH, NULL, 0, portMAX_DELAY));
+            ESP_LOGI(MODULE_CONSOLE, "Trigger EVT_MODE_SWITCH\n");
         }
 
         vTaskDelay(10);
@@ -82,7 +82,7 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
 #endif /* DEBUG_EVT_PROC */
 
     switch(id){
-        case MODE_KEY_SHORT_PRESSED:
+        case EVT_KEY_SHORT_PRESSED:
             if(NULL == event_data ){
 
                 // amount of time from key released
@@ -93,7 +93,7 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
                 // amount of time from lastkey press action
                 if (TIME_DIFF_IN_MS(press_act_time, curr_time) < CONFIG_KEY_RESERVE_TIME_IN_MS){
                     next_mode++;
-                    ESP_LOGI(MODULE_EVT_PROC, "MODE_KEY_SHORT_PRESSED, act mode %d %lld < %d in ms", 
+                    ESP_LOGI(MODULE_EVT_PROC, "EVT_KEY_SHORT_PRESSED, act mode %d %lld < %d in ms", 
                             next_mode, TIME_DIFF_IN_MS(press_act_time, curr_time), CONFIG_KEY_RESERVE_TIME_IN_MS);
                     return;
                 }
@@ -103,7 +103,7 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
                 err = wireless_mode_switch(next_mode);
 
 #if (DEBUG_EVT_PROC)
-                ESP_LOGI(MODULE_EVT_PROC, "MODE_KEY_SHORT_PRESSED, switch from %d to %d err = %d", prev_mode, wireless_mode_get(), err);
+                ESP_LOGI(MODULE_EVT_PROC, "EVT_KEY_SHORT_PRESSED, switch from %d to %d err = %d", prev_mode, wireless_mode_get(), err);
 #else
                 UNUSED(prev_mode);
                 UNUSED(err);
@@ -115,7 +115,7 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
                 err = wireless_mode_switch(mode);
 
 #if (DEBUG_EVT_PROC)
-                ESP_LOGI(MODULE_EVT_PROC, "MODE_KEY_SHORT_PRESSED, switch to mode %d err = %d", wireless_mode_get(), err);
+                ESP_LOGI(MODULE_EVT_PROC, "EVT_KEY_SHORT_PRESSED, switch to mode %d err = %d", wireless_mode_get(), err);
 #else
                 UNUSED(err);
 #endif /*DEBUG_EVT_PROC*/
@@ -124,29 +124,29 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
 
             break;
 
-        case MODE_KEY_RELEASED:
+        case EVT_KEY_RELEASED:
             press_rel_time = curr_time;
 
 #if (DEBUG_EVT_PROC)
-            ESP_LOGW(MODULE_EVT_PROC, "MODE_KEY_RELEASED, To be implemented");
+            ESP_LOGW(MODULE_EVT_PROC, "EVT_KEY_RELEASED, To be implemented");
 #endif /*DEBUG_EVT_PROC*/
 
             break;
 
-        case MODE_KEY_LONG_PRESSED:
+        case EVT_KEY_LONG_PRESSED:
             (void)restore_factory_settings();
             (void)UTIL_reboot(3);
             break;
 
-        case MODE_KEY_DEFAULT:
+        case EVT_MODE_SWITCH:
             err = wireless_mode_switch(SW_MODE_WIFI_AP);
 #if (DEBUG_EVT_PROC)
-            ESP_LOGI(MODULE_EVT_PROC, "MODE_KEY_DEFAULT, switch to mode %d err = %d", wireless_mode_get(), err);
+            ESP_LOGI(MODULE_EVT_PROC, "EVT_MODE_SWITCH, switch to mode %d err = %d", wireless_mode_get(), err);
 #endif /* DEBUG_EVT_PROC */
 
             break;
 
-        case MODE_REBOOT:
+        case EVT_REBOOT:
             (void)UTIL_reboot(3);
             break;
 
