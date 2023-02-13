@@ -6,7 +6,9 @@ set(APP_VER_MAJOR "0")
 set(APP_VER_MINOR "3")
 
 set(EXTRA_COMPONENT_DIRS "components/button" 
-                         "components/command")
+                         "components/command/cmd_udp"
+                         "components/command/cmd_sau"
+                         "components/command/cmd_nvs")
 
 macro(Get_COMMITID APP_COMMITID)
     find_package(Git QUIET)
