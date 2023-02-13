@@ -18,7 +18,7 @@
  */
 #include "config.h"
 #include "define.h"
-
+#include "handle.h"
 
 /*
  * module header files
@@ -30,6 +30,7 @@
 #include "factory_setting.h"
 #include "msp_protocol.h"
 #include "factory_setting.h"
+#include "process.h"
 
 /*
  * service header files
@@ -88,7 +89,8 @@ esp_err_t udp_wifi(struct udp_data * data)
     }
 
     if (SW_MODE_WIFI_AP == wireless_mode_get()){
-        (void)UTIL_reboot(3);
+        //(void)UTIL_reboot(3);
+        ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, MODE_REBOOT, NULL, 0, portMAX_DELAY));
     } else {
         err = wireless_mode_switch(SW_MODE_WIFI_AP);
         if (err != ESP_OK) {
@@ -143,7 +145,8 @@ esp_err_t udp_debug(struct udp_data * data)
 
 esp_err_t udp_reboot(struct udp_data * data)
 {
-    (void)UTIL_reboot(3);
+    //(void)UTIL_reboot(3);
+    ESP_ERROR_CHECK(esp_event_post_to(g_evt_handle, EVT_PROCESS, MODE_REBOOT, NULL, 0, portMAX_DELAY));
     return ESP_OK;
 }
 

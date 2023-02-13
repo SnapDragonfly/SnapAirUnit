@@ -145,7 +145,11 @@ static void evt_process_handler(void* handler_args, esp_event_base_t base, int32
 #endif /* DEBUG_EVT_PROC */
 
             break;
-            
+
+        case MODE_REBOOT:
+            (void)UTIL_reboot(3);
+            break;
+
         default:
             /* Can't be HERE */
             ESP_LOGE(MODULE_EVT_PROC, "Error");
