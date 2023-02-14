@@ -15,6 +15,7 @@
 #include "esp_bt.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
+#include "lwip/ip4_addr.h"
 
 /*
  * basic header files
@@ -58,6 +59,26 @@ static void wifi_softap_task(void* args)
     //ESP_ERROR_CHECK(esp_event_loop_create_default());
     g_softap_instance_netif = esp_netif_create_default_wifi_ap();
 
+    esp_netif_ip_info_t ip_info;
+    IP4_ADDR(&ip_info.ip, 
+                                 FACTORY_ESP_WIFI_AP_IP_A, 
+                                 FACTORY_ESP_WIFI_AP_IP_B, 
+                                 FACTORY_ESP_WIFI_AP_IP_SEGMENT, 
+                                 FACTORY_ESP_WIFI_AP_IP_D);
+    IP4_ADDR(&ip_info.netmask, 
+                                 FACTORY_ESP_WIFI_AP_IP_MASK, 
+                                 FACTORY_ESP_WIFI_AP_IP_MASK, 
+                                 FACTORY_ESP_WIFI_AP_IP_MASK, 0);
+    IP4_ADDR(&ip_info.gw, 
+                                 FACTORY_ESP_WIFI_AP_IP_A, 
+                                 FACTORY_ESP_WIFI_AP_IP_B, 
+                                 FACTORY_ESP_WIFI_AP_IP_SEGMENT, 
+                                 FACTORY_ESP_WIFI_AP_IP_D);
+
+    ESP_ERROR_CHECK(esp_netif_dhcps_stop(g_softap_instance_netif));
+    ESP_ERROR_CHECK(esp_netif_set_ip_info(g_softap_instance_netif, &ip_info));
+    ESP_ERROR_CHECK(esp_netif_dhcps_start(g_softap_instance_netif));
+
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
@@ -94,10 +115,14 @@ static void wifi_softap_task(void* args)
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 
-    ESP_LOGI(MODULE_WIFI_AP, "wifi_start_softap done. SSID:%s password:%s channel:%d",
-             get_ap_ssid(), get_ap_pass(), FACTORY_ESP_WIFI_CHANNEL);
+    ESP_LOGI(MODULE_WIFI_AP, "wifi_start_softap done. SSID:%s password:%s channel:%d ip:%d.%d.%d.%d",
+             get_ap_ssid(), get_ap_pass(), FACTORY_ESP_WIFI_CHANNEL,
+             FACTORY_ESP_WIFI_AP_IP_A, FACTORY_ESP_WIFI_AP_IP_B, FACTORY_ESP_WIFI_AP_IP_SEGMENT, FACTORY_ESP_WIFI_AP_IP_D);
 
-    set_str_ip(192, 168, 4, 1);
+    set_str_ip(FACTORY_ESP_WIFI_AP_IP_A, 
+               FACTORY_ESP_WIFI_AP_IP_B, 
+               FACTORY_ESP_WIFI_AP_IP_SEGMENT, 
+               FACTORY_ESP_WIFI_AP_IP_D);
 
     //vTaskDelete(NULL);
 }

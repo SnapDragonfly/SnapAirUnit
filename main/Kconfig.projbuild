@@ -14,6 +14,13 @@ menu "Snap Air Unit"
             help
                 WiFi password (WPA or WPA2) for the example to use.
 
+        config ESP_WIFI_AP_IP_SEGMENT
+            int "WiFi AP IP segment"
+            range 1 253
+            default 10
+            help
+                WiFi AP IP segment
+
         config ESP_WIFI_STA_SSID
             string "WiFi Station SSID"
             default "AutoLab"
