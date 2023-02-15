@@ -38,8 +38,10 @@ https://www.bilibili.com/video/BV1Gv4y1t76r/
 
  To Do:
  
- 1. MMCX connector for solid contactor of external antenna
- 2. internal PCB antenna or external MMCX antenna selectable by 0 ohm resistance
- 3. 4pin connector (4.5V, GND, RX, TX) for ELRS receiver
- 4.  2.54mm Jumper for channel selection (OSD_RX/OSD_TX, to esp32 or ELRS module)
- 5. Camera IF support for OV2640/OV5640
+ 1. solid connector of external antenna: MMCX or IPX
+ 2. internal PCB antenna or external MMCX antenna selectable by 0 ohm resistor
+ 3. 4 pin connector (4.5V, GND, RX, TX) and solid fixer for ELRS receiver
+ 4. 2.54mm Jumper for channel selection (OSD_RX/OSD_TX to esp32 or ELRS receiver)
+ 5. support camera interface, FPV HD(720P)
+ 6. RF amplifier for long range 2.4G (LOS) transimission
+ 7. IO controls: dry contact or wet contact
