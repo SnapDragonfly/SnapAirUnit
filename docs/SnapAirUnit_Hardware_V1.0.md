@@ -45,3 +45,5 @@ https://www.bilibili.com/video/BV1Gv4y1t76r/
  5. support camera interface, FPV HD(720P)
  6. RF amplifier for long range 2.4G (LOS) transimission
  7. IO controls: dry contact or wet contact
+
+ *Note: Make sure to avoid IO confliction.*
