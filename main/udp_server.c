@@ -99,12 +99,12 @@ static void udp_srv_task(void *pvParameters)
         ESP_LOGI(MODULE_UDP_SRV, "Socket created");
 #endif /* DEBUG_UDP_SRV */
 
-#if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_EXAMPLE_IPV6)
+#if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_TUNNEL_IPV6)
         int enable = 1;
         lwip_setsockopt(g_server_sock, IPPROTO_IP, IP_PKTINFO, &enable, sizeof(enable));
 #endif
 
-#if defined(CONFIG_EXAMPLE_IPV4) && defined(CONFIG_EXAMPLE_IPV6)
+#if defined(CONFIG_TUNNEL_IPV4) && defined(CONFIG_TUNNEL_IPV6)
         if (addr_family == AF_INET6) {
             // Note that by default IPV6 binds to both protocols, it is must be disabled
             // if both protocols used at the same time (used in CI)
@@ -128,7 +128,7 @@ static void udp_srv_task(void *pvParameters)
 #endif /* DEBUG_UDP_SRV */
         socklen_t socklen = sizeof(g_source_addr);
 
-#if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_EXAMPLE_IPV6)
+#if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_TUNNEL_IPV6)
         struct iovec iov;
         struct msghdr msg;
         struct cmsghdr *cmsgtmp;
@@ -151,7 +151,7 @@ static void udp_srv_task(void *pvParameters)
 #endif /* DEBUG_UDP_SRV */
             memset(rx_buffer, 0, STR_BUFFER_LEN);
 
-#if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_EXAMPLE_IPV6)
+#if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_TUNNEL_IPV6)
             int len = recvmsg(g_server_sock, &msg, 0);
 #else
             int len = recvfrom(g_server_sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&g_source_addr, &socklen);
@@ -171,7 +171,7 @@ static void udp_srv_task(void *pvParameters)
                 // Get the sender's ip address as string
                 if (g_source_addr.ss_family == PF_INET) {
                     inet_ntoa_r(((struct sockaddr_in *)&g_source_addr)->sin_addr, g_addr_str, sizeof(g_addr_str) - 1);
-#if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_EXAMPLE_IPV6)
+#if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_TUNNEL_IPV6)
                     for ( cmsgtmp = CMSG_FIRSTHDR(&msg); cmsgtmp != NULL; cmsgtmp = CMSG_NXTHDR(&msg, cmsgtmp) ) {
                         if ( cmsgtmp->cmsg_level == IPPROTO_IP && cmsgtmp->cmsg_type == IP_PKTINFO ) {
                             struct in_pktinfo *pktinfo;
@@ -252,10 +252,10 @@ static void udp_srv_task(void *pvParameters)
 
 esp_err_t udp_srv_start(void)
 {
-#ifdef CONFIG_EXAMPLE_IPV4
+#ifdef CONFIG_TUNNEL_IPV4
     xTaskCreate(udp_srv_task, MODULE_UDP_SRV, TASK_BUFFER_4K0, (void*)AF_INET, 5, NULL);
 #endif
-#ifdef CONFIG_EXAMPLE_IPV6
+#ifdef CONFIG_TUNNEL_IPV6
     xTaskCreate(udp_srv_task, MODULE_UDP_SRV, TASK_BUFFER_4K0, (void*)AF_INET6, 5, NULL);
 #endif
 

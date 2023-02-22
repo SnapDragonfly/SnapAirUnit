@@ -58,14 +58,14 @@ static void udp_clt_task(void *pvParameters)
             continue;
         }
 
-#if defined(CONFIG_EXAMPLE_IPV4)
+#if defined(CONFIG_TUNNEL_IPV4)
         struct sockaddr_in dest_addr;
         dest_addr.sin_addr.s_addr = inet_addr(g_addr_str);
         dest_addr.sin_family = AF_INET;
         dest_addr.sin_port = htons(STATUS_PORT);
         addr_family = AF_INET;
         ip_protocol = IPPROTO_IP;
-#elif defined(CONFIG_EXAMPLE_IPV6)
+#elif defined(CONFIG_TUNNEL_IPV6)
         struct sockaddr_in6 dest_addr = { 0 };
         inet6_aton(g_addr_str, &dest_addr.sin6_addr);
         dest_addr.sin6_family = AF_INET6;

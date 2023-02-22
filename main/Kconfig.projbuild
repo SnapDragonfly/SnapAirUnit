@@ -150,18 +150,18 @@ menu "Snap Air Unit"
 
     menu "UDP Configuration"
     
-        choice EXAMPLE_IP_MODE
+        choice TUNNEL_IP_MODE
             prompt "IP Version"
-            default EXAMPLE_IPV4
+            default TUNNEL_IPV4
             help
                 UDP server & client can use either IPV4 or IPV6.
     
-            config EXAMPLE_IPV4
+            config TUNNEL_IPV4
                 bool "IPV4"
     
-            config EXAMPLE_IPV6
+            config TUNNEL_IPV6
                 bool "IPV6"
-                select EXAMPLE_CONNECT_IPV6
+                select TUNNEL_CONNECT_IPV6
     
         endchoice
 
