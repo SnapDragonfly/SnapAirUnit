@@ -1,17 +1,23 @@
 # SnapAirUnit
 
-It's an education version of Snap Air Unit.
+It's an education version of Snap Air Unit, which aims to provide an basic kit connecting open-source flight controller(betaFlight/iNav) and snap/python programming language. 
 
-# Feature
+Main features:
+--------------
 
-* [Support] 2.4G AP/STA/BT SPP wireless mode
-* [Support] betaFlight/iNav MSP protocol passthrough
+* [Support] 2.4G AP/STA wireless mode
+> 1. UART direct passthrough
+> 2. MSP protocol passthrough
+> 3. HuiYuan customized protocol passthrough
+* [Support] BT SPP & UART direct passthrough
 * [TODO] Tello school API throught UPD protocol
 * [TODO] RESTful API for snap programming
 * [TODO] ELRS control link
 * [TODO] WiFi video link
 
-# Document
+# Get Started
+
+## Document
 
      .
     ├──> docs  //images used in *.md documents
@@ -24,7 +30,7 @@ It's an education version of Snap Air Unit.
     │   └──> How_to_Connect.md
     └──> README.md
 
-# Questions & Answers
+## Questions & Answers
 
 1. [How to Work with the Code ?](./docs/How_to_Work_with_Code.md)
 
