@@ -33,6 +33,18 @@ extern "C" {
 
 #define CONFIG_KEY_RESERVE_TIME_IN_MS      (CONFIG_KEY_PRESS_RESERVE*1000)
 
+// for pass through mode
+#if defined(CONFIG_PASS_THROUGH_UART)
+    #define PASS_THROUGH_UART
+    //#pragma message(PASS_THROUGH_UART defined)
+#elif defined(CONFIG_PASS_THROUGH_HY)
+    #define PASS_THROUGH_HY
+    #error PASS_THROUGH_HY configure NOT supported!!!
+#else /* CONFIG_PASS_THROUGH_MSP */
+    #define PASS_THROUGH_MSP
+    //#pragma message(PASS_THROUGH_MSP defined)
+#endif /* CONFIG_UART_PASS_THROUGH */
+
 // for msp uart port
 #define MSP_UART_TXD                        CONFIG_MSP_TTL_TXD
 #define MSP_UART_RXD                        CONFIG_MSP_TTL_RXD

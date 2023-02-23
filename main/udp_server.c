@@ -167,6 +167,10 @@ static void udp_srv_task(void *pvParameters)
             }
             // Data received
             else {
+#if defined(PASS_THROUGH_UART)
+                ESP_ERROR_CHECK(ttl_msg_send((uint8_t *)rx_buffer, len));
+#elif defined(PASS_THROUGH_HY)
+#else /* PASS_THROUGH_MSP */
                 protocol_state_upgrade(SW_STATE_FULL_DUPLEX);
                 // Get the sender's ip address as string
                 if (g_source_addr.ss_family == PF_INET) {
@@ -235,6 +239,7 @@ static void udp_srv_task(void *pvParameters)
 
                         break;
                     }
+#endif /* PASS_THROUGH_DATA */
             }
         }
 

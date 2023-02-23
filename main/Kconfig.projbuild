@@ -149,7 +149,24 @@ menu "Snap Air Unit"
 	endmenu
 
     menu "UDP Configuration"
+
+        choice PASS_THROUGH_DATA
+            prompt "pass through data type"
+            default PASS_THROUGH_MSP
+            help
+                This value defaults to PASS_THROUGH_MSP, which is used for betaFlight and iNav flight control.
+                PASS_THROUGH_UART: direct uart data pass through.
+                PASS_THROUGH_HY:  HuiYuan ODM data pass through.
+                Please select PASS_THROUGH_MSP/PASS_THROUGH_UART/PASS_THROUGH_HY to configure the program.
     
+            config PASS_THROUGH_MSP
+                bool "MSP"
+            config PASS_THROUGH_UART
+                bool "UART"
+            config PASS_THROUGH_HY
+                bool "HUIYUAN"
+        endchoice
+
         choice TUNNEL_IP_MODE
             prompt "IP Version"
             default TUNNEL_IPV4

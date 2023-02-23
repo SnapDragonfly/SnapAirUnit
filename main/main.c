@@ -25,6 +25,7 @@
  */
 #include "module.h"
 #include "msp_protocol.h"
+#include "tello_protocol.h"
 #include "util.h"
 #include "mode.h"
 #include "process.h"
@@ -71,6 +72,20 @@ void sand_box(void)
     (void)UTIL_alive(SAND_BOX_ALIVE_CHARACTER);
     (void)UTIL_reboot(SAND_BOX_REBOOT_PROMOTES);
 
+#if defined(PASS_THROUGH_UART)
+    /* Issue #67, need to be fixed.
+     * Compiler error when PASS_THROUGH_UART selected (avoided, but NOT solved properly) #67 
+     */
+    //UNUSED(nomsp_handle_tello);
+    nomsp_handle_tello(NULL, 0);
+#elif defined(PASS_THROUGH_HY)
+    //UNUSED(x);
+#else /* PASS_THROUGH_MSP */
+    //UNUSED(x);
+#endif /* PASS_THROUGH_DATA */
+
+    
+    
 }
 
 /**
@@ -103,12 +118,26 @@ void app_init(void)
     g_key_handle    = module_key_start(KEY_MODE);
 
     //Service Module for Applications
+
+#if defined(PASS_THROUGH_UART)
+    ESP_ERROR_CHECK(snap_sw_module_start(rest_srv_init, false, 0, MODULE_HTTP));
+    ESP_ERROR_CHECK(ttl_srv_start());
+    ESP_ERROR_CHECK(udp_srv_start());
+    ESP_ERROR_CHECK(wireless_mode_init());
+#elif defined(PASS_THROUGH_HY)
+    ESP_ERROR_CHECK(snap_sw_module_start(rest_srv_init, false, 0, MODULE_HTTP));
+    ESP_ERROR_CHECK(ttl_srv_start());
+    ESP_ERROR_CHECK(udp_srv_start());
+    ESP_ERROR_CHECK(udp_clt_start());
+    ESP_ERROR_CHECK(wireless_mode_init());
+#else /* PASS_THROUGH_MSP */
     ESP_ERROR_CHECK(snap_sw_module_start(rest_srv_init, false, 0, MODULE_HTTP));
     ESP_ERROR_CHECK(ttl_srv_start());
     ESP_ERROR_CHECK(udp_srv_start());
     ESP_ERROR_CHECK(udp_clt_start());
     ESP_ERROR_CHECK(wireless_mode_init());
     ESP_ERROR_CHECK(auc_srv_start());
+#endif /* PASS_THROUGH_DATA */
 
     printf("%s: free_heap_size = %d\n", DEVICE_NAME_SNAP_AIR_UNIT, esp_get_free_heap_size());
 }
@@ -123,7 +152,13 @@ void app_main(void)
     /* 
      * Snap Air Unit: Education Version 
      */
-    printf("%s: Warmly welcome!\n", DEVICE_NAME_SNAP_AIR_UNIT);
+#if defined(PASS_THROUGH_UART)
+    printf("%s: Warmly welcome! udp-uart mode\n", DEVICE_NAME_SNAP_AIR_UNIT);
+#elif defined(PASS_THROUGH_HY)
+    printf("%s: Warmly welcome! udp-hy mode\n", DEVICE_NAME_SNAP_AIR_UNIT);
+#else /* PASS_THROUGH_MSP */
+    printf("%s: Warmly welcome! udp-msp mode\n", DEVICE_NAME_SNAP_AIR_UNIT);
+#endif /* PASS_THROUGH_DATA */
 
     /* Print chip information */
     esp_chip_info_t chip_info;

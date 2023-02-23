@@ -78,6 +78,11 @@ static void ttl_srv_task(void *pvParameters)
                     }
 #endif /* DEBUG_UART */
 
+#if defined(PASS_THROUGH_UART)
+                    udp_msg_send(temp, event.size);
+#elif defined(PASS_THROUGH_HY)
+
+#else /* PASS_THROUGH_MSP */
                     // To do send to BT SPP
                     if (g_esp_ssp_handle && protocol_state_active(SW_MODE_BT_SPP)){
                         if(MESSAGE_CENTER == auc_get_type()){
@@ -103,6 +108,7 @@ static void ttl_srv_task(void *pvParameters)
                         }
                     }
                     //esp_ble_gatts_send_indicate(spp_gatts_if, spp_conn_id, spp_handle_table[SPP_IDX_SPP_DATA_NTY_VAL],event.size, temp, false);
+#endif /* PASS_THROUGH_DATA */
                     free(temp);
                 }
                 break;
