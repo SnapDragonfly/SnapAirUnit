@@ -39,7 +39,7 @@ extern "C" {
     //#pragma message(PASS_THROUGH_UART defined)
 #elif defined(CONFIG_PASS_THROUGH_HY)
     #define PASS_THROUGH_HY
-    #error PASS_THROUGH_HY configure NOT supported!!!
+    //#error PASS_THROUGH_HY configure NOT supported!!!
 #else /* CONFIG_PASS_THROUGH_MSP */
     #define PASS_THROUGH_MSP
     //#pragma message(PASS_THROUGH_MSP defined)

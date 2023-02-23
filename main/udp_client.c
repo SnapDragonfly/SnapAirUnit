@@ -39,6 +39,19 @@
 
 extern char g_addr_str[STR_IP_LEN];
 
+static int                   g_status_sock;
+#if defined(CONFIG_TUNNEL_IPV4)
+    struct sockaddr_in g_status_addr;
+#elif defined(CONFIG_TUNNEL_IPV6)
+    struct sockaddr_in6 g_status_addr = { 0 };
+#endif
+
+
+int udp_status_send(uint8_t * buf, int len)
+{
+    return sendto(g_status_sock, buf, len, 0, (struct sockaddr *)&g_status_addr, sizeof(g_status_addr));
+}
+
 static void udp_clt_task(void *pvParameters)
 {
     char rx_buffer[STR_BUFFER_LEN];
@@ -59,24 +72,24 @@ static void udp_clt_task(void *pvParameters)
         }
 
 #if defined(CONFIG_TUNNEL_IPV4)
-        struct sockaddr_in dest_addr;
-        dest_addr.sin_addr.s_addr = inet_addr(g_addr_str);
-        dest_addr.sin_family = AF_INET;
-        dest_addr.sin_port = htons(STATUS_PORT);
+        memset(&g_status_addr, 0, sizeof(g_status_addr));
+        g_status_addr.sin_addr.s_addr = inet_addr(g_addr_str);
+        g_status_addr.sin_family = AF_INET;
+        g_status_addr.sin_port = htons(STATUS_PORT);
         addr_family = AF_INET;
         ip_protocol = IPPROTO_IP;
 #elif defined(CONFIG_TUNNEL_IPV6)
-        struct sockaddr_in6 dest_addr = { 0 };
-        inet6_aton(g_addr_str, &dest_addr.sin6_addr);
-        dest_addr.sin6_family = AF_INET6;
-        dest_addr.sin6_port = htons(STATUS_PORT);
-        dest_addr.sin6_scope_id = esp_netif_get_netif_impl_index(EXAMPLE_INTERFACE);
+        memset(&g_status_addr, 0, sizeof(g_status_addr));
+        inet6_aton(g_addr_str, &g_status_addr.sin6_addr);
+        g_status_addr.sin6_family = AF_INET6;
+        g_status_addr.sin6_port = htons(STATUS_PORT);
+        g_status_addr.sin6_scope_id = esp_netif_get_netif_impl_index(EXAMPLE_INTERFACE);
         addr_family = AF_INET6;
         ip_protocol = IPPROTO_IPV6;
 #endif
 
-        int sock = socket(addr_family, SOCK_DGRAM, ip_protocol);
-        if (sock < 0) {
+        g_status_sock = socket(addr_family, SOCK_DGRAM, ip_protocol);
+        if (g_status_sock < 0) {
             ESP_LOGE(MODULE_UDP_CLT, "Unable to create socket: errno %d", errno);
             break;
         }
@@ -85,16 +98,19 @@ static void udp_clt_task(void *pvParameters)
         struct timeval timeout;
         timeout.tv_sec = 10;
         timeout.tv_usec = 0;
-        setsockopt (sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout);
+        setsockopt (g_status_sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout);
 
 #if (DEBUG_UDP_CLT)
         ESP_LOGI(MODULE_UDP_CLT, "Socket created, sending to %s:%d", g_addr_str, STATUS_PORT);
 #endif /* DEBUG_UDP_CLT */
         while (1) {
+#if defined(PASS_THROUGH_HY)
+            //UNUSED(x)
+#else /* PASS_THROUGH_MSP */
             sprintf(rx_buffer, "udp sate =%d mode =%d", protocol_state_get(), wireless_mode_get());
 
-            int err = sendto(sock, rx_buffer, strlen(rx_buffer), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
-            if (err < 0) {
+            int n = udp_status_send((uint8_t *)rx_buffer, strlen(rx_buffer));
+            if (n < 0) {
 #if (DEBUG_UDP_CLT)
                 ESP_LOGE(MODULE_UDP_CLT, "Error occurred during sending: errno %d", errno);
 #endif /* DEBUG_UDP_CLT */
@@ -104,10 +120,11 @@ static void udp_clt_task(void *pvParameters)
 #if (DEBUG_UDP_CLT)
             ESP_LOGI(MODULE_UDP_CLT, "Message sent");
 #endif /* DEBUG_UDP_CLT */
+#endif /* PASS_THROUGH_DATA */
 
             struct sockaddr_storage source_addr; // Large enough for both IPv4 or IPv6
             socklen_t socklen = sizeof(source_addr);
-            int len = recvfrom(sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&source_addr, &socklen);
+            int len = recvfrom(g_status_sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&source_addr, &socklen);
 
             // Error occurred during receiving
             if (len < 0) {
@@ -136,12 +153,12 @@ static void udp_clt_task(void *pvParameters)
             vTaskDelay(TIME_TWO_SECOND_IN_MS / portTICK_PERIOD_MS);
         }
 
-        if (sock != -1) {
+        if (g_status_sock != -1) {
 #if (DEBUG_UDP_CLT)
             ESP_LOGE(MODULE_UDP_CLT, "Shutting down socket and restarting...");
 #endif /* DEBUG_UDP_CLT */
-            shutdown(sock, 0);
-            close(sock);
+            shutdown(g_status_sock, 0);
+            close(g_status_sock);
         }
     }
     vTaskDelete(NULL);

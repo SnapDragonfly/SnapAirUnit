@@ -31,6 +31,7 @@
  */
 #include "msp_protocol.h"
 #include "tello_protocol.h"
+#include "hy_protocol.h"
 #include "module.h"
 #include "mode.h"
 
@@ -39,24 +40,24 @@
  */
 #include "ttl.h"
 
-static int                   g_server_sock;
-static struct sockaddr_storage g_source_addr;
+static int                   g_control_sock;
+static struct sockaddr_storage g_control_addr;
 char                          g_addr_str[STR_IP_LEN];
 
-esp_err_t udp_msg_send(uint8_t * buf, int len)
+int udp_control_send(uint8_t * buf, int len)
 {
 #if (DEBUG_UDP_SRV)
     ESP_LOGI(MODULE_UDP_SRV, "sending %d bytes", len);
     esp_log_buffer_hex(MODULE_UDP_SRV, buf, len);
 #endif /* DEBUG_UDP_SRV */
 
-    int err = sendto(g_server_sock, buf, len, 0, (struct sockaddr *)&g_source_addr, sizeof(g_source_addr));
-    if (err < 0) {
+    int n = sendto(g_control_sock, buf, len, 0, (struct sockaddr *)&g_control_addr, sizeof(g_control_addr));
+    if (n < 0) {
         protocol_state_degrade(SW_STATE_HALF_DUPLEX);
         ESP_LOGE(MODULE_UDP_SRV, "Error occurred during sending: errno %d", errno);
     }
 
-    return err;
+    return n;
 }
 
 static void udp_srv_task(void *pvParameters)
@@ -90,8 +91,8 @@ static void udp_srv_task(void *pvParameters)
             ip_protocol = IPPROTO_IPV6;
         }
 
-        g_server_sock = socket(addr_family, SOCK_DGRAM, ip_protocol);
-        if (g_server_sock < 0) {
+        g_control_sock = socket(addr_family, SOCK_DGRAM, ip_protocol);
+        if (g_control_sock < 0) {
             ESP_LOGE(MODULE_UDP_SRV, "Unable to create socket: errno %d", errno);
             break;
         }
@@ -101,7 +102,7 @@ static void udp_srv_task(void *pvParameters)
 
 #if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_TUNNEL_IPV6)
         int enable = 1;
-        lwip_setsockopt(g_server_sock, IPPROTO_IP, IP_PKTINFO, &enable, sizeof(enable));
+        lwip_setsockopt(g_control_sock, IPPROTO_IP, IP_PKTINFO, &enable, sizeof(enable));
 #endif
 
 #if defined(CONFIG_TUNNEL_IPV4) && defined(CONFIG_TUNNEL_IPV6)
@@ -109,24 +110,24 @@ static void udp_srv_task(void *pvParameters)
             // Note that by default IPV6 binds to both protocols, it is must be disabled
             // if both protocols used at the same time (used in CI)
             int opt = 1;
-            setsockopt(g_server_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-            setsockopt(g_server_sock, IPPROTO_IPV6, IPV6_V6ONLY, &opt, sizeof(opt));
+            setsockopt(g_control_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+            setsockopt(g_control_sock, IPPROTO_IPV6, IPV6_V6ONLY, &opt, sizeof(opt));
         }
 #endif
         // Set timeout
         struct timeval timeout;
         timeout.tv_sec = 10;
         timeout.tv_usec = 0;
-        setsockopt (g_server_sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout);
+        setsockopt (g_control_sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout);
 
-        int err = bind(g_server_sock, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
+        int err = bind(g_control_sock, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
         if (err < 0) {
             ESP_LOGE(MODULE_UDP_SRV, "Socket unable to bind: errno %d", errno);
         }
 #if (DEBUG_UDP_SRV)
         ESP_LOGI(MODULE_UDP_SRV, "Socket bound, port %d", CONTROL_PORT);
 #endif /* DEBUG_UDP_SRV */
-        socklen_t socklen = sizeof(g_source_addr);
+        socklen_t socklen = sizeof(g_control_addr);
 
 #if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_TUNNEL_IPV6)
         struct iovec iov;
@@ -141,7 +142,7 @@ static void udp_srv_task(void *pvParameters)
         msg.msg_flags = 0;
         msg.msg_iov = &iov;
         msg.msg_iovlen = 1;
-        msg.msg_name = (struct sockaddr *)&g_source_addr;
+        msg.msg_name = (struct sockaddr *)&g_control_addr;
         msg.msg_namelen = socklen;
 #endif
 
@@ -152,9 +153,9 @@ static void udp_srv_task(void *pvParameters)
             memset(rx_buffer, 0, STR_BUFFER_LEN);
 
 #if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_TUNNEL_IPV6)
-            int len = recvmsg(g_server_sock, &msg, 0);
+            int len = recvmsg(g_control_sock, &msg, 0);
 #else
-            int len = recvfrom(g_server_sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&g_source_addr, &socklen);
+            int len = recvfrom(g_control_sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&g_control_addr, &socklen);
 #endif
             // Error occurred during receiving
             if (len < 0) {
@@ -170,11 +171,10 @@ static void udp_srv_task(void *pvParameters)
 #if defined(PASS_THROUGH_UART)
                 ESP_ERROR_CHECK(ttl_msg_send((uint8_t *)rx_buffer, len));
 #elif defined(PASS_THROUGH_HY)
-#else /* PASS_THROUGH_MSP */
                 protocol_state_upgrade(SW_STATE_FULL_DUPLEX);
                 // Get the sender's ip address as string
-                if (g_source_addr.ss_family == PF_INET) {
-                    inet_ntoa_r(((struct sockaddr_in *)&g_source_addr)->sin_addr, g_addr_str, sizeof(g_addr_str) - 1);
+                if (g_control_addr.ss_family == PF_INET) {
+                    inet_ntoa_r(((struct sockaddr_in *)&g_control_addr)->sin_addr, g_addr_str, sizeof(g_addr_str) - 1);
 #if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_TUNNEL_IPV6)
                     for ( cmsgtmp = CMSG_FIRSTHDR(&msg); cmsgtmp != NULL; cmsgtmp = CMSG_NXTHDR(&msg, cmsgtmp) ) {
                         if ( cmsgtmp->cmsg_level == IPPROTO_IP && cmsgtmp->cmsg_type == IP_PKTINFO ) {
@@ -186,8 +186,29 @@ static void udp_srv_task(void *pvParameters)
                         }
                     }
 #endif
-                } else if (g_source_addr.ss_family == PF_INET6) {
-                    inet6_ntoa_r(((struct sockaddr_in6 *)&g_source_addr)->sin6_addr, g_addr_str, sizeof(g_addr_str) - 1);
+                } else if (g_control_addr.ss_family == PF_INET6) {
+                    inet6_ntoa_r(((struct sockaddr_in6 *)&g_control_addr)->sin6_addr, g_addr_str, sizeof(g_addr_str) - 1);
+                }
+
+                ESP_ERROR_CHECK(udp_handle_hy((uint8_t *)rx_buffer, len));
+#else /* PASS_THROUGH_MSP */
+                protocol_state_upgrade(SW_STATE_FULL_DUPLEX);
+                // Get the sender's ip address as string
+                if (g_control_addr.ss_family == PF_INET) {
+                    inet_ntoa_r(((struct sockaddr_in *)&g_control_addr)->sin_addr, g_addr_str, sizeof(g_addr_str) - 1);
+#if defined(CONFIG_LWIP_NETBUF_RECVINFO) && !defined(CONFIG_TUNNEL_IPV6)
+                    for ( cmsgtmp = CMSG_FIRSTHDR(&msg); cmsgtmp != NULL; cmsgtmp = CMSG_NXTHDR(&msg, cmsgtmp) ) {
+                        if ( cmsgtmp->cmsg_level == IPPROTO_IP && cmsgtmp->cmsg_type == IP_PKTINFO ) {
+                            struct in_pktinfo *pktinfo;
+                            pktinfo = (struct in_pktinfo*)CMSG_DATA(cmsgtmp);
+#if (DEBUG_UDP_SRV)
+                            ESP_LOGI(MODULE_UDP_SRV, "dest ip: %s\n", inet_ntoa(pktinfo->ipi_addr));
+#endif /* DEBUG_UDP_SRV */
+                        }
+                    }
+#endif
+                } else if (g_control_addr.ss_family == PF_INET6) {
+                    inet6_ntoa_r(((struct sockaddr_in6 *)&g_control_addr)->sin6_addr, g_addr_str, sizeof(g_addr_str) - 1);
                 }
 
                 rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string...
@@ -243,12 +264,12 @@ static void udp_srv_task(void *pvParameters)
             }
         }
 
-        if (g_server_sock != -1) {
+        if (g_control_sock != -1) {
 #if (DEBUG_UDP_SRV)
             ESP_LOGE(MODULE_UDP_SRV, "Shutting down socket and restarting...");
 #endif /* DEBUG_UDP_SRV */
-            shutdown(g_server_sock, 0);
-            close(g_server_sock);
+            shutdown(g_control_sock, 0);
+            close(g_control_sock);
             //protocol_state_set(SW_STATE_IDLE);
         }
     }

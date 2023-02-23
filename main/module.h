@@ -54,6 +54,7 @@ extern "C" {
 #define DEBUG_UDP_CLT             0
 #define DEBUG_MSP_PROTO           0
 #define DEBUG_TELLO_PROTO         0
+#define DEBUG_HY_PROTO            0
 #define DEBUG_CONSOLE             0
 
 
@@ -63,6 +64,7 @@ extern "C" {
 #define MODULE_UDP_CLT             "uclt"
 #define MODULE_MSP_PROTO           "msp"
 #define MODULE_TELLO_PROTO         "tel"
+#define MODULE_HY_PROTO            "hy"
 #define MODULE_CONSOLE             "cons"
 
 

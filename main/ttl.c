@@ -30,6 +30,7 @@
 #include "mode.h"
 #include "msp_protocol.h"
 #include "tello_protocol.h"
+#include "hy_protocol.h"
 
 /*
  * service header files
@@ -78,11 +79,6 @@ static void ttl_srv_task(void *pvParameters)
                     }
 #endif /* DEBUG_UART */
 
-#if defined(PASS_THROUGH_UART)
-                    udp_msg_send(temp, event.size);
-#elif defined(PASS_THROUGH_HY)
-
-#else /* PASS_THROUGH_MSP */
                     // To do send to BT SPP
                     if (g_esp_ssp_handle && protocol_state_active(SW_MODE_BT_SPP)){
                         if(MESSAGE_CENTER == auc_get_type()){
@@ -92,9 +88,14 @@ static void ttl_srv_task(void *pvParameters)
                         }
                         auc_set_type(MESSAGE_UNKNOW);
                     } else {
+#if defined(PASS_THROUGH_UART)
+                        udp_control_send(temp, event.size);
+#elif defined(PASS_THROUGH_HY)
+                        ttl_handle_wifi_hy(temp, event.size);
+#else /* PASS_THROUGH_MSP */
                         esp_err_t ret;
                         if (SW_STATE_CLI == protocol_state_get()){
-                            udp_msg_send(temp, event.size);
+                            udp_control_send(temp, event.size);
                         }else{
                             if(MESSAGE_CENTER == auc_get_type()){
                                 auc_handle_msp(temp, event.size);
@@ -106,9 +107,9 @@ static void ttl_srv_task(void *pvParameters)
                             }
                             auc_set_type(MESSAGE_UNKNOW);
                         }
+#endif /* PASS_THROUGH_DATA */
                     }
                     //esp_ble_gatts_send_indicate(spp_gatts_if, spp_conn_id, spp_handle_table[SPP_IDX_SPP_DATA_NTY_VAL],event.size, temp, false);
-#endif /* PASS_THROUGH_DATA */
                     free(temp);
                 }
                 break;

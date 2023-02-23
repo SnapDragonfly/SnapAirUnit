@@ -106,7 +106,7 @@ esp_err_t udp_sdk(struct udp_data * data)
 {
     UNUSED(data);
 
-    udp_msg_send((uint8_t *)get_app_versions(), strlen(get_idf_versions()));
+    udp_control_send((uint8_t *)get_app_versions(), strlen(get_idf_versions()));
     return ESP_ERR_INVALID_RESPONSE;
 }
 
@@ -174,7 +174,7 @@ esp_err_t udp_identity(struct udp_data * data)
     sprintf(str_buf,"%s,%d,%d,%02X%02X%02X%02X%02X%02X", get_str_ip(), CONTROL_PORT, STATUS_PORT,
             efuse_mac[0],efuse_mac[1],efuse_mac[2],efuse_mac[3],efuse_mac[4],efuse_mac[5]);
 
-    udp_msg_send((uint8_t *)str_buf, strlen(str_buf));
+    udp_control_send((uint8_t *)str_buf, strlen(str_buf));
 
     return ESP_ERR_INVALID_RESPONSE;
 }
@@ -189,7 +189,7 @@ esp_err_t udp_loopback(struct udp_data * data)
         return ESP_FAIL;
     }
 
-    udp_msg_send((uint8_t *)data->param[0], strlen(data->param[0]));
+    udp_control_send((uint8_t *)data->param[0], strlen(data->param[0]));
     return ESP_OK;
 }
 

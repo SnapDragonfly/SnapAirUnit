@@ -7,7 +7,7 @@ extern "C" {
 #endif
 
 esp_err_t udp_srv_start(void);
-esp_err_t udp_msg_send(uint8_t * buf, int len);
+int udp_control_send(uint8_t * buf, int len);
 
 #ifdef __cplusplus
 }

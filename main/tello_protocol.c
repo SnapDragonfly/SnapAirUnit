@@ -191,7 +191,7 @@ esp_err_t nomsp_handle_tello(uint8_t * buf, int len)
             break;
 
         case ESP_OK:
-            udp_msg_send((uint8_t *)TELLO_RESPONSE_OK, strlen(TELLO_RESPONSE_OK));
+            udp_control_send((uint8_t *)TELLO_RESPONSE_OK, strlen(TELLO_RESPONSE_OK));
             break;
 
         case ESP_FAIL:
@@ -199,7 +199,7 @@ esp_err_t nomsp_handle_tello(uint8_t * buf, int len)
         case ESP_ERR_NO_MEM:
             /* FALL THROUGH */
         default:
-            udp_msg_send((uint8_t *)TELLO_RESPONSE_ERR, strlen(TELLO_RESPONSE_ERR));
+            udp_control_send((uint8_t *)TELLO_RESPONSE_ERR, strlen(TELLO_RESPONSE_ERR));
             break;
         }
 

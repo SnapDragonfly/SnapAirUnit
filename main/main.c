@@ -79,7 +79,11 @@ void sand_box(void)
     //UNUSED(nomsp_handle_tello);
     nomsp_handle_tello(NULL, 0);
 #elif defined(PASS_THROUGH_HY)
-    //UNUSED(x);
+    /* Issue #67, need to be fixed.
+     * Compiler error when PASS_THROUGH_UART selected (avoided, but NOT solved properly) #67 
+     */
+    //UNUSED(nomsp_handle_tello);
+    nomsp_handle_tello(NULL, 0);
 #else /* PASS_THROUGH_MSP */
     //UNUSED(x);
 #endif /* PASS_THROUGH_DATA */
