@@ -5,15 +5,21 @@ It's an education version of Snap Air Unit, which aims to provide an basic kit c
 Main features:
 --------------
 
-* [Support] 2.4G AP/STA wireless mode
+* [Support] 2.4G WiFi(AP/STA) wireless mode
 > 1. UART direct passthrough
 > 2. MSP protocol passthrough
-> 3. HuiYuan customized protocol passthrough
-* [Support] BT SPP & UART direct passthrough
-* [TODO] Tello school API throught UPD protocol
-* [TODO] RESTful API for snap programming
-* [TODO] ELRS control link
-* [TODO] WiFi video link
+> 3. HuiYuan customized protocol passthrough (Simulation)
+* [Support] BT SPP wireless mode
+> 1. UART direct passthrough
+> 2. MSP protocol passthrough
+* [Support] Tello school API throught UPD protocol
+> 1. [TODO, SW] FC-WiFi bridge
+> 2. [TODO, SW] postion Estimator
+* [Support] RESTful API for snap programming
+> 1. [TODO, SW] FC-WiFi bridge
+> 2. [TODO, SW] postion Estimator
+* [TODO, HW] ELRS control link
+* [TODO, SW + HW] WiFi video link
 
 # Get Started
 
