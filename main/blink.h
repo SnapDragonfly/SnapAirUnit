@@ -20,7 +20,7 @@ typedef enum {
 
 
 typedef enum {
-    LED_STATUS_NONE           = LED_BLINK_NONE,  // Connection Established
+    LED_STATUS_ON             = LED_BLINK_NONE,  // Connection Established
     LED_STATUS_SLOW           = LED_BLINK_SLOW,  // Wait for Connection
     LED_STATUS_FAST           = LED_BLINK_FAST,  // Timeout for Connection
     LED_STATUS_WARN           = LED_BLINK_WARN,  // Wait for Binding
@@ -52,8 +52,8 @@ struct blink_led {
 };
 
 blink_led_handle_t module_led_start(uint8_t num);
-void led_mode_set(struct blink_led *led, led_blink_t mode);
-void led_mode_next(struct blink_led *led);
+void led_blink_set(struct blink_led *led, led_blink_t mode);
+void led_blink_next(struct blink_led *led);
 
 #ifdef __cplusplus
 }

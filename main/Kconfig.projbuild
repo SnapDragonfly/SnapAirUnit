@@ -257,11 +257,23 @@ menu "Snap Air Unit"
             config BLINK_LED_RMT
                 bool "RMT - Addressable LED"
         endchoice
+
+        choice BLINK_LED_LEVEL
+            prompt "Blink LED LEVEL ON"
+            default BLINK_LED_LEVEL_ON_LOW
+            help
+                Defines the default peripheral for blink example
     
+            config BLINK_LED_LEVEL_ON_HIGH
+                bool "GPIO_HIGH"
+            config BLINK_LED_LEVEL_ON_LOW
+                bool "GPIO_LOW"
+        endchoice
+
         config BLINK_MODE_GPIO
             int "Blink GPIO number"
             range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
-            default 18
+            default 22
             help
                 GPIO number (IOxx) to blink on and off or the RMT signal for the addressable LED.
                 Some GPIOs are used for other purposes (flash connections, etc.) and cannot be used to blink.
@@ -285,7 +297,7 @@ menu "Snap Air Unit"
         config BLINK_PERIOD_FAST
             int "Blink period for fast mode in ms"
             range 10 3600000
-            default 300
+            default 200
             help
                 Define the blinking period for fast mode in milliseconds.
 

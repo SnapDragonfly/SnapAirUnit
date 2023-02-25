@@ -194,8 +194,8 @@ esp_err_t wireless_mode_switch(enum_wireless_mode_t mode)
         }
 
     g_sw_mode = mode;
-    (void)led_mode_set((struct blink_led *)g_mode_handle, g_sw_mode);
-    (void)led_mode_set((struct blink_led *)g_status_handle, LED_STATUS_SLOW);
+    (void)led_blink_set((struct blink_led *)g_mode_handle, g_sw_mode);
+    (void)led_blink_set((struct blink_led *)g_status_handle, LED_STATUS_SLOW);
     (void)nvs_set_wireless_mode(g_sw_mode);
 
     return ESP_OK;
@@ -237,6 +237,9 @@ esp_err_t wireless_mode_init(void)
             wifi_ap_start();
             break;
     }
+
+    (void)led_blink_set((struct blink_led *)g_mode_handle, g_sw_mode);
+    (void)led_blink_set((struct blink_led *)g_status_handle, LED_STATUS_SLOW);
 
     ESP_LOGI(MODULE_MODE, "mode_init err = %d, mode = %d, g_sw_mode = %d", err, mode, g_sw_mode);
     return ESP_OK;

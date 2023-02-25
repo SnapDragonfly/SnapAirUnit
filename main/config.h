@@ -57,6 +57,10 @@ extern "C" {
 #define MODE_GPIO                           CONFIG_BLINK_MODE_GPIO
 #define STATUS_GPIO                         CONFIG_BLINK_STATUS_GPIO
 
+#define BLINK_LED_LEVEL_ON_LOW              CONFIG_BLINK_LED_LEVEL_ON_LOW
+#define BLINK_LED_LEVEL_ON_HIGH             CONFIG_BLINK_LED_LEVEL_ON_HIGH
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -16,6 +16,7 @@
  */
 #include "module.h"
 #include "define.h"
+#include "config.h"
 
 /*
  * module header files
@@ -31,20 +32,41 @@ static void led_init(struct blink_led *led, uint8_t io_num)
 {
     led->num      = io_num;
     led->mode     = LED_BLINK_NONE;
+
+#if defined(BLINK_LED_LEVEL_ON_LOW)
+    led->state    = 0;
+#elif defined(BLINK_LED_LEVEL_ON_HIGH)
     led->state    = 1;
+#else
+    #error BLINK_LED_LEVEL not configured!!!
+#endif
 }
 
-void led_mode_set(struct blink_led *led, led_blink_t mode)
+void led_blink_set(struct blink_led *led, led_blink_t mode)
 {
     led->mode     = mode%LED_BLINK_NULL;
-    led->state    = 1;
+
+#if defined(BLINK_LED_LEVEL_ON_LOW)
+            led->state    = 0;
+#elif defined(BLINK_LED_LEVEL_ON_HIGH)
+            led->state    = 1;
+#else
+    #error BLINK_LED_LEVEL not configured!!!
+#endif
 }
 
-void led_mode_next(struct blink_led *led)
+void led_blink_next(struct blink_led *led)
 {
     led->mode++;
     led->mode     = led->mode % LED_BLINK_NULL;
-    led->state    = 1;
+
+#if defined(BLINK_LED_LEVEL_ON_LOW)
+        led->state    = 0;
+#elif defined(BLINK_LED_LEVEL_ON_HIGH)
+        led->state    = 1;
+#else
+    #error BLINK_LED_LEVEL not configured!!!
+#endif
 }
 
 
