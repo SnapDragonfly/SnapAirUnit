@@ -60,6 +60,9 @@ extern "C" {
 #define BLINK_LED_LEVEL_ON_LOW              CONFIG_BLINK_LED_LEVEL_ON_LOW
 #define BLINK_LED_LEVEL_ON_HIGH             CONFIG_BLINK_LED_LEVEL_ON_HIGH
 
+// for RF mode
+#define ESP_RF_MODE                         CONFIG_ESP_RF_MODE
+
 
 #ifdef __cplusplus
 }

@@ -18,6 +18,7 @@
 /*
  * basic header files
  */
+#include "config.h"
 #include "define.h"
 
 /*
@@ -151,6 +152,11 @@ static int sau_ap(int argc, char **argv)
         arg_print_errors(stderr, wifi_ap_args.end, argv[0]);
         return 1;
     }
+
+#if ( defined(PASS_THROUGH_UART) && (ESP_RF_MODE == 2) ) // SW_MODE_BT_SPP
+    ESP_LOGI(MODULE_CMD_SAU, "SW_MODE_BT_SPP + PASS_THROUGH_UART, no need for connecting ap!");
+    return 0;
+#endif
 
     const char *ssid = wifi_ap_args.ssid->sval[0];
     const char *pass = wifi_ap_args.pass->sval[0];

@@ -21,6 +21,7 @@
 /*
  * basic header files
  */
+#include "config.h"
 #include "define.h"
 #include "handle.h"
 
@@ -143,10 +144,6 @@ enum_wireless_mode_t wireless_mode_get(void)
 
 esp_err_t wireless_mode_switch(enum_wireless_mode_t mode)
 {
-#if (DEBUG_MODE)
-    ESP_LOGI(MODULE_MODE, "current mode(%d), set to %d, actually %d", g_sw_state, mode, mode % SW_MODE_NULL);
-#endif /* DEBUG_MODE */
-
     /* Make sure it's NOT overflow! */
     mode = mode % SW_MODE_NULL;
 
@@ -176,6 +173,24 @@ esp_err_t wireless_mode_switch(enum_wireless_mode_t mode)
         }
 
     /* Start new mode */
+#if ( defined(PASS_THROUGH_UART) && (ESP_RF_MODE == 2) ) // SW_MODE_BT_SPP
+    switch(mode){
+        case SW_MODE_WIFI_AP:
+            wifi_ap_start();
+            break;
+
+        case SW_MODE_WIFI_STA:
+            mode = SW_MODE_BT_SPP;
+            /* fall through */
+
+        case SW_MODE_BT_SPP:
+            bt_spp_start();
+            break;
+
+        default:
+            break;
+        }
+#else
     switch(mode){
         case SW_MODE_WIFI_AP:
             wifi_ap_start();
@@ -192,6 +207,11 @@ esp_err_t wireless_mode_switch(enum_wireless_mode_t mode)
         default:
             break;
         }
+#endif
+
+#if (DEBUG_MODE)
+    ESP_LOGI(MODULE_MODE, "current mode(%d), set to %d, actually %d", g_sw_state, mode, mode % SW_MODE_NULL);
+#endif /* DEBUG_MODE */
 
     g_sw_mode = mode;
     (void)led_blink_set((struct blink_led *)g_mode_handle, g_sw_mode);
@@ -212,7 +232,7 @@ esp_err_t wireless_mode_init(void)
     uint16_t mode;
     esp_err_t err = nvs_get_wireless_mode(&mode);
     if(ESP_OK != err){
-        g_sw_mode = SW_MODE_WIFI_AP;
+        g_sw_mode = ESP_RF_MODE;
         (void)nvs_set_wireless_mode(g_sw_mode);
     } else {
         g_sw_mode = mode;
