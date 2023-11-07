@@ -43,7 +43,14 @@
 
 > $ cd SnapAirUnit
 >
-> $ idf.py set-target ESP32
+> $ idf.py set-target esp32
+
+**Support following targets:**
+- esp32
+- esp32s2
+- esp32c3
+- esp32s3
+- esp32c2
 
 **Step 2: configure the project**
 
