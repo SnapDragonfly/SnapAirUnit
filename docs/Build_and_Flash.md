@@ -11,8 +11,13 @@
 > $ cd esp-idf
 >
 > $ git checkout release/v5.0
+>
 
-**Step 2: setup environment**
+**Step 2: install compiling tools**
+
+> $ ./install.sh
+
+**Step 3: setup environment**
 
 > $ . ./export.sh
 
