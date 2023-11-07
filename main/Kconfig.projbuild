@@ -278,7 +278,7 @@ menu "Snap Air Unit"
         endchoice
 
         config BLINK_MODE_GPIO
-            int "Blink GPIO number"
+            int "Blink Mode GPIO"
             range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
             default 22
             help
@@ -286,7 +286,7 @@ menu "Snap Air Unit"
                 Some GPIOs are used for other purposes (flash connections, etc.) and cannot be used to blink.
 
         config BLINK_STATUS_GPIO
-            int "Blink GPIO number"
+            int "Blink Status GPIO"
             range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
             default 19
             help
