@@ -46,11 +46,11 @@
 > $ idf.py set-target esp32
 
 **Support following targets:**
-- esp32
-- esp32s2
-- esp32c3
-- esp32s3
-- esp32c2
+- esp32 **-- esp-idf v5.0 ok --**
+- esp32s2  **-- unclear --**
+- esp32c3  **-- unclear --**
+- esp32s3  **-- unclear --**
+- esp32c2  **-- unclear --**
 
 **Step 2: configure the project**
 
