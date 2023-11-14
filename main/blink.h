@@ -3,6 +3,7 @@
 #define __BLINK_SOURCE_H__
 
 #include "config.h"
+#include "led_strip.h"
 
 #ifdef __cplusplus
 extern "C" {
